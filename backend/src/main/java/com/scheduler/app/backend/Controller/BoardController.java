@@ -29,10 +29,10 @@ public class BoardController {
         }
         return add;
     }
-    @PostMapping(value="/board/addboardscan/boards")
-    public ArrayList<Board> addBoardScan(@RequestParam long board){
+    @PostMapping(value="/board/addboardscan")
+    public ArrayList<Board> addBoardScan(){
         ArrayList<Board> addedList=new ArrayList<Board>();
-        addedList=boardService.scanNewBoards((int) board);
+        addedList=boardService.scanNewBoards();
         return addedList;
     }
     

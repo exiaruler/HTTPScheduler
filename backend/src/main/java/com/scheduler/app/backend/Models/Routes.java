@@ -15,9 +15,9 @@ public class Routes extends ModelBase{
     @Column
     private String route;
     @Column 
-    private boolean schedule;
+    private boolean schedule=false;
     @Column 
-    private boolean modes;
+    private boolean modes=false;
     @Column
     private boolean startRoute=false;
     @OneToMany

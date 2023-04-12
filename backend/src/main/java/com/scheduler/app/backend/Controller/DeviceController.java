@@ -18,10 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class DeviceController {
     @Autowired
     private DeviceService service;
-    @PostMapping(value="/device/addboard")
+    @PostMapping(value="/device/adddevice")
     public Devices addDevice(@RequestBody Devices entry){
         return service.addDevice(entry);
 
+    }
+    @GetMapping(value="/device/getalldevices")
+    public List<Devices> getAllDevices(){
+        return service.getAllDevice();
     }
     
 }

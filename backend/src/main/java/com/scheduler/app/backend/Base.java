@@ -54,6 +54,19 @@ public class Base{
         }
         return output;
     }
+    public String getDataByFieldRevamp(String field,String input){
+        String data="";
+        String [] arr=input.split(",");
+        for(int i=0; i<arr.length; i++){
+            String jsonRow=arr[i];
+            String [] jsonSplit=jsonRow.split(":");
+            if(field.equals(jsonSplit[0])){
+                data=jsonSplit[1].trim();
+                break;
+            }
+        }
+        return data;
+    }
     public String getVariableData(String value){
         if(value=="") return "";
         int index=value.indexOf(": {");

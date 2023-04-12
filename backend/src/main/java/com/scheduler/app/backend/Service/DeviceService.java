@@ -1,5 +1,8 @@
 package com.scheduler.app.backend.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.scheduler.app.HTTPHandle.HttpUtil;
@@ -36,7 +39,7 @@ public class DeviceService extends Base {
                 newDevice.setDeviceName(deviceName);
                 Devices save=addDevice(newDevice);
                 // saves routes
-                routesService.addRoutesByScan(save.getId(),ip);
+                routesService.addRoutesByScan(save,ip);
                 
             }
         }else{
@@ -50,8 +53,11 @@ public class DeviceService extends Base {
                 newDevice.setBoardId(board);
                 newDevice.setDeviceName(deviceName);
                 Devices save=addDevice(newDevice);
-                routesService.addRoutesByScan(save.getId(), ip);
+                routesService.addRoutesByScan(save, ip);
         }
+    }
+    public List<Devices> getAllDevice(){
+        return device.findAll();
     }
     
 

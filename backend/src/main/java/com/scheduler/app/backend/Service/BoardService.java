@@ -32,7 +32,7 @@ public class BoardService extends Base {
     public Board addBoard(Board entry){
         return board.save(entry);
     }
-    public ArrayList<Board> scanNewBoards(int deviceExpected){
+    public ArrayList<Board> scanNewBoards(){
         ArrayList<Board> addedList=new ArrayList<Board>();
         String ipAddress="192.168.1.";
         for(int i=0; i<255; i++){
