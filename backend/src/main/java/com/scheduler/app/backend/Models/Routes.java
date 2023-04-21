@@ -12,12 +12,16 @@ import javax.persistence.OneToMany;
 public class Routes extends ModelBase{
     @ManyToOne(optional = false)
     private Devices device;
+    // route of the device
     @Column
     private String route;
+    // if the route in use to be scheduled
     @Column 
     private boolean schedule=false;
+    // true if the route has modes
     @Column 
     private boolean modes=false;
+    // if the route is used to start the device when on
     @Column
     private boolean startRoute=false;
     @OneToMany
@@ -88,16 +92,16 @@ public class Routes extends ModelBase{
         this.schedule = schedule;
     }
 
-    public boolean isMode() {
-        return this.modes;
+    public List<Mode> isMode() {
+        return this.mode;
     }
 
-    public boolean getMode() {
-        return this.modes;
+    public List<Mode> getMode() {
+        return this.mode;
     }
 
-    public void setMode(boolean mode) {
-        this.modes = mode;
+    public void setMode(List<Mode> mode) {
+        this.mode = mode;
     }
     
 

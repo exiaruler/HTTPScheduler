@@ -20,12 +20,15 @@ import javax.persistence.Table;
 public class Board extends ModelBase {
  
     //@NotBlank(message = "Name must not be blank")
+    // arduino board id
     @Column(name = "onboard_id")
     private int onboardId;
+    // board name
     @Column
     private String name;
     @Column
     private String ip;
+    // active status
     @Column
     private boolean status=false;
 

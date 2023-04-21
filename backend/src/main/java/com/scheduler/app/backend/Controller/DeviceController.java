@@ -27,5 +27,9 @@ public class DeviceController {
     public List<Devices> getAllDevices(){
         return service.getAllDevice();
     }
+    @GetMapping(value="/device/get-device/{id}")
+    public Devices getDevice(@PathVariable long id){
+        return service.getDevice(id);
+    }
     
 }

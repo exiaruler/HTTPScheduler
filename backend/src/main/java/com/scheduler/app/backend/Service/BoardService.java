@@ -1,10 +1,9 @@
 package com.scheduler.app.backend.Service;
 import org.springframework.stereotype.Service;
 import com.scheduler.app.backend.Repo.*;
-import com.scheduler.app.HTTPHandle.HttpUtil;
 import com.scheduler.app.backend.Models.Board;
+import com.scheduler.app.backend.Models.Devices;
 import com.scheduler.app.backend.Base;
-import com.scheduler.app.backend.Service.DeviceService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -91,8 +90,6 @@ public class BoardService extends Base {
     }
    
     public Board findBoard(long id){
-        Board test=new Board();
-        test.getClass();
         return board.findById(id).get();
     }
     

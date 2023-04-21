@@ -10,11 +10,21 @@ import java.time.ZoneId;
 @MappedSuperclass
 public class ModelBase{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column
     private LocalDateTime createdDate=LocalDateTime.now(ZoneId.of("Australia/Sydney"));
+    @Column
+    private LocalDateTime updatedDate=LocalDateTime.now(ZoneId.of("Australia/Sydney"));
+
+    public LocalDateTime getUpdatedDate() {
+        return this.updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
 
 
     public LocalDateTime getCreatedDate() {

@@ -1,15 +1,14 @@
 package com.scheduler.app.backend.Service;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import com.scheduler.app.HTTPHandle.HttpUtil;
 import com.scheduler.app.backend.Base;
 import com.scheduler.app.backend.Models.Board;
 import com.scheduler.app.backend.Models.Devices;
 import com.scheduler.app.backend.Repo.DeviceRepo;
+import com.scheduler.app.backend.Task.Model.CompletedTask;
 
 @Service
 public class DeviceService extends Base {
@@ -24,6 +23,16 @@ public class DeviceService extends Base {
     
     public Devices addDevice(Devices entry){
         return device.save(entry);
+    }
+    public Devices updateDevice(Devices obj,long id){
+        Devices rec=device.findById(id).get();
+        Devices save=null;
+        if(rec!=null){
+            rec.setDeviceName(obj.getDeviceName());
+
+            save=device.save(rec);
+        }
+        return save;
     }
     public void addDeviceFromScan(Board board,String ip,String json){
         String value=getVariableData(json);
@@ -58,6 +67,24 @@ public class DeviceService extends Base {
     }
     public List<Devices> getAllDevice(){
         return device.findAll();
+    }
+    public Devices getDevice(long id){
+        return device.findById(id).get();
+    }
+    public void updateDeviceAfterAction(CompletedTask task){
+       Devices rec=task.getDevice();
+       if(rec!=null){
+        // update device state and warning
+        if(task.getStatusString()!=""){
+            rec.setState(task.getStatusString());
+        }else{
+            rec.setState("off");
+        }
+        if(task.getWarning()!=""){
+            rec.setWarning(task.getWarning());
+        }
+        device.save(rec);
+       }
     }
     
 

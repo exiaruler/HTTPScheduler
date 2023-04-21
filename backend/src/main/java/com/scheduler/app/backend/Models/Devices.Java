@@ -14,18 +14,23 @@ import javax.persistence.OneToMany;
 @Entity
 public class Devices extends ModelBase{
 
+    // device which the board is belong to
     @JsonManagedReference
     @ManyToOne(optional = false)
     private Board boardId;
-
+    // name of device
     @Column
     private String deviceName;
+    // state which the device is in
     @Column
     private String state;
+    // error from device
     @Column
     private String warning;
+    // priority for task schedule 
     @Column
     private int priority=1;
+    // time delay (mins) for task schedule
     @Column
     private double timeDelay=10;
     @OneToMany(fetch = FetchType.LAZY)
