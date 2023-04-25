@@ -60,7 +60,7 @@ public class SchedulerTask{
         }
     }
     // loop through array to update database
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 100)
     public void runComplete(){
         if(!completeTaskQueue.isEmpty()){
             System.out.println("Number of completed task in queue "+completeTaskQueue.size());
@@ -104,6 +104,10 @@ public class SchedulerTask{
         }
 
         return result;
+    }
+    // get priority task 
+    private Task getPriority(Task task){
+        return task;
     }
     // get all running task
     public List<Task> getAllRunTask(){

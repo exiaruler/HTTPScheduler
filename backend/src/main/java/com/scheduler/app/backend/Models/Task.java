@@ -23,12 +23,14 @@ public class Task extends ModelBase {
     private boolean motor=false;
     @Column
     private LocalDateTime scheduledTime=LocalDateTime.now();
-    
+    @Column 
+    private boolean oneTimeJob=true;
 
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime) {
+
+    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
@@ -37,6 +39,20 @@ public class Task extends ModelBase {
         this.priority = priority;
         this.motor = motor;
         this.scheduledTime = scheduledTime;
+        this.oneTimeJob = oneTimeJob;
+    }
+    
+
+    public boolean isOneTimeJob() {
+        return this.oneTimeJob;
+    }
+
+    public boolean getOneTimeJob() {
+        return this.oneTimeJob;
+    }
+
+    public void setOneTimeJob(boolean oneTimeJob) {
+        this.oneTimeJob = oneTimeJob;
     }
 
 
@@ -118,12 +134,12 @@ public class Task extends ModelBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime);
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime);
+        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob);
     }
 
 

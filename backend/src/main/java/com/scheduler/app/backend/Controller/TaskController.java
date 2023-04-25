@@ -38,10 +38,12 @@ public class TaskController {
     public void deleteTask(@PathVariable long id){
         service.deleteTask(id);
     }
+    // route to start device
     @GetMapping(value="/task/start-device/{device}")
     public void addTaskFromRequestStart(@PathVariable String device){
 
     }
+    // route to for device to send request during operation
     @GetMapping(value="/task/send-device/{device}")
     public void sendRequestDevice(@PathVariable String device){
 

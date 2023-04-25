@@ -71,17 +71,20 @@ public class DeviceService extends Base {
     public Devices getDevice(long id){
         return device.findById(id).get();
     }
+    // update device after http request
     public void updateDeviceAfterAction(CompletedTask task){
        Devices rec=task.getDevice();
        if(rec!=null){
         // update device state and warning
-        if(task.getStatusString()!=""){
-            rec.setState(task.getStatusString());
-        }else{
-            rec.setState("off");
-        }
-        if(task.getWarning()!=""){
+        if(task.getWarning()!=""&&!task.getStatus()){
             rec.setWarning(task.getWarning());
+            rec.setState("");
+        }else{
+            if(task.getStatusString()!=""){
+                rec.setState(task.getStatusString());
+            }else{
+                rec.setState("off");
+            }
         }
         device.save(rec);
        }

@@ -27,6 +27,15 @@ public class RoutesService extends Base {
     public Mode addMode(Mode entry){
         return modeService.save(entry);
     }
+    public Routes updateRoute(Routes entry,long id){
+        Routes rec=null;
+        if(service.existsById(id)){
+            rec=service.findById(id).get();
+            rec=entry;
+            service.save(rec);
+        }
+        return rec;
+    }
     public void addRoutesByScan(Devices deviceId,String ip){
        String queryDataRequest=httpUtil.requestRoute(ip, "QueryData","");
        String rawJson=getrawVariable(queryDataRequest);
@@ -63,5 +72,12 @@ public class RoutesService extends Base {
        }
         
     }
+    public List<Routes> getAllRoutes(){
+        return service.findAll();
+    }
+    public Routes getRoute(long id){
+        return service.findById(id).get();
+    }
+
     
 }

@@ -11,22 +11,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 public class BoardController {
     @Autowired
     private BoardService boardService;
     
-    @PostMapping(value="/board/addboardtest")
+    @PostMapping(value="/board/addboard")
     public String addBoardTest(@RequestBody Board board){
         String add="";
-        try{
-            add=boardService.addBoardTest(board);
-        }catch(Exception err){
-
-        }
+        //add=boardService.addBoardTest(board);
         return add;
     }
     @PostMapping(value="/board/addboardscan")
