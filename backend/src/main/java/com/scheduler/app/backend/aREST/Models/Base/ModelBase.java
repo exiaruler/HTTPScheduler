@@ -1,0 +1,49 @@
+package com.scheduler.app.backend.aREST.Models.Base;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+// Base class for models 
+@MappedSuperclass
+public class ModelBase{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column
+    private LocalDateTime createdDate=LocalDateTime.now(ZoneId.of("Australia/Sydney"));
+    @Column
+    private LocalDateTime updatedDate=LocalDateTime.now(ZoneId.of("Australia/Sydney"));
+
+    public LocalDateTime getUpdatedDate() {
+        return this.updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        if(this.id<1){
+            this.createdDate = createdDate;
+        }
+    }
+
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+}

@@ -1,20 +1,24 @@
 package com.scheduler.app.backend.Task;
 import java.util.ArrayList;
 import java.util.List;
-import com.scheduler.app.backend.Task.HttpSchedule;
+
 import com.scheduler.app.backend.Task.Model.CompletedTask;
+import com.scheduler.app.backend.Task.Thread.HttpSchedule;
+import com.scheduler.app.backend.Task.Thread.CheckRun;
+import com.scheduler.app.backend.aREST.Models.*;
+import com.scheduler.app.backend.aREST.Service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
-import com.scheduler.app.backend.Models.*;
-import com.scheduler.app.backend.Service.*;
 @Component
 public class SchedulerTask{
+    // setting for queue to start
     public static boolean running=true;
+
     private boolean start=false;
-   
+    
     @Autowired
     private TaskService service;
     @Autowired
@@ -27,7 +31,7 @@ public class SchedulerTask{
     private static List<Task> runningQueue=new ArrayList<Task>();
     // task finished processing 
     private static List<CompletedTask> completeTaskQueue=new ArrayList<CompletedTask>();
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 100)
     public void runSche(){
         if(queue.isEmpty()&&!start){
             service.addToScheduler();
@@ -113,30 +117,57 @@ public class SchedulerTask{
     public List<Task> getAllRunTask(){
         return runningQueue;
     }
+    // check if any task running 
+    public boolean checkRun(){
+        boolean result=false;
+        if(runningQueue.size()>0){
+            while(!result){
+                CheckRun thread=new CheckRun(runningQueue);
+                thread.start();
+                try {
+                    thread.join();
+                    boolean check=thread.checkRun(runningQueue);
+                    if(check){
+                        result=true;
+                    }
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }
+        }
+        return result;
+    }
     // add list of tasks to the queue from the service 
     public void addToQueue(List<Task> currentList){
         queue=currentList;
     }
     // add to completed task array queue
-    public void addToComplete(Devices device,boolean status,String state,String warning){
-        CompletedTask compTask=new CompletedTask();
-        compTask.setDevice(device);
-        compTask.setStatus(status);
-        compTask.setStatusString(state);
-        compTask.setWarning(warning);
-        completeTaskQueue.add(compTask);
-        System.out.println(completeTaskQueue.size());
+    public void addToComplete(Devices device,boolean status,String state,String warning,boolean complete){
+        if(complete){
+            CompletedTask compTask=new CompletedTask();
+            compTask.setDevice(device);
+            compTask.setStatus(status);
+            compTask.setStatusString(state);
+            compTask.setWarning(warning);
+            completeTaskQueue.add(compTask);
+            System.out.println(completeTaskQueue.size());
+        }
         
     }
-    public void updateDeviceStatus(String json,long deviceId){
-        //deviceService.updateDeviceAfterAction(json, deviceId);
-        deviceService.getAllDevice();
+    // add task back into queue if required
+    public void failedTask(Task task){
+        queue.add(task);
     }
+   
     public void updateQueue(long id){
         service.deleteTask(id);
         service.addToScheduler();
     }
-
+    public void clearRunningTask(){
+        runningQueue.clear();
+    }
     public void removeRunningTask(Task task){
         for(int i=0; i<runningQueue.size(); i++){
             if(runningQueue.get(i).equals(task)){
