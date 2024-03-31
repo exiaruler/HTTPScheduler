@@ -5,8 +5,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import com.scheduler.app.backend.aREST.Models.Base.*;
+import com.scheduler.app.backend.aREST.Models.Base.CustomBase.TaskBase;
 @Entity
-public class Task extends ModelBase {
+public class Task extends TaskBase {
+    /* 
     @Column
     private String application;
     @Column
@@ -196,7 +198,7 @@ public class Task extends ModelBase {
             ", oneTimeJob='" + isOneTimeJob() + "'" +
             "}";
     }
-    
+    */
 
 
 }

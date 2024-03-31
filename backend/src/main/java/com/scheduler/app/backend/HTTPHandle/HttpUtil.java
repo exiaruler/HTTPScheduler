@@ -92,16 +92,16 @@ public class HttpUtil {
         responseBody = response.body();
         return responseBody;
     }
-    // request for amiamai api
-    public String httpRequestAmiAmi(String url,long timeOut) throws URISyntaxException, IOException, InterruptedException{
+    // request to express server
+    public String httpRequestExpress(String url,long timeOut) throws URISyntaxException, IOException, InterruptedException{
         String responseBody="";
+        String expressServerUrl="http://localhost:8000/get-amiami";
         System.out.println(url);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .header("x-user-key","amiami_dev")
-            .header("sec-fetch-mode", "cors")
-            .uri(URI.create(url))
+            //.version(HttpClient.Version.HTTP_2)
+            .POST(HttpRequest.BodyPublishers.ofString("{\"action\":\"hello\"}"))
+            .uri(URI.create(expressServerUrl))
             //.timeout(Duration.ofMillis(200))
             .build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());

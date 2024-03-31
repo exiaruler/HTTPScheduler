@@ -5,13 +5,14 @@ import java.net.URISyntaxException;
 import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
+import com.scheduler.app.backend.AmiAmi.AmiamiBase;
 @Service
-public class Amiami extends Base {
+public class Amiami extends AmiamiBase {
     
     public void testRequest(String url){
         String output="";
         try {
-            output=httpUtil.httpRequestAmiAmi(url, 200);
+            output=httpUtil.httpRequestExpress(url, 200);
         } catch (URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

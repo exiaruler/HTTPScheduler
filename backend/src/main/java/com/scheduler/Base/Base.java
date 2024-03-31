@@ -85,13 +85,5 @@ public class Base{
         return value;
     }
     
-    public Object test(Object object){
-        Object test=new Object();
-        
-        if(object!=null){
-            test=object;
-        }
-        return test;
-    }
     
 }
