@@ -3,15 +3,12 @@ import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
 import com.scheduler.Base.JsonObject.JsonObject;
+import com.scheduler.app.backend.aREST.ArestV2Frame;
 import com.scheduler.app.backend.aREST.Models.Board;
-import com.scheduler.app.backend.aREST.Models.Devices;
+import com.scheduler.app.backend.aREST.Models.Device;
 import com.scheduler.app.backend.aREST.Models.ScanDevice;
 import com.scheduler.app.backend.aREST.Repo.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
@@ -20,6 +17,7 @@ public class BoardService extends Base {
     private final BoardRepo board;
     private final DeviceService deviceService;
     private final ScanDeviceService scanVer;
+    public ArestV2Frame arest=new ArestV2Frame();
 
     public BoardService(BoardRepo board, DeviceService deviceService, ScanDeviceService scanVer) {
         this.board = board;
@@ -49,6 +47,8 @@ public class BoardService extends Base {
             String ipTest=ipAddress+i;
             String rawJson=httpUtil.request(ipTest);
             if(rawJson!=""){
+                addBoardIp(ipTest,rawJson);
+                
                 if(arduinoboardCheck(rawJson)){
                     String jsonSection=getrawPart(rawJson,1);
                     String [] boardRaw=jsonSection.split(",");
@@ -61,11 +61,11 @@ public class BoardService extends Base {
                         // don't save board if there no scan version because of directions
                         ScanDevice scanVersion=scanVer.getScan(rawIdArr[0]);
                         if(scanVersion!=null){
-                            newBoard.setOnboardId(Integer.parseInt(rawIdArr[1]));
+                            newBoard.setBoardId(rawIdArr[1]);
                             newBoard.setScanDeviceVersion(scanVersion.getId());
                             Board save=addBoard(newBoard);
                             // save device 
-                            deviceService.addDeviceFromScan(save,ipTest,getrawPart(rawJson,0),scanVersion);
+                            //deviceService.addDeviceFromScan(save,ipTest,getrawPart(rawJson,0),scanVersion);
                             Board saveItem=board.findById(save.getId()).get();
                             addedList.add(saveItem);
                         }
@@ -82,6 +82,7 @@ public class BoardService extends Base {
                     }
                     */
                 }
+
             }
         }
         return addedList;
@@ -90,12 +91,18 @@ public class BoardService extends Base {
     public Board addBoardIp(String rawJson,String ip){
         Board add=null;
         if(arduinoboardCheck(rawJson)){
+            /* 
             String jsonSection=getrawPart(rawJson,1);
             String [] boardRaw=jsonSection.split(",");
+            */
             Board newBoard=new Board();
             JsonObject json=jsonobj.jsonToObject(rawJson);
-            newBoard.setName(json.findKeyValue("name"));
-            newBoard.setIp(ip);
+            if(arest.testBoardFrameWork(json,ip)){
+                newBoard.setName(json.findKeyValue("name"));
+                newBoard.setIp(ip);
+            }
+            
+            
             String[] rawIdArr=json.findKeyValue("id").trim().split("\\|");
             int id=Integer.parseInt(rawIdArr[1]);
             //Board existBoard=board.getBoardId(id);
@@ -103,11 +110,11 @@ public class BoardService extends Base {
                 // don't save board if there no scan version because of directions
                 ScanDevice scanVersion=scanVer.getScan(rawIdArr[0]);
                 if(scanVersion!=null){
-                    newBoard.setOnboardId(Integer.parseInt(rawIdArr[1]));
+                    newBoard.setBoardId(rawIdArr[1]);
                     newBoard.setScanDeviceVersion(scanVersion.getId());
                     Board save=addBoard(newBoard);
                     // save device 
-                    Set<Devices> deviceList=deviceService.addDeviceFromScan(save,ip,json,scanVersion);
+                    List<Device> deviceList=deviceService.addDeviceFromScan(save,ip,json,scanVersion);
                     save.setDevice(deviceList);
                     save=addBoard(save);
                     add=board.findById(save.getId()).get();
@@ -139,13 +146,14 @@ public class BoardService extends Base {
         return board;
     }
 
+
     public Board updateBoard(Board obj,long id){
         Board rec=board.findById(id).get();
         Board save=null;
         if(rec!=null){
             rec.setName(obj.getName());
             rec.setIp(obj.getIp());
-            rec.setOnboardId(obj.getOnboardId());
+            rec.setBoardId(obj.getBoardId());
             rec.setStatus(obj.isStatus());
             save=board.save(rec);
         }

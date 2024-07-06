@@ -1,7 +1,6 @@
 package com.scheduler.Base.JsonObject;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 // turn json string into object
 public class JsonObject implements Json {
     // store json key and data in arraylist
@@ -68,6 +67,15 @@ public class JsonObject implements Json {
         }
         return output;
     }
+    // check key in JsonObject
+    public boolean checkKey(String key){
+        boolean output=false;
+        ArrayList<String> indexes=this.keyIndex;
+        if(indexes.contains(key)){
+            output=true;
+        }
+        return output;
+    }
     // find value by key that is formatted as an and convert value into arraylist
     public ArrayList<String> findKeyToArray(String key,String split){
         ArrayList<String> list=new ArrayList<>();
@@ -118,10 +126,6 @@ public class JsonObject implements Json {
         }
         return json;
     }
-    @Override
-    public String findKeyValue() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findKeyValue'");
-    }  
+   
 }
 

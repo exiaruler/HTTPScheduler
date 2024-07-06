@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class BackendApplication {
 	
-	//protected HttpUtil httpUtil=new HttpUtil();
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);
 		

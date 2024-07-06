@@ -14,7 +14,7 @@ public class RoutesController {
     private RoutesService service;
 
     @GetMapping(value="/routes/get-all-routes")
-    public List<Routes> getAllRoutes(){
+    public List<Route> getAllRoutes(){
         return service.getAllRoutes();
     }
     

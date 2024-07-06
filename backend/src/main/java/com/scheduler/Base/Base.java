@@ -1,10 +1,6 @@
 package com.scheduler.Base;
-import java.util.List;
-
-import javax.management.Query;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.app.backend.HTTPHandle.HttpUtil;
@@ -14,6 +10,30 @@ public class Base{
 
     protected HttpUtil httpUtil=new HttpUtil();
     public JsonObject jsonobj=new JsonObject();
+
+    // arest v2 get value from query route
+    public String requestQuery(String ip,String param){
+        String responseBody="";
+        long standard=200;
+        String routeSet=httpUtil.createRoute(ip,"query",param);
+        try {
+            String rawReturn=httpUtil.httpRequest(routeSet,standard);
+            JsonObject returnJson=jsonobj.jsonToObject(rawReturn);
+            if(returnJson.findKeyValue("return_value").trim().equals("1")){
+                String queryDataRoute=httpUtil.createRoute(ip,"QueryData","");
+                String queryDataRaw=httpUtil.httpRequest(queryDataRoute, standard);
+                returnJson=jsonobj.jsonToObject(queryDataRaw);
+                responseBody=returnJson.findKeyValue("QueryData");
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return responseBody;
+    }
 
     // check if the device is an arduino board using aREST
     public boolean arduinoboardCheck(String jsonString){

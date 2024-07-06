@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class SchedulerTask{
     // setting for queue to start
     public static boolean running=true;
-
     private boolean start=false;
     
     @Autowired
@@ -50,7 +49,7 @@ public class SchedulerTask{
                 if(dt.isAfter(taskDt)||dt.equals(taskDt)){
                     // add task to running queue if it passes check else let it stick in the queue 
                     if(!checkTaskRunning(task)){
-                        Devices device=deviceService.getDevice(task.getDeviceId());
+                        Device device=deviceService.getDevice(task.getDeviceId());
                         runningQueue.add(task);
                         HttpSchedule thread=new HttpSchedule(task,device);
                         thread.start();
@@ -131,7 +130,6 @@ public class SchedulerTask{
                         result=true;
                     }
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 
@@ -144,7 +142,7 @@ public class SchedulerTask{
         queue=currentList;
     }
     // add to completed task array queue
-    public void addToComplete(Devices device,boolean status,String state,String warning,boolean complete){
+    public void addToComplete(Device device,boolean status,String state,String warning,boolean complete){
         if(complete){
             CompletedTask compTask=new CompletedTask();
             compTask.setDevice(device);

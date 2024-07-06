@@ -1,17 +1,15 @@
 package com.scheduler.app.backend.aREST.Service;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
 import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.app.backend.Task.Model.CompletedTask;
+import com.scheduler.app.backend.aREST.ArestV2Frame;
 import com.scheduler.app.backend.aREST.Models.Board;
-import com.scheduler.app.backend.aREST.Models.Devices;
-import com.scheduler.app.backend.aREST.Models.Routes;
+import com.scheduler.app.backend.aREST.Models.Device;
+import com.scheduler.app.backend.aREST.Models.Route;
 import com.scheduler.app.backend.aREST.Models.ScanDevice;
 import com.scheduler.app.backend.aREST.Repo.DeviceRepo;
 
@@ -19,19 +17,19 @@ import com.scheduler.app.backend.aREST.Repo.DeviceRepo;
 public class DeviceService extends Base {
     private final DeviceRepo device;
     private final RoutesService routesService;
-
+    public ArestV2Frame arest=new ArestV2Frame();
 
     public DeviceService(DeviceRepo device, RoutesService routesService) {
         this.device = device;
         this.routesService = routesService;
     }
     
-    public Devices addDevice(Devices entry){
+    public Device addDevice(Device entry){
         return device.save(entry);
     }
-    public Devices updateDevice(Devices obj,long id){
-        Devices rec=device.findById(id).get();
-        Devices save=null;
+    public Device updateDevice(Device obj,long id){
+        Device rec=device.findById(id).get();
+        Device save=null;
         if(rec!=null){
             rec.setDeviceName(obj.getDeviceName());
 
@@ -39,47 +37,126 @@ public class DeviceService extends Base {
         }
         return save;
     }
-    public Set<Devices> addDeviceFromScan(Board board,String ip,JsonObject json,ScanDevice version){
-        Set<Devices> deviceList=new HashSet<Devices>();
-        String deveice=json.findKeyValue("Devices");
-        if(deveice.indexOf("|")>-1){
-            String[] deviceArr=deveice.split("\\|");
+    public List<Device> addDeviceFromScan(Board board,String ip,JsonObject jsonObj,ScanDevice version){
+        List<Device> deviceList=new ArrayList<Device>();
+        String device=jsonObj.findKeyValue("Devices");
+        if(device.indexOf("|")>-1){
+            String[] deviceArr=device.split("\\|");
             for(int i=0; i<deviceArr.length; i++){
                 String deviceName=deviceArr[i];
                 httpUtil.getRoutes(ip,deviceName.trim());
-                Devices newDevice=new Devices();
-                newDevice.setBoardId(board);
+                Device newDevice=new Device();
+                newDevice.setBoard(board);
                 newDevice.setDeviceName(deviceName);
                 //newDevice.setRoutes(routesService.addRoutesByScan(newDevice,ip,version));
-                Devices save=addDevice(newDevice);
+                Device save=addDevice(newDevice);
                 // saves routes
-                Set<Routes> route=routesService.addRoutesByScan(save,ip,version);
+                List<Route> route=routesService.addRoutesByScan(save,ip,version);
                 save.setRoutes(route);
                 //save=updateDevice(save,save.getId());
-                device.save(save);
+                //device.save(save);
                 deviceList.add(save);
             }
         }else{
-                String deviceName=deveice.trim();
+                String deviceName=device.trim();
                 try{
                     httpUtil.getRoutes(ip, deviceName);
                 }catch(Exception err){
 
                 }
-                Devices newDevice=new Devices();
-                newDevice.setBoardId(board);
+                Device newDevice=new Device();
+                newDevice.setBoard(board);
                 newDevice.setDeviceName(deviceName);
-                Devices save=addDevice(newDevice);
+                Device save=addDevice(newDevice);
                 save.setRoutes(routesService.addRoutesByScan(save,ip,version));
                 save=addDevice(save);
                 deviceList.add(save);
         }
         return deviceList;
     }
-    public List<Devices> getAllDevice(){
+    // test device framework if it follows arestv2
+    public boolean testDeviceFramework(JsonObject obj,String ip){
+        String [] keys={"Devices","Background","QueryData","SetDevice","Warning","Status"};
+        boolean out=false;
+        for(int i=0; i<keys.length; i++){
+            if(obj.checkKey(keys[i])){
+                out=true;
+                // test if there any devices listed and it's string and character '|'
+                if(keys[i].equals("Devices")){
+                    String value=obj.findKeyValue("Devices");
+                    String [] arr=value.split("\\|");
+                    if(arr.length>1){
+                        
+                    }
+                    if(value.length()<=0){
+                        out=false;
+                        break;
+                    }
+                }
+                // test if background key is a boolean
+                if(keys[i].equals("Background")){
+                    String value=obj.findKeyValue("Background");
+                    if(!value.equals("false")||!value.equals("true")){
+                        out=false;
+                        break;
+                    }
+                }
+                // test for string
+                if(keys[i].equals("QueryData")){
+                    
+                }
+                // test for string
+                if(keys[i].equals("SetDevice")){
+                    
+                }
+                // test for string
+                if(keys[i].equals("Warning")){
+                    
+                }
+                // test for string
+                if(keys[i].equals("Status")){
+                    
+                }
+            }
+            else
+            {
+                out=false;
+                break;
+            }
+        }
+        // validate query data commands
+        String queryDataTest="routes,type,subtype,components,background";
+        String query=requestQuery(ip,"1");
+        if(!queryDataTest.equals(query)){
+             out=false;
+        }else
+        // test commands
+        {
+            String arr[]=queryDataTest.split(",");
+            for(int i=0; i<arr.length; i++){
+                JsonObject json=jsonobj.jsonToObject(httpUtil.requestRoute(ip,"query", arr[i]));
+                if(json.checkKey("return_value")){
+                    if(json.findKeyValue("return_value").equals("1")){
+                        out=true;
+                    }else
+                    {
+                     out=false;
+                     break;   
+                    }
+                }else
+                {
+                    out=false;
+                    break;
+                }
+            }
+
+        } 
+        return out;
+    }
+    public List<Device> getAllDevice(){
         return device.findAll();
     }
-    public Devices getDevice(long id){
+    public Device getDevice(long id){
         return device.findById(id).get();
     }
     public void deleteAllBoard(){
@@ -87,7 +164,7 @@ public class DeviceService extends Base {
     }
     // update device after http request
     public void updateDeviceAfterAction(CompletedTask task){
-       Devices rec=task.getDevice();
+       Device rec=task.getDevice();
        if(rec!=null){
         // update device state and warning
         if(task.getWarning()!=""&&!task.getStatus()){

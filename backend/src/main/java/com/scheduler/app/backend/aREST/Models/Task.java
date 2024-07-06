@@ -1,37 +1,50 @@
 package com.scheduler.app.backend.aREST.Models;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
+import javax.persistence.*;
 import com.scheduler.app.backend.aREST.Models.Base.*;
-import com.scheduler.app.backend.aREST.Models.Base.CustomBase.TaskBase;
+import java.util.Objects;
+
 @Entity
-public class Task extends TaskBase {
-    /* 
+public class Task extends ModelBase {
+    // application
     @Column
     private String application;
+    // device Id 
     @Column
     private long deviceId;
+    // board id 
     @Column
     private long board;
+    // url
     @Column
     private String url;
+    // section 
     @Column
     private String section;
+    // task priority
     @Column
     private int priority=1;
+    // if motor/servo use in the task
     @Column
     private boolean motor=false;
+    // scheduled run time for task
     @Column
     private LocalDateTime scheduledTime=LocalDateTime.now();
+    // task to repeat once
     @Column 
     private boolean oneTimeJob=true;
+    // update device status in database
+    @Column
+    private boolean updateDevice=false;
+    // task used for startup
+    @Column
+    private boolean startupJob=false;
+
 
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob) {
+    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean startupJob) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
@@ -41,6 +54,8 @@ public class Task extends TaskBase {
         this.motor = motor;
         this.scheduledTime = scheduledTime;
         this.oneTimeJob = oneTimeJob;
+        this.updateDevice = updateDevice;
+        this.startupJob = startupJob;
     }
 
     public String getApplication() {
@@ -123,6 +138,30 @@ public class Task extends TaskBase {
         this.oneTimeJob = oneTimeJob;
     }
 
+    public boolean isUpdateDevice() {
+        return this.updateDevice;
+    }
+
+    public boolean getUpdateDevice() {
+        return this.updateDevice;
+    }
+
+    public void setUpdateDevice(boolean updateDevice) {
+        this.updateDevice = updateDevice;
+    }
+
+    public boolean isStartupJob() {
+        return this.startupJob;
+    }
+
+    public boolean getStartupJob() {
+        return this.startupJob;
+    }
+
+    public void setStartupJob(boolean startupJob) {
+        this.startupJob = startupJob;
+    }
+
     public Task application(String application) {
         setApplication(application);
         return this;
@@ -168,6 +207,16 @@ public class Task extends TaskBase {
         return this;
     }
 
+    public Task updateDevice(boolean updateDevice) {
+        setUpdateDevice(updateDevice);
+        return this;
+    }
+
+    public Task startupJob(boolean startupJob) {
+        setStartupJob(startupJob);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -176,12 +225,12 @@ public class Task extends TaskBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob;
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && startupJob == task.startupJob;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob);
+        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, startupJob);
     }
 
     @Override
@@ -196,9 +245,11 @@ public class Task extends TaskBase {
             ", motor='" + isMotor() + "'" +
             ", scheduledTime='" + getScheduledTime() + "'" +
             ", oneTimeJob='" + isOneTimeJob() + "'" +
+            ", updateDevice='" + isUpdateDevice() + "'" +
+            ", startupJob='" + isStartupJob() + "'" +
             "}";
     }
-    */
+    
 
 
 }

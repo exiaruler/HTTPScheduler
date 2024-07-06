@@ -42,6 +42,7 @@ public class TaskService extends Base{
     public Optional<Task> getTask(long id){
         return service.findById(id);
     }
+    // find all task in database
     public List<Task> getAllTask(){
         return service.findAll();
     }

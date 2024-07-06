@@ -1,64 +1,51 @@
 package com.scheduler.app.backend.aREST.Models;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.app.backend.aREST.Models.Base.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Entity
-@Table(indexes = @Index(columnList = "onboard_Id"),name="board")
 public class Board extends ModelBase {
  
-    //@NotBlank(message = "Name must not be blank")
     // arduino board id
-    @Column(name = "onboard_id")
-    private int onboardId=0;
+    @Column
+    private String boardId;
     // board name
     @Column
     private String name;
+    // ip address
     @Column
     private String ip;
     // active status
     @Column
     private boolean status=false;
+    // scan device version
     @Column
     private long ScanDeviceVersion=0;
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE })
-    private Set<Devices> device;
-
+    // device list
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "board", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    private List<Device> device;
+    
 
     public Board() {
     }
 
-
-    public Board(int onboardId, String name, String ip, boolean status, long ScanDeviceVersion, Set<Devices> device) {
-        this.onboardId = onboardId;
+    public Board(String boardId, String name, String ip, boolean status, long ScanDeviceVersion, List<Device> device) {
+        this.boardId = boardId;
         this.name = name;
         this.ip = ip;
         this.status = status;
         this.ScanDeviceVersion = ScanDeviceVersion;
         this.device = device;
     }
-    
 
-    public int getOnboardId() {
-        return this.onboardId;
+    public String getBoardId() {
+        return this.boardId;
     }
 
-    public void setOnboardId(int onboardId) {
-        this.onboardId = onboardId;
+    public void setBoardId(String boardId) {
+        this.boardId = boardId;
     }
 
     public String getName() {
@@ -97,12 +84,42 @@ public class Board extends ModelBase {
         this.ScanDeviceVersion = ScanDeviceVersion;
     }
 
-    public Set<Devices> getDevice() {
+    public List<Device> getDevice() {
         return this.device;
     }
 
-    public void setDevice(Set<Devices> device) {
+    public void setDevice(List<Device> device) {
         this.device = device;
+    }
+
+    public Board boardId(String boardId) {
+        setBoardId(boardId);
+        return this;
+    }
+
+    public Board name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public Board ip(String ip) {
+        setIp(ip);
+        return this;
+    }
+
+    public Board status(boolean status) {
+        setStatus(status);
+        return this;
+    }
+
+    public Board ScanDeviceVersion(long ScanDeviceVersion) {
+        setScanDeviceVersion(ScanDeviceVersion);
+        return this;
+    }
+
+    public Board device(List<Device> device) {
+        setDevice(device);
+        return this;
     }
 
     @Override
@@ -113,13 +130,26 @@ public class Board extends ModelBase {
             return false;
         }
         Board board = (Board) o;
-        return onboardId == board.onboardId && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && ScanDeviceVersion == board.ScanDeviceVersion && Objects.equals(device, board.device);
+        return Objects.equals(boardId, board.boardId) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && ScanDeviceVersion == board.ScanDeviceVersion && Objects.equals(device, board.device);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(onboardId, name, ip, status, ScanDeviceVersion, device);
+        return Objects.hash(boardId, name, ip, status, ScanDeviceVersion, device);
     }
-   
 
+    @Override
+    public String toString() {
+        return "{" +
+            " boardId='" + getBoardId() + "'" +
+            ", name='" + getName() + "'" +
+            ", ip='" + getIp() + "'" +
+            ", status='" + isStatus() + "'" +
+            ", ScanDeviceVersion='" + getScanDeviceVersion() + "'" +
+            ", device='" + getDevice() + "'" +
+            "}";
+    }
+
+
+   
 }

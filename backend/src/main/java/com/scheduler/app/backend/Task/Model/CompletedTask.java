@@ -2,10 +2,10 @@ package com.scheduler.app.backend.Task.Model;
 
 import java.util.Objects;
 
-import com.scheduler.app.backend.aREST.Models.Devices;
+import com.scheduler.app.backend.aREST.Models.Device;
 
 public class CompletedTask {
-    private Devices device;
+    private Device device;
     private String statusString;
     private String warning;
     private boolean status;
@@ -15,7 +15,7 @@ public class CompletedTask {
     public CompletedTask() {
     }
 
-    public CompletedTask(Devices device, String statusString, String warning, boolean status, boolean oneTimeJob) {
+    public CompletedTask(Device device, String statusString, String warning, boolean status, boolean oneTimeJob) {
         this.device = device;
         this.statusString = statusString;
         this.warning = warning;
@@ -44,11 +44,11 @@ public class CompletedTask {
         this.warning = warning;
     }
     
-    public Devices getDevice() {
+    public Device getDevice() {
         return this.device;
     }
 
-    public void setDevice(Devices device) {
+    public void setDevice(Device device) {
         this.device = device;
     }
 

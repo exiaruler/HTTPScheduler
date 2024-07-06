@@ -43,18 +43,19 @@ public class HttpUtil {
         }
         return responseBody;
     }
+    
     public String requestDevice(String url){
         String result="";
         try {
             result= httpDeviceRequest(url);
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
+           
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+      
             e.printStackTrace();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+         
             e.printStackTrace();
         }
         return result;
@@ -65,14 +66,14 @@ public class HttpUtil {
         try {
             result =testHttpDevice(route);
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
             
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+           
             e.printStackTrace();
         }
         return result;
@@ -145,13 +146,13 @@ public class HttpUtil {
         try {
             httpRequest(route,standard);
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+           
             e.printStackTrace();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+           
             e.printStackTrace();
         }
     }
@@ -162,7 +163,7 @@ public class HttpUtil {
         return requestUrl;
     }
     
-    private String createRoute(String ip,String route,String param){
+    public String createRoute(String ip,String route,String param){
         if(route==""||ip=="") return "";
         String requestUrl="http://"+ip+"/"+route;
         if(param!=""){

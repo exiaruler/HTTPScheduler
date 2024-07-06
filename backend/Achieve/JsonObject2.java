@@ -62,6 +62,7 @@ public class JsonObject2 extends JsonObject {
         jsonOb.keyIndex.add(key);
         //jsonOb.variables=variableList;
         //obj.
+        return jsonOb;
     }
     private String getKeyForObject(String json,int startIndex){
         String key="";

@@ -1,8 +1,5 @@
 package com.scheduler.app.backend.aREST.Models;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,10 +11,10 @@ import javax.persistence.OneToMany;
 
 import com.scheduler.app.backend.aREST.Models.Base.*;
 @Entity
-public class Routes extends ModelBase{
-    @ManyToOne
-    @JoinColumn(name="device_id", nullable=false)
-    private Devices device;
+public class Route extends ModelBase{
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinColumn(name="device_id")
+    private Device device;
     // route of the device
     @Column
     private String route;
@@ -30,13 +27,16 @@ public class Routes extends ModelBase{
     // if the route is used to start the device when on
     @Column
     private boolean startRoute=false;
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE })
-    private Set<Mode> mode;
+    // list of modes
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade ={ CascadeType.PERSIST, CascadeType.MERGE,
+        CascadeType.DETACH, CascadeType.REFRESH })
+    private List<Mode> mode;
 
-    public Routes() {
+
+    public Route() {
     }
 
-    public Routes(Devices device, String route, boolean schedule, boolean modes, boolean startRoute, Set<Mode> mode) {
+    public Route(Device device, String route, boolean schedule, boolean modes, boolean startRoute, List<Mode> mode) {
         this.device = device;
         this.route = route;
         this.schedule = schedule;
@@ -45,12 +45,11 @@ public class Routes extends ModelBase{
         this.mode = mode;
     }
 
-
-    public Devices getDevice() {
+    public Device getDevice() {
         return this.device;
     }
 
-    public void setDevice(Devices device) {
+    public void setDevice(Device device) {
         this.device = device;
     }
 
@@ -98,23 +97,52 @@ public class Routes extends ModelBase{
         this.startRoute = startRoute;
     }
 
-    public Set<Mode> getMode() {
+    public List<Mode> getMode() {
         return this.mode;
     }
 
-    public void setMode(Set<Mode> modeList) {
-        this.mode = modeList;
+    public void setMode(List<Mode> mode) {
+        this.mode = mode;
     }
-    
+
+    public Route device(Device device) {
+        setDevice(device);
+        return this;
+    }
+
+    public Route route(String route) {
+        setRoute(route);
+        return this;
+    }
+
+    public Route schedule(boolean schedule) {
+        setSchedule(schedule);
+        return this;
+    }
+
+    public Route modes(boolean modes) {
+        setModes(modes);
+        return this;
+    }
+
+    public Route startRoute(boolean startRoute) {
+        setStartRoute(startRoute);
+        return this;
+    }
+
+    public Route mode(List<Mode> mode) {
+        setMode(mode);
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof Routes)) {
+        if (!(o instanceof Route)) {
             return false;
         }
-        Routes routes = (Routes) o;
+        Route routes = (Route) o;
         return Objects.equals(device, routes.device) && Objects.equals(route, routes.route) && schedule == routes.schedule && modes == routes.modes && startRoute == routes.startRoute && Objects.equals(mode, routes.mode);
     }
 
@@ -123,5 +151,17 @@ public class Routes extends ModelBase{
         return Objects.hash(device, route, schedule, modes, startRoute, mode);
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+            " device='" + getDevice() + "'" +
+            ", route='" + getRoute() + "'" +
+            ", schedule='" + isSchedule() + "'" +
+            ", modes='" + isModes() + "'" +
+            ", startRoute='" + isStartRoute() + "'" +
+            ", mode='" + getMode() + "'" +
+            "}";
+    }
+    
 
 }

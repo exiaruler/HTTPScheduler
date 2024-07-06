@@ -1,17 +1,14 @@
 package com.scheduler.app.backend.aREST.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
 import com.scheduler.Base.JsonObject.JsonObject;
-import com.scheduler.app.backend.aREST.Models.Devices;
+import com.scheduler.app.backend.aREST.ArestV2Frame;
+import com.scheduler.app.backend.aREST.Models.Device;
 import com.scheduler.app.backend.aREST.Models.Mode;
-import com.scheduler.app.backend.aREST.Models.Routes;
+import com.scheduler.app.backend.aREST.Models.Route;
 import com.scheduler.app.backend.aREST.Models.ScanDevice;
 import com.scheduler.app.backend.aREST.Repo.ModeRepo;
 import com.scheduler.app.backend.aREST.Repo.RoutesRepo;
@@ -20,20 +17,20 @@ import com.scheduler.app.backend.aREST.Repo.RoutesRepo;
 public class RoutesService extends Base {
     private final RoutesRepo service;
     private final ModeRepo modeService;
-
+    public ArestV2Frame arest=new ArestV2Frame();
     public RoutesService(RoutesRepo service, ModeRepo modeService) {
         this.service = service;
         this.modeService = modeService;
     }
     
-    public Routes addRoute(Routes entry){
+    public Route addRoute(Route entry){
         return service.save(entry);
     }
     public Mode addMode(Mode entry){
         return modeService.save(entry);
     }
-    public Routes updateRoute(Routes entry,long id){
-        Routes rec=null;
+    public Route updateRoute(Route entry,long id){
+        Route rec=null;
         if(service.existsById(id)){
             rec=service.findById(id).get();
             rec=entry;
@@ -41,8 +38,8 @@ public class RoutesService extends Base {
         }
         return rec;
     }
-    public Set<Routes> addRoutesByScan(Devices deviceId,String ip,ScanDevice version){
-        Set<Routes> routeList=new HashSet<Routes>();
+    public List<Route> addRoutesByScan(Device deviceId,String ip,ScanDevice version){
+        List<Route> routeList=new ArrayList<Route>();
        String queryDataRequest=httpUtil.requestRoute(ip,version.getGetRouteData(),"");
        JsonObject json=jsonobj.jsonToObject(queryDataRequest);
        String queryData=json.findKeyValue(version.getGetRouteData()).trim();
@@ -55,9 +52,9 @@ public class RoutesService extends Base {
 
        // loop and save routes and modes 
        for(int i=0; i<arr.length; i++){
-        Set <Mode> modeList=new HashSet<Mode>();
+        List <Mode> modeList=new ArrayList<Mode>();
         String route=arr[i];
-        Routes newRoute=new Routes();
+        Route newRoute=new Route();
         newRoute.setDevice(deviceId);
         int bracketStartI=route.indexOf("(");
         int bracketEndI=route.indexOf(")");
@@ -71,13 +68,13 @@ public class RoutesService extends Base {
         }else{
             newRoute.setRoute(route);
         }
-        Routes save=addRoute(newRoute);
+        Route save=addRoute(newRoute);
         //save param of that route
         if(param!=""){
             String [] arrParams=param.split("\\"+paramControl);
             for(int x=0; x<arrParams.length; x++){
                 Mode newMode=new Mode();
-                newMode.setRoutes(save);
+                newMode.setRoute(save);
                 newMode.setMode(arrParams[x]);
                 modeList.add(addMode(newMode));
             }
@@ -88,10 +85,10 @@ public class RoutesService extends Base {
        }
         return routeList;
     }
-    public List<Routes> getAllRoutes(){
+    public List<Route> getAllRoutes(){
         return service.findAll();
     }
-    public Routes getRoute(long id){
+    public Route getRoute(long id){
         return service.findById(id).get();
     }
 

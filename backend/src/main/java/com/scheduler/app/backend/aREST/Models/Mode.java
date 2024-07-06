@@ -1,6 +1,7 @@
 package com.scheduler.app.backend.aREST.Models;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -9,30 +10,30 @@ import javax.persistence.ManyToOne;
 import com.scheduler.app.backend.aREST.Models.Base.*;
 @Entity
 public class Mode extends ModelBase{
-    @ManyToOne
-    @JoinColumn(name="route_id", nullable=false)
-    private Routes routes;
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinColumn(name="route_id")
+    private Route route;
     @Column
     private String mode;
     @Column 
     private boolean selectedMode;
+    
 
     public Mode() {
     }
 
-
-    public Mode(Routes routes, String mode, boolean selectedMode) {
-        this.routes = routes;
+    public Mode(Route route, String mode, boolean selectedMode) {
+        this.route = route;
         this.mode = mode;
         this.selectedMode = selectedMode;
     }
 
-    public Routes getRoutes() {
-        return this.routes;
+    public Route getRoute() {
+        return this.route;
     }
 
-    public void setRoutes(Routes routes) {
-        this.routes = routes;
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
     public String getMode() {
@@ -55,6 +56,22 @@ public class Mode extends ModelBase{
         this.selectedMode = selectedMode;
     }
 
+    public Mode route(Route route) {
+        setRoute(route);
+        return this;
+    }
+
+    public Mode mode(String mode) {
+        setMode(mode);
+        return this;
+    }
+
+    public Mode selectedMode(boolean selectedMode) {
+        setSelectedMode(selectedMode);
+        return this;
+    }
+
+    @SuppressWarnings("unlikely-arg-type")
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -63,13 +80,23 @@ public class Mode extends ModelBase{
             return false;
         }
         Mode mode = (Mode) o;
-        return Objects.equals(routes, mode.routes) && Objects.equals(mode, mode.mode) && selectedMode == mode.selectedMode;
+        return Objects.equals(route, mode.route) && Objects.equals(mode, mode.mode) && selectedMode == mode.selectedMode;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(routes, mode, selectedMode);
+        return Objects.hash(route, mode, selectedMode);
     }
-    
+
+    @Override
+    public String toString() {
+        return "{" +
+            " route='" + getRoute() + "'" +
+            ", mode='" + getMode() + "'" +
+            ", selectedMode='" + isSelectedMode() + "'" +
+            "}";
+    }
+
+
 }
     
