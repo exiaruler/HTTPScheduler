@@ -37,27 +37,30 @@ public class DeviceService extends Base {
         }
         return save;
     }
-    public List<Device> addDeviceFromScan(Board board,String ip,JsonObject jsonObj,ScanDevice version){
+    public List<Device> addDeviceFromScan(Board board,String ip,JsonObject jsonObj){
         List<Device> deviceList=new ArrayList<Device>();
-        String device=jsonObj.findKeyValue("Devices");
-        if(device.indexOf("|")>-1){
-            String[] deviceArr=device.split("\\|");
-            for(int i=0; i<deviceArr.length; i++){
-                String deviceName=deviceArr[i];
-                httpUtil.getRoutes(ip,deviceName.trim());
-                Device newDevice=new Device();
-                newDevice.setBoard(board);
-                newDevice.setDeviceName(deviceName);
-                //newDevice.setRoutes(routesService.addRoutesByScan(newDevice,ip,version));
-                Device save=addDevice(newDevice);
-                // saves routes
-                List<Route> route=routesService.addRoutesByScan(save,ip,version);
-                save.setRoutes(route);
-                //save=updateDevice(save,save.getId());
-                //device.save(save);
-                deviceList.add(save);
-            }
-        }else{
+        if(arest.testDeviceFramework(jsonObj, ip)){
+            String device=jsonObj.findKeyValue("Devices");
+            if(device.indexOf("|")>-1){
+                String[] deviceArr=device.split("\\|");
+                for(int i=0; i<deviceArr.length; i++){
+                    String deviceName=deviceArr[i];
+                    //httpUtil.getRoutes(ip,deviceName.trim());
+                    Device newDevice=new Device();
+                    newDevice.setBoard(board);
+                    newDevice.setDeviceName(deviceName);
+                    // saves routes
+                    List<Route> route=routesService.addRoutesByScan(newDevice,ip);
+                    newDevice.setRoutes(route);
+                    deviceList.add(newDevice);
+                    //Device save=addDevice(newDevice);
+                    
+                    //save.setRoutes(route);
+                    //save=updateDevice(save,save.getId());
+                    //device.save(save);
+                    //deviceList.add(save);
+                }
+            }else{
                 String deviceName=device.trim();
                 try{
                     httpUtil.getRoutes(ip, deviceName);
@@ -68,9 +71,10 @@ public class DeviceService extends Base {
                 newDevice.setBoard(board);
                 newDevice.setDeviceName(deviceName);
                 Device save=addDevice(newDevice);
-                save.setRoutes(routesService.addRoutesByScan(save,ip,version));
+                save.setRoutes(routesService.addRoutesByScan(save,ip));
                 save=addDevice(save);
                 deviceList.add(save);
+            }  
         }
         return deviceList;
     }

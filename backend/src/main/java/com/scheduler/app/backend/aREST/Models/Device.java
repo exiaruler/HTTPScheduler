@@ -1,15 +1,17 @@
 package com.scheduler.app.backend.aREST.Models;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.app.backend.aREST.Models.Base.*;
 
 import java.util.*;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class Device extends ModelBase{
 
     // device which the board is belong to
+    @JsonBackReference
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(name="board_id")
     private Board board;
@@ -41,6 +43,7 @@ public class Device extends ModelBase{
     @Column
     private boolean custom;
     // list of routes
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Route> routes;

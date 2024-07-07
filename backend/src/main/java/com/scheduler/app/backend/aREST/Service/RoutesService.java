@@ -38,51 +38,68 @@ public class RoutesService extends Base {
         }
         return rec;
     }
-    public List<Route> addRoutesByScan(Device deviceId,String ip,ScanDevice version){
+    public List<Route> addRoutesByScan(Device deviceId,String ip){
         List<Route> routeList=new ArrayList<Route>();
-       String queryDataRequest=httpUtil.requestRoute(ip,version.getGetRouteData(),"");
-       JsonObject json=jsonobj.jsonToObject(queryDataRequest);
-       String queryData=json.findKeyValue(version.getGetRouteData()).trim();
-       String [] rawRoute=queryData.split("\\|\\|");
-       // controller of version of routes and params
-       String [] controlArr=rawRoute[0].split("");
-       String routeControl=controlArr[0];
-       String paramControl=controlArr[1]; 
-       String [] arr=rawRoute[1].split("\\"+routeControl);
+        if(arest.testRoutes(ip)){
+            String rawJson=httpUtil.request(ip);
+            String queryDataRequest="QueryData";
+            JsonObject json=jsonobj.jsonToObject(rawJson);
+            String queryData=json.findKeyValue(queryDataRequest);
+            String [] rawRoute=queryData.split("\\|\\|");
+            // controller of version of routes and params
+            String [] controlArr=rawRoute[0].trim().split("");
+            String routeControl=controlArr[0];
+            String paramControl=controlArr[1]; 
+            String [] arr=rawRoute[1].split("\\"+routeControl);
 
-       // loop and save routes and modes 
-       for(int i=0; i<arr.length; i++){
-        List <Mode> modeList=new ArrayList<Mode>();
-        String route=arr[i];
-        Route newRoute=new Route();
-        newRoute.setDevice(deviceId);
-        int bracketStartI=route.indexOf("(");
-        int bracketEndI=route.indexOf(")");
-        String param="";
-        // if there params 
-        if(bracketEndI>-1&&bracketEndI>-1){
-            param=route.substring(bracketStartI+1, bracketEndI);
-            String routeItself=route.substring(0,bracketStartI);
-            newRoute.setRoute(routeItself);
-            newRoute.setModes(true);
-        }else{
-            newRoute.setRoute(route);
-        }
-        Route save=addRoute(newRoute);
-        //save param of that route
-        if(param!=""){
-            String [] arrParams=param.split("\\"+paramControl);
-            for(int x=0; x<arrParams.length; x++){
-                Mode newMode=new Mode();
-                newMode.setRoute(save);
-                newMode.setMode(arrParams[x]);
-                modeList.add(addMode(newMode));
+        // loop and save routes and modes 
+        for(int i=0; i<arr.length; i++){
+            List <Mode> modeList=new ArrayList<Mode>();
+            String route=arr[i];
+            Route newRoute=new Route();
+            newRoute.setDevice(deviceId);
+            int bracketStartI=route.indexOf("(");
+            int bracketEndI=route.indexOf(")");
+            String param="";
+            // if there params 
+            if(bracketEndI>-1&&bracketEndI>-1){
+                param=route.substring(bracketStartI+1, bracketEndI);
+                String routeItself=route.substring(0,bracketStartI);
+                //save param of that route
+                if(param!=""){
+                    String [] arrParams=param.split("\\"+paramControl);
+                    for(int x=0; x<arrParams.length; x++){
+                        Mode newMode=new Mode();
+                        newMode.setRoute(newRoute);
+                        newMode.setMode(arrParams[x]);
+                        modeList.add(newMode);
+                    }
+                }
+                newRoute.setRoute(routeItself);
+                newRoute.setModes(true);
+                newRoute.setMode(modeList);
+            }else{
+                newRoute.setRoute(route);
             }
+            routeList.add(newRoute);
+            //Route save=addRoute(newRoute);
+            /* 
+            //save param of that route
+            if(param!=""){
+                String [] arrParams=param.split("\\"+paramControl);
+                for(int x=0; x<arrParams.length; x++){
+                    Mode newMode=new Mode();
+                    newMode.setRoute(save);
+                    newMode.setMode(arrParams[x]);
+                    modeList.add(addMode(newMode));
+                }
+            }
+                */
+            //save.setMode(modeList);
+            //save=addRoute(save);
+            //routeList.add(save);
         }
-        save.setMode(modeList);
-        save=addRoute(save);
-        routeList.add(save);
-       }
+        }
         return routeList;
     }
     public List<Route> getAllRoutes(){

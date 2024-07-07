@@ -39,12 +39,19 @@ public class Task extends ModelBase {
     // task used for startup
     @Column
     private boolean startupJob=false;
+    // task status
+    @Column boolean active=false;
+    // schedule task
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
 
 
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean startupJob) {
+    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean startupJob, boolean active, Schedule schedule) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
@@ -56,6 +63,8 @@ public class Task extends ModelBase {
         this.oneTimeJob = oneTimeJob;
         this.updateDevice = updateDevice;
         this.startupJob = startupJob;
+        this.active = active;
+        this.schedule = schedule;
     }
 
     public String getApplication() {
@@ -162,6 +171,26 @@ public class Task extends ModelBase {
         this.startupJob = startupJob;
     }
 
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public boolean getActive() {
+        return this.active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Schedule getSchedule() {
+        return this.schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
     public Task application(String application) {
         setApplication(application);
         return this;
@@ -217,6 +246,16 @@ public class Task extends ModelBase {
         return this;
     }
 
+    public Task active(boolean active) {
+        setActive(active);
+        return this;
+    }
+
+    public Task schedule(Schedule schedule) {
+        setSchedule(schedule);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -225,12 +264,12 @@ public class Task extends ModelBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && startupJob == task.startupJob;
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && startupJob == task.startupJob && active == task.active && Objects.equals(schedule, task.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, startupJob);
+        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, startupJob, active, schedule);
     }
 
     @Override
@@ -247,8 +286,11 @@ public class Task extends ModelBase {
             ", oneTimeJob='" + isOneTimeJob() + "'" +
             ", updateDevice='" + isUpdateDevice() + "'" +
             ", startupJob='" + isStartupJob() + "'" +
+            ", active='" + isActive() + "'" +
+            ", schedule='" + getSchedule() + "'" +
             "}";
     }
+   
     
 
 

@@ -91,36 +91,27 @@ public class BoardService extends Base {
     public Board addBoardIp(String rawJson,String ip){
         Board add=null;
         if(arduinoboardCheck(rawJson)){
-            /* 
-            String jsonSection=getrawPart(rawJson,1);
-            String [] boardRaw=jsonSection.split(",");
-            */
             Board newBoard=new Board();
             JsonObject json=jsonobj.jsonToObject(rawJson);
             if(arest.testBoardFrameWork(json,ip)){
                 newBoard.setName(json.findKeyValue("name"));
                 newBoard.setIp(ip);
-            }
-            
-            
-            String[] rawIdArr=json.findKeyValue("id").trim().split("\\|");
-            int id=Integer.parseInt(rawIdArr[1]);
-            //Board existBoard=board.getBoardId(id);
-            if(rawIdArr.length==2){
-                // don't save board if there no scan version because of directions
-                ScanDevice scanVersion=scanVer.getScan(rawIdArr[0]);
-                if(scanVersion!=null){
+                String[] rawIdArr=json.findKeyValue("id").trim().split("\\|");
+                if(rawIdArr.length==2){
                     newBoard.setBoardId(rawIdArr[1]);
-                    newBoard.setScanDeviceVersion(scanVersion.getId());
+                    List<Device> deviceList=deviceService.addDeviceFromScan(newBoard,ip,json);
+                    newBoard.setDevice(deviceList);
                     Board save=addBoard(newBoard);
+                    add=save;
+                    /* 
                     // save device 
-                    List<Device> deviceList=deviceService.addDeviceFromScan(save,ip,json,scanVersion);
+                    List<Device> deviceList=deviceService.addDeviceFromScan(save,ip,json);
                     save.setDevice(deviceList);
                     save=addBoard(save);
                     add=board.findById(save.getId()).get();
+                   */
                 }
-            }
-            
+            }    
                     /*
                     if(existBoard != null){
                         ScanDevice scanVersion=scanVer.getScan(rawIdArr[0]);

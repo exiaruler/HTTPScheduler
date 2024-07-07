@@ -50,8 +50,11 @@ public class JsonObject implements Json {
         String arr []=json.split(",");
         for(int i=0; i<arr.length; i++){
             System.out.println(arr[i]);
-            String [] varr=arr[i].split(":");
-            obj=addJson(varr[0],varr[1], obj);
+            if(arr[i].indexOf(":")>0){
+                String [] varr=arr[i].split(":");
+                obj=addJson(varr[0],varr[1], obj);
+            }else break;
+            
         }
         return obj;
     }
@@ -101,7 +104,7 @@ public class JsonObject implements Json {
         // check if value is an array
         
         obj.key=key.trim();
-        obj.value=value;
+        obj.value=value.trim();
         // add data
         if(jObject.variables.size()==0){
             variableList.add(obj);

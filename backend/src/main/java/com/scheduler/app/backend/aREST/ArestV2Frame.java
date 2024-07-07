@@ -74,18 +74,18 @@ public class ArestV2Frame extends Base {
             }
         }
         // validate query data commands
-        String queryDataTest="routes,type,subtype,components,background";
+        String queryDataTest="routes|type|subtype|components|background";
         String query=requestQuery(ip,"1");
         if(!queryDataTest.equals(query)){
              out=false;
         }else
         // test commands
         {
-            String arr[]=queryDataTest.split(",");
+            String arr[]=queryDataTest.split("\\|");
             for(int i=0; i<arr.length; i++){
                 JsonObject json=jsonobj.jsonToObject(httpUtil.requestRoute(ip,"query", arr[i]));
                 if(json.checkKey("return_value")){
-                    if(json.findKeyValue("return_value").equals("1")){
+                    if(json.findKeyValue("return_value").trim().equals("1")){
                         out=true;
                     }else
                     {
@@ -104,9 +104,10 @@ public class ArestV2Frame extends Base {
     }
     public boolean testRoutes(String ip){
         boolean out=false;
-        JsonObject json=jsonobj.jsonToObject(requestQuery(ip,"routes"));
-        String rawRoutes=json.findKeyValue("QueryData");
-        String [] controlArr=rawRoutes.split("\\|\\|");
+        String rawRoutes=requestQuery(ip,"routes");
+        System.out.println(rawRoutes);
+        String [] routeArr=rawRoutes.split("\\|\\|");
+        String [] controlArr=routeArr[0].split("");
         if(controlArr[0].equals("\\|")){ out=true;}else out=false;
         if(controlArr[1].equals("~")){ out=true;}else out=false;
         return out;

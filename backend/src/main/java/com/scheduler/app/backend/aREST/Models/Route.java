@@ -9,9 +9,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.app.backend.aREST.Models.Base.*;
 @Entity
 public class Route extends ModelBase{
+    @JsonBackReference
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(name="device_id")
     private Device device;
@@ -28,6 +31,7 @@ public class Route extends ModelBase{
     @Column
     private boolean startRoute=false;
     // list of modes
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade ={ CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Mode> mode;

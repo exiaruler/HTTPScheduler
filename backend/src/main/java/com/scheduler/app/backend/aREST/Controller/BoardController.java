@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class BoardController {
     @Autowired
     private BoardService boardService;
-    
+   
     @PostMapping(value="/board/addboard")
     @ResponseBody
     public Board addBoardTest(@RequestBody Board board){
@@ -44,13 +44,7 @@ public class BoardController {
     
     @GetMapping(value="/board/getboards")
     public List<Board> all(){
-        List<Board> output=new ArrayList<Board>();
-        try{
-            output=boardService.getBoards();
-        }catch(Exception err){
-
-        }
-        return output;
+        return boardService.getBoards();
     }
     @GetMapping(value="/board/getboard/{id}")
     public Board getBoard(@PathVariable long id){
@@ -69,11 +63,7 @@ public class BoardController {
     @DeleteMapping(value="/board/deleteboardall")
     public String deleteBoard(){
         String result="All boards deleted";
-        try{
-            boardService.deleteAllBoards();
-        }catch(Exception err){
-
-        }
+        boardService.deleteAllBoards();
         return result;
     }
 

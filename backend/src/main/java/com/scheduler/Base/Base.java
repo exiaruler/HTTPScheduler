@@ -23,7 +23,7 @@ public class Base{
                 String queryDataRoute=httpUtil.createRoute(ip,"QueryData","");
                 String queryDataRaw=httpUtil.httpRequest(queryDataRoute, standard);
                 returnJson=jsonobj.jsonToObject(queryDataRaw);
-                responseBody=returnJson.findKeyValue("QueryData");
+                responseBody=returnJson.findKeyValue("QueryData").trim();
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();

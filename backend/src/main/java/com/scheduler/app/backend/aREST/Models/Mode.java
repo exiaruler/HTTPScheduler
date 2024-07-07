@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.scheduler.app.backend.aREST.Models.Base.*;
 @Entity
 public class Mode extends ModelBase{
+    @JsonBackReference
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(name="route_id")
     private Route route;
