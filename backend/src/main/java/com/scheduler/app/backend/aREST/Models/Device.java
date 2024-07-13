@@ -6,6 +6,7 @@ import com.scheduler.app.backend.aREST.Models.Base.*;
 import java.util.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Device extends ModelBase{
@@ -47,7 +48,11 @@ public class Device extends ModelBase{
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Route> routes;
-    
+    // list of schedule task
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+        CascadeType.DETACH, CascadeType.REFRESH })
+    private List<Schedule> schedules;
     /* 
     // variables
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "variable", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -58,7 +63,7 @@ public class Device extends ModelBase{
     public Device() {
     }
 
-    public Device(Board board, String deviceName, String state, String warning, int priority, double timeDelay, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes) {
+    public Device(Board board, String deviceName, String state, String warning, int priority, double timeDelay, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes, List<Schedule> schedules) {
         this.board = board;
         this.deviceName = deviceName;
         this.state = state;
@@ -70,6 +75,7 @@ public class Device extends ModelBase{
         this.frameworkFollowed = frameworkFollowed;
         this.custom = custom;
         this.routes = routes;
+        this.schedules = schedules;
     }
 
     public Board getBoard() {
@@ -168,6 +174,14 @@ public class Device extends ModelBase{
         this.routes = routes;
     }
 
+    public List<Schedule> getSchedules() {
+        return this.schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
     public Device board(Board board) {
         setBoard(board);
         return this;
@@ -223,6 +237,11 @@ public class Device extends ModelBase{
         return this;
     }
 
+    public Device schedules(List<Schedule> schedules) {
+        setSchedules(schedules);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -231,12 +250,12 @@ public class Device extends ModelBase{
             return false;
         }
         Device device = (Device) o;
-        return Objects.equals(board, device.board) && Objects.equals(deviceName, device.deviceName) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && priority == device.priority && timeDelay == device.timeDelay && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes);
+        return Objects.equals(board, device.board) && Objects.equals(deviceName, device.deviceName) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && priority == device.priority && timeDelay == device.timeDelay && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, deviceName, state, warning, priority, timeDelay, type, subtype, frameworkFollowed, custom, routes);
+        return Objects.hash(board, deviceName, state, warning, priority, timeDelay, type, subtype, frameworkFollowed, custom, routes, schedules);
     }
 
     @Override
@@ -253,8 +272,10 @@ public class Device extends ModelBase{
             ", frameworkFollowed='" + isFrameworkFollowed() + "'" +
             ", custom='" + isCustom() + "'" +
             ", routes='" + getRoutes() + "'" +
+            ", schedules='" + getSchedules() + "'" +
             "}";
     }
+    
 
    
 }

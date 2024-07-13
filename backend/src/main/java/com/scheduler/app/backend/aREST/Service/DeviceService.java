@@ -167,7 +167,8 @@ public class DeviceService extends Base {
         device.deleteAll();
     }
     // update device after http request
-    public void updateDeviceAfterAction(CompletedTask task){
+    public void updateDeviceAfterAction(CompletedTask task,Device deviceUpdate){
+        /* 
        Device rec=task.getDevice();
        if(rec!=null){
         // update device state and warning
@@ -181,11 +182,9 @@ public class DeviceService extends Base {
                 rec.setState("off");
             }
         }
-        device.save(rec);
+            */
+        if(deviceUpdate!=null){device.save(deviceUpdate);}
        }
     }
     
-
-
-    }
 

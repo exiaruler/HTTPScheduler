@@ -3,12 +3,13 @@ package com.scheduler.Base.ThreadBase;
 import com.scheduler.Base.Base;
 import com.scheduler.app.backend.HTTPHandle.HttpUtil;
 import com.scheduler.app.backend.Task.SchedulerTask;
+import com.scheduler.app.backend.aREST.ArestV2Frame;
 
 public class BaseThread extends Thread{
     protected Base base=new Base();
     protected HttpUtil http=new HttpUtil();
     protected SchedulerTask sche=new SchedulerTask();
-
+    protected ArestV2Frame arest=new ArestV2Frame();
     @Override
     public void run(){
     }
@@ -21,4 +22,5 @@ public class BaseThread extends Thread{
         long endTimeNano=calculateTaskDurationNano(startTime, endTime);
         return (double)endTimeNano/ 1_000_000.0;
     }
+    
 }

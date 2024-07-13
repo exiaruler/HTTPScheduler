@@ -6,7 +6,10 @@ import com.scheduler.app.backend.aREST.Service.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,8 +50,13 @@ public class BoardController {
         return boardService.getBoards();
     }
     @GetMapping(value="/board/getboard/{id}")
-    public Board getBoard(@PathVariable long id){
-        return boardService.findBoard(id);
+    public ResponseEntity<Optional<Board>> getBoard(@PathVariable long id){
+        Optional<Board> board=boardService.findBoard(id);
+        if(board!=null){
+            return ResponseEntity.ok(board);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
     @DeleteMapping(value="/board/deleteboard/{id}")
     public String deleteBoard(@PathVariable long id){

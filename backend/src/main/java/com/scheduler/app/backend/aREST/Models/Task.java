@@ -1,6 +1,8 @@
 package com.scheduler.app.backend.aREST.Models;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.scheduler.app.backend.aREST.Models.Base.*;
 import java.util.Objects;
 
@@ -36,22 +38,23 @@ public class Task extends ModelBase {
     // update device status in database
     @Column
     private boolean updateDevice=false;
-    // task used for startup
-    @Column
-    private boolean startupJob=false;
     // task status
     @Column boolean active=false;
+    // http task
+    @Column
+    private boolean httpTask=false;
     // schedule task
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "schedule_id")
+    //@MapsId
+    @JsonBackReference
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "schedule_id",referencedColumnName = "id")
     private Schedule schedule;
 
 
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean startupJob, boolean active, Schedule schedule) {
+    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, Schedule schedule) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
@@ -62,8 +65,8 @@ public class Task extends ModelBase {
         this.scheduledTime = scheduledTime;
         this.oneTimeJob = oneTimeJob;
         this.updateDevice = updateDevice;
-        this.startupJob = startupJob;
         this.active = active;
+        this.httpTask = httpTask;
         this.schedule = schedule;
     }
 
@@ -159,18 +162,6 @@ public class Task extends ModelBase {
         this.updateDevice = updateDevice;
     }
 
-    public boolean isStartupJob() {
-        return this.startupJob;
-    }
-
-    public boolean getStartupJob() {
-        return this.startupJob;
-    }
-
-    public void setStartupJob(boolean startupJob) {
-        this.startupJob = startupJob;
-    }
-
     public boolean isActive() {
         return this.active;
     }
@@ -181,6 +172,18 @@ public class Task extends ModelBase {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isHttpTask() {
+        return this.httpTask;
+    }
+
+    public boolean getHttpTask() {
+        return this.httpTask;
+    }
+
+    public void setHttpTask(boolean httpTask) {
+        this.httpTask = httpTask;
     }
 
     public Schedule getSchedule() {
@@ -241,13 +244,13 @@ public class Task extends ModelBase {
         return this;
     }
 
-    public Task startupJob(boolean startupJob) {
-        setStartupJob(startupJob);
+    public Task active(boolean active) {
+        setActive(active);
         return this;
     }
 
-    public Task active(boolean active) {
-        setActive(active);
+    public Task httpTask(boolean httpTask) {
+        setHttpTask(httpTask);
         return this;
     }
 
@@ -264,12 +267,12 @@ public class Task extends ModelBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && startupJob == task.startupJob && active == task.active && Objects.equals(schedule, task.schedule);
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && Objects.equals(schedule, task.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, startupJob, active, schedule);
+        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, schedule);
     }
 
     @Override
@@ -285,13 +288,12 @@ public class Task extends ModelBase {
             ", scheduledTime='" + getScheduledTime() + "'" +
             ", oneTimeJob='" + isOneTimeJob() + "'" +
             ", updateDevice='" + isUpdateDevice() + "'" +
-            ", startupJob='" + isStartupJob() + "'" +
             ", active='" + isActive() + "'" +
+            ", httpTask='" + isHttpTask() + "'" +
             ", schedule='" + getSchedule() + "'" +
             "}";
     }
-   
-    
 
+    
 
 }

@@ -112,5 +112,11 @@ public class ArestV2Frame extends Base {
         if(controlArr[1].equals("~")){ out=true;}else out=false;
         return out;
     }
+    public JsonObject changeDevice(String url,String param){
+        JsonObject json=new JsonObject();
+        String rawJson=httpUtil.requestRoute(url,"changeDevice", param);
+        json.jsonToObject(rawJson);
+        return json;
+    }
 
 }

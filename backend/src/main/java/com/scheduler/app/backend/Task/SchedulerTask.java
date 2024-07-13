@@ -30,7 +30,7 @@ public class SchedulerTask{
     private static List<Task> runningQueue=new ArrayList<Task>();
     // task finished processing 
     private static List<CompletedTask> completeTaskQueue=new ArrayList<CompletedTask>();
-    @Scheduled(fixedRate = 100)
+    @Scheduled(fixedRate = 500)
     public void runSche(){
         if(queue.isEmpty()&&!start){
             service.addToScheduler();
@@ -48,13 +48,19 @@ public class SchedulerTask{
                 LocalDateTime taskDt=task.getScheduledTime();
                 if(dt.isAfter(taskDt)||dt.equals(taskDt)){
                     // add task to running queue if it passes check else let it stick in the queue 
-                    if(!checkTaskRunning(task)){
+                    if(!checkTaskRunning(task)&&!task.getHttpTask()){
                         Device device=deviceService.getDevice(task.getDeviceId());
                         runningQueue.add(task);
                         HttpSchedule thread=new HttpSchedule(task,device);
                         thread.start();
                         queue.remove(i);
-                        updateQueue(taskId);
+                        updateQueue(task);
+                    }
+                    // run http task
+                    if(task.getHttpTask()){
+                        HttpSchedule thread=new HttpSchedule(task,null);
+                        thread.start();
+                        queue.remove(i);
                     }
                     
                 }
@@ -69,7 +75,8 @@ public class SchedulerTask{
             System.out.println("Number of completed task in queue "+completeTaskQueue.size());
             for(int i=0; i<completeTaskQueue.size(); i++){
                 CompletedTask task=completeTaskQueue.get(i);
-                deviceService.updateDeviceAfterAction(task);
+                deviceService.updateDeviceAfterAction(task,task.getDevice());
+                service.modifyTaskFromScheduler(task.getTask());
                 completeTaskQueue.remove(i);
             }
         }
@@ -142,37 +149,41 @@ public class SchedulerTask{
         queue=currentList;
     }
     // add to completed task array queue
-    public void addToComplete(Device device,boolean status,String state,String warning,boolean complete){
+    public void addToComplete(Device device,boolean status,String state,String warning,boolean complete,Task task){
         if(complete){
             CompletedTask compTask=new CompletedTask();
             compTask.setDevice(device);
             compTask.setStatus(status);
             compTask.setStatusString(state);
             compTask.setWarning(warning);
+            compTask.setTask(task);
             completeTaskQueue.add(compTask);
             System.out.println(completeTaskQueue.size());
         }
-        
     }
     // add task back into queue if required
     public void failedTask(Task task){
         queue.add(task);
     }
    
-    public void updateQueue(long id){
-        service.deleteTask(id);
+    public void updateQueue(Task task){
+        service.deleteTask(task);
         service.addToScheduler();
     }
     public void clearRunningTask(){
         runningQueue.clear();
     }
     public void removeRunningTask(Task task){
+        runningQueue.remove(task);
+        /* 
         for(int i=0; i<runningQueue.size(); i++){
             if(runningQueue.get(i).equals(task)){
                 runningQueue.remove(i);
+                service.modifyTaskFromScheduler(task);
                 break;
             }
         }
+            */
     }
 
     

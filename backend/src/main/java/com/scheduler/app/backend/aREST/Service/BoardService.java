@@ -170,8 +170,10 @@ public class BoardService extends Base {
         
     }
    
-    public Board findBoard(long id){
-        return board.findById(id).get();
+    public Optional<Board> findBoard(long id){
+        //Board record;
+        return board.findById(id);
+        //return record;
     }
     
 }
