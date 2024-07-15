@@ -26,21 +26,15 @@ public class TaskService extends Base{
     public Task addTask(Task entry){
         LocalDateTime setDt=addDuration("0:01");
         entry.setScheduledTime(setDt);
+        entry.setActive(true);
         Task add=service.save(entry);
         addToScheduler();
         return add;
     }
     public Task setTaskSchedule(Task task){
-        if(task.getSchedule().getStartup()){
-            LocalDateTime currenDateTime = LocalDateTime.now();
-            task.setScheduledTime(currenDateTime);
-            task.setActive(true);
-        }
-        if(task.getSchedule().getRepeatTask()){
-            LocalDateTime dateTime=addDuration(task.getSchedule().getTime());
-            task.setScheduledTime(dateTime);
-            task.setActive(true);
-        }
+        LocalDateTime dateTime=addDuration(task.getSchedule().getTime());
+        task.setScheduledTime(dateTime);
+        task.setActive(true);
         service.save(task);
         addToScheduler();
         return task;
@@ -64,6 +58,7 @@ public class TaskService extends Base{
             if(task.getSchedule().getRepeatTask()){
                 LocalDateTime schedule=addDuration(task.getSchedule().getTime());
                 task.setScheduledTime(schedule);
+                task.setActive(true);
             }
             // start next task
             if(task.getSchedule().getNextTask()!=0){
@@ -102,6 +97,10 @@ public class TaskService extends Base{
     public List<Task> getAllTask(){
         return service.findAll();
     }
+    // find task by active
+    public List<Task> getAllTaskStat(boolean status){
+        return service.getAllTaskAct(status);
+    }
     public List<Task> getAllRunningTask(){
         List<Task> list=sche.getAllRunTask();
         return list;
@@ -124,5 +123,12 @@ public class TaskService extends Base{
         currenDateTime=currenDateTime.plusMinutes(mins).plusSeconds(seconds);
         return currenDateTime;
     }
-    
+    public String createRouteUrl(String ip,String route,String param){
+        if(route==""||ip=="") return "";
+        String requestUrl="http://"+ip+"/"+route;
+        if(param!=""){
+            requestUrl=requestUrl+"?params="+param;
+        }else requestUrl=requestUrl+"?params=1";
+        return requestUrl;
+    }
 }

@@ -1,6 +1,9 @@
 package com.scheduler.Base;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Random;
+
+import javax.transaction.Transactional;
 
 import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.app.backend.HTTPHandle.HttpUtil;
@@ -104,6 +107,15 @@ public class Base{
         value=value.substring(index+1);
         return value;
     }
-    
-    
+    // generate random string
+    public String generateRandString(int length){
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder stringBuilt = new StringBuilder(length);
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            stringBuilt.append(characters.charAt(index));
+        }
+        return stringBuilt.toString();
+    }
 }

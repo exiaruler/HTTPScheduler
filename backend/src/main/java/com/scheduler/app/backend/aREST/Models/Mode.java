@@ -15,19 +15,17 @@ public class Mode extends ModelBase{
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(name="route_id")
     private Route route;
+    // mode
     @Column
-    private String mode;
-    @Column 
-    private boolean selectedMode;
-    
+    private String mode;    
+
 
     public Mode() {
     }
 
-    public Mode(Route route, String mode, boolean selectedMode) {
+    public Mode(Route route, String mode) {
         this.route = route;
         this.mode = mode;
-        this.selectedMode = selectedMode;
     }
 
     public Route getRoute() {
@@ -46,18 +44,6 @@ public class Mode extends ModelBase{
         this.mode = mode;
     }
 
-    public boolean isSelectedMode() {
-        return this.selectedMode;
-    }
-
-    public boolean getSelectedMode() {
-        return this.selectedMode;
-    }
-
-    public void setSelectedMode(boolean selectedMode) {
-        this.selectedMode = selectedMode;
-    }
-
     public Mode route(Route route) {
         setRoute(route);
         return this;
@@ -68,12 +54,6 @@ public class Mode extends ModelBase{
         return this;
     }
 
-    public Mode selectedMode(boolean selectedMode) {
-        setSelectedMode(selectedMode);
-        return this;
-    }
-
-    @SuppressWarnings("unlikely-arg-type")
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -82,12 +62,12 @@ public class Mode extends ModelBase{
             return false;
         }
         Mode mode = (Mode) o;
-        return Objects.equals(route, mode.route) && Objects.equals(mode, mode.mode) && selectedMode == mode.selectedMode;
+        return Objects.equals(route, mode.route) && Objects.equals(mode, mode.mode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(route, mode, selectedMode);
+        return Objects.hash(route, mode);
     }
 
     @Override
@@ -95,10 +75,8 @@ public class Mode extends ModelBase{
         return "{" +
             " route='" + getRoute() + "'" +
             ", mode='" + getMode() + "'" +
-            ", selectedMode='" + isSelectedMode() + "'" +
             "}";
     }
-
 
 }
     

@@ -1,14 +1,9 @@
 package com.scheduler.app.backend.aREST.Controller;
-
-import static org.mockito.Answers.values;
-
 import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.scheduler.app.backend.aREST.Models.Schedule;
 import com.scheduler.app.backend.aREST.Service.ScheduleService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +21,10 @@ public class ScheduleController {
         String url=(String) payload.get("url");
         boolean startup=(boolean) payload.get("startup");
         boolean repeat=(boolean) payload.get("repeat");
-        return service.addHttpTask(name,time, repeat,startup,url);
+        long deviceId=(int) payload.get("device");
+        long routeId=(int) payload.get("route");
+        long modeId=(int) payload.get("mode");
+        return service.addSchedule(name, time, repeat, startup, url, deviceId, routeId,modeId);
     }
     @GetMapping("/schedule/get-schedules")
     public List<Schedule> getAllSchedule() {
@@ -37,6 +35,15 @@ public class ScheduleController {
         boolean success=false;
         long id=(int) entity.get("id");
         success=service.startupTask(id);
+        return success;
+    }
+    // boot route from device
+    @PostMapping("/schedule/device-startup")
+    public boolean startupDevice(@RequestBody Map<String, Object> entity) {
+        boolean success=false;
+        String id=(String) entity.get("id");
+        int intId=Integer.valueOf(id);
+        success=service.startupTask(intId);
         return success;
     }
     @PostMapping("/schedule/test-task")

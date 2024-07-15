@@ -18,19 +18,13 @@ public class Device extends ModelBase{
     private Board board;
     // name of device
     @Column
-    private String deviceName;
+    private String name;
     // state which the device is in
     @Column
     private String state;
     // error from device
     @Column
     private String warning;
-    // priority for task schedule 
-    @Column
-    private int priority=1;
-    // time delay (mins) for task schedule
-    @Column
-    private double timeDelay=10;
     // device type optional
     @Column 
     private String type;
@@ -53,29 +47,34 @@ public class Device extends ModelBase{
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Schedule> schedules;
+    // list of routes used for schedule
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+        CascadeType.DETACH, CascadeType.REFRESH })
+    private List<Route> routesSchedule;
     /* 
     // variables
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "variable", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Variable> variables;
     */
+    
 
     public Device() {
     }
 
-    public Device(Board board, String deviceName, String state, String warning, int priority, double timeDelay, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes, List<Schedule> schedules) {
+    public Device(Board board, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes, List<Schedule> schedules, List<Route> routesSchedule) {
         this.board = board;
-        this.deviceName = deviceName;
+        this.name = name;
         this.state = state;
         this.warning = warning;
-        this.priority = priority;
-        this.timeDelay = timeDelay;
         this.type = type;
         this.subtype = subtype;
         this.frameworkFollowed = frameworkFollowed;
         this.custom = custom;
         this.routes = routes;
         this.schedules = schedules;
+        this.routesSchedule = routesSchedule;
     }
 
     public Board getBoard() {
@@ -86,12 +85,12 @@ public class Device extends ModelBase{
         this.board = board;
     }
 
-    public String getDeviceName() {
-        return this.deviceName;
+    public String getName() {
+        return this.name;
     }
 
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getState() {
@@ -108,22 +107,6 @@ public class Device extends ModelBase{
 
     public void setWarning(String warning) {
         this.warning = warning;
-    }
-
-    public int getPriority() {
-        return this.priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public double getTimeDelay() {
-        return this.timeDelay;
-    }
-
-    public void setTimeDelay(double timeDelay) {
-        this.timeDelay = timeDelay;
     }
 
     public String getType() {
@@ -182,13 +165,21 @@ public class Device extends ModelBase{
         this.schedules = schedules;
     }
 
+    public List<Route> getRoutesSchedule() {
+        return this.routesSchedule;
+    }
+
+    public void setRoutesSchedule(List<Route> routesSchedule) {
+        this.routesSchedule = routesSchedule;
+    }
+
     public Device board(Board board) {
         setBoard(board);
         return this;
     }
 
-    public Device deviceName(String deviceName) {
-        setDeviceName(deviceName);
+    public Device name(String name) {
+        setName(name);
         return this;
     }
 
@@ -199,16 +190,6 @@ public class Device extends ModelBase{
 
     public Device warning(String warning) {
         setWarning(warning);
-        return this;
-    }
-
-    public Device priority(int priority) {
-        setPriority(priority);
-        return this;
-    }
-
-    public Device timeDelay(double timeDelay) {
-        setTimeDelay(timeDelay);
         return this;
     }
 
@@ -242,6 +223,11 @@ public class Device extends ModelBase{
         return this;
     }
 
+    public Device routesSchedule(List<Route> routesSchedule) {
+        setRoutesSchedule(routesSchedule);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -250,32 +236,29 @@ public class Device extends ModelBase{
             return false;
         }
         Device device = (Device) o;
-        return Objects.equals(board, device.board) && Objects.equals(deviceName, device.deviceName) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && priority == device.priority && timeDelay == device.timeDelay && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules);
+        return Objects.equals(board, device.board) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(routesSchedule, device.routesSchedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, deviceName, state, warning, priority, timeDelay, type, subtype, frameworkFollowed, custom, routes, schedules);
+        return Objects.hash(board, name, state, warning, type, subtype, frameworkFollowed, custom, routes, schedules, routesSchedule);
     }
 
     @Override
     public String toString() {
         return "{" +
             " board='" + getBoard() + "'" +
-            ", deviceName='" + getDeviceName() + "'" +
+            ", name='" + getName() + "'" +
             ", state='" + getState() + "'" +
             ", warning='" + getWarning() + "'" +
-            ", priority='" + getPriority() + "'" +
-            ", timeDelay='" + getTimeDelay() + "'" +
             ", type='" + getType() + "'" +
             ", subtype='" + getSubtype() + "'" +
             ", frameworkFollowed='" + isFrameworkFollowed() + "'" +
             ", custom='" + isCustom() + "'" +
             ", routes='" + getRoutes() + "'" +
             ", schedules='" + getSchedules() + "'" +
+            ", routesSchedule='" + getRoutesSchedule() + "'" +
             "}";
     }
-    
 
-   
 }

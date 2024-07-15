@@ -1,6 +1,7 @@
 package com.scheduler.app.backend.aREST.Controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,19 @@ public class TaskController {
     @Autowired
     private TaskService service;
     @PostMapping(value="/task/addtask")
-    public Task addTask(@RequestBody Task entry){
-        return service.addTask(entry);
+    public Task addTask(@RequestBody Map<String, Object> payload){
+        String application=(String) payload.get("application");
+        int boardId=(int) payload.get("board");
+        int deviceId=(int) payload.get("deviceId");
+        String url=(String) payload.get("url");
+        String section=(String) payload.get("section");
+        Task task=new Task();
+        task.setApplication(application);
+        task.setBoard(boardId);
+        task.setDeviceId(deviceId);
+        task.setUrl(url);
+        task.setSection(section);
+        return service.addTask(task);
     }
     @GetMapping(value="/task/get-task/{id}")
     public Optional<Task> getTask(@PathVariable long id){
@@ -30,6 +42,10 @@ public class TaskController {
     @GetMapping(value="/task/getalltask")
     public List<Task> getAllTask(){
         return service.getAllTask();
+    }
+    @GetMapping(value="/task/get-all-task-bystatus/{status}")
+    public List<Task> getAllTaskAct(@PathVariable boolean status){
+        return service.getAllTaskStat(status);
     }
     @GetMapping(value="/task/get-all-run-task")
     public List<Task> getAllRunningTask(){

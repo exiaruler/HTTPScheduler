@@ -10,6 +10,7 @@ import com.scheduler.app.backend.aREST.Models.Device;
 import com.scheduler.app.backend.aREST.Models.Mode;
 import com.scheduler.app.backend.aREST.Models.Route;
 import com.scheduler.app.backend.aREST.Models.ScanDevice;
+import com.scheduler.app.backend.aREST.Repo.DeviceRepo;
 import com.scheduler.app.backend.aREST.Repo.ModeRepo;
 import com.scheduler.app.backend.aREST.Repo.RoutesRepo;
 // save routes and modes
@@ -17,18 +18,30 @@ import com.scheduler.app.backend.aREST.Repo.RoutesRepo;
 public class RoutesService extends Base {
     private final RoutesRepo service;
     private final ModeRepo modeService;
+    private final DeviceRepo deviceRepo;
     public ArestV2Frame arest=new ArestV2Frame();
-    public RoutesService(RoutesRepo service, ModeRepo modeService) {
+    public RoutesService(RoutesRepo service, ModeRepo modeService, DeviceRepo deviceRepo) {
         this.service = service;
         this.modeService = modeService;
+        this.deviceRepo = deviceRepo;
     }
     
-    public Route addRoute(Route entry){
-        return service.save(entry);
+    public Route addRoute(long deviceId,String route,boolean modes,List<Mode>modeList){
+        Route newRoute=new Route();
+        Device device=deviceRepo.getReferenceById(deviceId);
+        if(device!=null){
+            newRoute.setDevice(device);
+            if(!modes){
+                newRoute.setMode(null);
+            }else newRoute.setMode(modeList);
+        }
+        service.save(newRoute);
+        return newRoute;
     }
-    public Mode addMode(Mode entry){
+    public Mode addMode(long routeId,Mode entry){
         return modeService.save(entry);
     }
+    
     public Route updateRoute(Route entry,long id){
         Route rec=null;
         if(service.existsById(id)){
@@ -52,61 +65,53 @@ public class RoutesService extends Base {
             String paramControl=controlArr[1]; 
             String [] arr=rawRoute[1].split("\\"+routeControl);
 
-        // loop and save routes and modes 
-        for(int i=0; i<arr.length; i++){
-            List <Mode> modeList=new ArrayList<Mode>();
-            String route=arr[i];
-            Route newRoute=new Route();
-            newRoute.setDevice(deviceId);
-            int bracketStartI=route.indexOf("(");
-            int bracketEndI=route.indexOf(")");
-            String param="";
-            // if there params 
-            if(bracketEndI>-1&&bracketEndI>-1){
-                param=route.substring(bracketStartI+1, bracketEndI);
-                String routeItself=route.substring(0,bracketStartI);
-                //save param of that route
-                if(param!=""){
-                    String [] arrParams=param.split("\\"+paramControl);
-                    for(int x=0; x<arrParams.length; x++){
-                        Mode newMode=new Mode();
-                        newMode.setRoute(newRoute);
-                        newMode.setMode(arrParams[x]);
-                        modeList.add(newMode);
+            // loop and save routes and modes 
+            for(int i=0; i<arr.length; i++){
+                List <Mode> modeList=new ArrayList<Mode>();
+                String route=arr[i];
+                Route newRoute=new Route();
+                newRoute.setDevice(deviceId);
+                int bracketStartI=route.indexOf("(");
+                int bracketEndI=route.indexOf(")");
+                String param="";
+                // if there params 
+                if(bracketEndI>-1&&bracketEndI>-1){
+                    param=route.substring(bracketStartI+1, bracketEndI);
+                    String routeItself=route.substring(0,bracketStartI);
+                    //save param of that route
+                    if(param!=""){
+                        String [] arrParams=param.split("\\"+paramControl);
+                        for(int x=0; x<arrParams.length; x++){
+                            Mode newMode=new Mode();
+                            newMode.setRoute(newRoute);
+                            newMode.setMode(arrParams[x]);
+                            modeList.add(newMode);
+                        }
                     }
+                    newRoute.setRoute(routeItself);
+                    newRoute.setModes(true);
+                    newRoute.setMode(modeList);
+                }else{
+                    newRoute.setRoute(route);
                 }
-                newRoute.setRoute(routeItself);
-                newRoute.setModes(true);
-                newRoute.setMode(modeList);
-            }else{
-                newRoute.setRoute(route);
+                routeList.add(newRoute);
             }
-            routeList.add(newRoute);
-            //Route save=addRoute(newRoute);
-            /* 
-            //save param of that route
-            if(param!=""){
-                String [] arrParams=param.split("\\"+paramControl);
-                for(int x=0; x<arrParams.length; x++){
-                    Mode newMode=new Mode();
-                    newMode.setRoute(save);
-                    newMode.setMode(arrParams[x]);
-                    modeList.add(addMode(newMode));
-                }
-            }
-                */
-            //save.setMode(modeList);
-            //save=addRoute(save);
-            //routeList.add(save);
-        }
         }
         return routeList;
     }
+    // routes
     public List<Route> getAllRoutes(){
         return service.findAll();
     }
     public Route getRoute(long id){
         return service.findById(id).get();
+    }
+    // modes
+    public List<Mode> getAllModes(){
+        return modeService.findAll();
+    }
+    public Mode getMode(long id){
+        return modeService.getReferenceById(id);
     }
 
     

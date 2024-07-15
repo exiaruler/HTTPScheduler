@@ -23,6 +23,9 @@ public class Schedule extends ModelBase {
     // next task after schedule task is completed
     @Column
     private long nextTask;
+    // mode
+    @Column 
+    private String mode="";
     // link to task
     //@PrimaryKeyJoinColumn
     @JsonBackReference
@@ -34,19 +37,26 @@ public class Schedule extends ModelBase {
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
     @JoinColumn(name="device_id")
     private Device device;
-
+    // link route from device
+    @JsonBackReference
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JoinColumn(name="route_id")
+    private Route route;
+    
 
     public Schedule() {
     }
 
-    public Schedule(String name, String time, boolean repeatTask, boolean startup, long nextTask, Task task, Device device) {
+    public Schedule(String name, String time, boolean repeatTask, boolean startup, long nextTask, String mode, Task task, Device device, Route route) {
         this.name = name;
         this.time = time;
         this.repeatTask = repeatTask;
         this.startup = startup;
         this.nextTask = nextTask;
+        this.mode = mode;
         this.task = task;
         this.device = device;
+        this.route = route;
     }
 
     public String getName() {
@@ -97,6 +107,14 @@ public class Schedule extends ModelBase {
         this.nextTask = nextTask;
     }
 
+    public String getMode() {
+        return this.mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
     public Task getTask() {
         return this.task;
     }
@@ -111,6 +129,14 @@ public class Schedule extends ModelBase {
 
     public void setDevice(Device device) {
         this.device = device;
+    }
+
+    public Route getRoute() {
+        return this.route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
     public Schedule name(String name) {
@@ -138,6 +164,11 @@ public class Schedule extends ModelBase {
         return this;
     }
 
+    public Schedule mode(String mode) {
+        setMode(mode);
+        return this;
+    }
+
     public Schedule task(Task task) {
         setTask(task);
         return this;
@@ -145,6 +176,11 @@ public class Schedule extends ModelBase {
 
     public Schedule device(Device device) {
         setDevice(device);
+        return this;
+    }
+
+    public Schedule route(Route route) {
+        setRoute(route);
         return this;
     }
 
@@ -156,12 +192,12 @@ public class Schedule extends ModelBase {
             return false;
         }
         Schedule schedule = (Schedule) o;
-        return Objects.equals(name, schedule.name) && Objects.equals(time, schedule.time) && repeatTask == schedule.repeatTask && startup == schedule.startup && nextTask == schedule.nextTask && Objects.equals(task, schedule.task) && Objects.equals(device, schedule.device);
+        return Objects.equals(name, schedule.name) && Objects.equals(time, schedule.time) && repeatTask == schedule.repeatTask && startup == schedule.startup && nextTask == schedule.nextTask && Objects.equals(mode, schedule.mode) && Objects.equals(task, schedule.task) && Objects.equals(device, schedule.device) && Objects.equals(route, schedule.route);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, repeatTask, startup, nextTask, task, device);
+        return Objects.hash(name, time, repeatTask, startup, nextTask, mode, task, device, route);
     }
 
     @Override
@@ -172,9 +208,11 @@ public class Schedule extends ModelBase {
             ", repeatTask='" + isRepeatTask() + "'" +
             ", startup='" + isStartup() + "'" +
             ", nextTask='" + getNextTask() + "'" +
+            ", mode='" + getMode() + "'" +
             ", task='" + getTask() + "'" +
             ", device='" + getDevice() + "'" +
+            ", route='" + getRoute() + "'" +
             "}";
     }
-    
+
 }

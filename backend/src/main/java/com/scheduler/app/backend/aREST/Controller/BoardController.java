@@ -6,6 +6,7 @@ import com.scheduler.app.backend.aREST.Service.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,12 @@ public class BoardController {
    
     @PostMapping(value="/board/addboard")
     @ResponseBody
-    public Board addBoardTest(@RequestBody Board board){
-        return boardService.addBoardTest(board);
+    public Board addBoardTest(@RequestBody Map<String, Object> payload){
+        String name=(String)payload.get("name");
+        String ip=(String) payload.get("ip");
+        boolean arest=(boolean) payload.get("aRest");
+        boolean status=(boolean) payload.get("status");
+        return boardService.addBoardManual(name, ip, arest, status);
     }
     @PostMapping(value = "/board/addboardtest", consumes = {"application/xml","application/json"})
     @ResponseBody
@@ -61,11 +66,7 @@ public class BoardController {
     @DeleteMapping(value="/board/deleteboard/{id}")
     public String deleteBoard(@PathVariable long id){
         String result="";
-        try{
-            result=boardService.deleteBoard(id);
-        }catch(Exception err){
-
-        }
+        result=boardService.deleteBoard(id);
         return result;
     }
     @DeleteMapping(value="/board/deleteboardall")

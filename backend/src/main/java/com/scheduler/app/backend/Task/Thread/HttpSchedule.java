@@ -3,9 +3,6 @@ import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.Base.ThreadBase.BaseThread;
 import com.scheduler.app.backend.aREST.Models.*;
 
-import netscape.javascript.JSObject;
-
-
 // sends action http request to device
 public class HttpSchedule extends BaseThread{
     private Task task;
@@ -30,8 +27,8 @@ public class HttpSchedule extends BaseThread{
         if(device!=null){
             String deviceIp=device.getBoard().getIp();
             if(http.requestRouteTest(deviceIp)){
-                JsonObject change=arest.changeDevice(deviceIp,device.getDeviceName());
-                if(change.findKeyValue("return_value").equals("1")){
+                JsonObject change=arest.changeDevice(deviceIp,device.getName());
+                //if(change.findKeyValue("return_value").equals("1")||change.findKeyValue("return_value").equals("0")){
                     String response=http.requestDevice(task.getUrl());
                     // get data required to update device in database
                     if(response!=""){
@@ -41,13 +38,13 @@ public class HttpSchedule extends BaseThread{
                         String deviceName="";
                         // 1 is sucess
                         if(returnValue.equals("1")){
-                            deviceJson.jsonToObject(http.request(deviceIp));
+                            deviceJson=base.jsonobj.jsonToObject(http.request(deviceIp));
                             deviceName=deviceJson.findKeyValue("SetDevice");
                             sucess=true;
                         }
                         // get state of device
                         if(sucess&&deviceName!=""){
-                            state=deviceJson.findKeyValue("status");
+                            state=deviceJson.findKeyValue("Status");
                             device.setState(state);
                             System.out.println(state);
                         }else{
@@ -60,7 +57,7 @@ public class HttpSchedule extends BaseThread{
                         // add to complete task queue to update device
                         sche.addToComplete(device, sucess, state, warning,complete,task);
                     }else sche.failedTask(task);
-                }
+                //}sche.failedTask(task);
             }else sche.failedTask(task);
         }else
         // send http request for non devices
