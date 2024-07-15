@@ -58,7 +58,10 @@ public class TaskController {
     }
     @DeleteMapping(value="/task/delete-task/{id}")
     public void deleteTask(@PathVariable long id){
-        service.deleteTask(id);
+        Task task=service.getTask(id).get();
+        if(task!=null){
+            service.deleteTask(task);
+        }
     }
     @GetMapping(value = "/task/master-clear")
     public String masterClear(){

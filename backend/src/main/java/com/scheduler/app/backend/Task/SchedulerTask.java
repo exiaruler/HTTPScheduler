@@ -175,15 +175,6 @@ public class SchedulerTask{
     }
     public void removeRunningTask(Task task){
         runningQueue.remove(task);
-        /* 
-        for(int i=0; i<runningQueue.size(); i++){
-            if(runningQueue.get(i).equals(task)){
-                runningQueue.remove(i);
-                service.modifyTaskFromScheduler(task);
-                break;
-            }
-        }
-            */
     }
 
     
