@@ -115,7 +115,7 @@ public class ArestV2Frame extends Base {
     public JsonObject changeDevice(String url,String param){
         JsonObject json=new JsonObject();
         String rawJson=httpUtil.requestRoute(url,"changeDevice", param);
-        json.jsonToObject(rawJson);
+        json=json.jsonToObject(rawJson);
         return json;
     }
 

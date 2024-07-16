@@ -15,7 +15,7 @@ public class HttpUtil {
     
     public String request(String ip){
         String responseBody="";
-        long standard=200;
+        long standard=500;
         try {
             responseBody=httpRequest(routeWithOutParam(ip),standard);
         } catch (URISyntaxException e) {

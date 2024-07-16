@@ -28,7 +28,7 @@ public class HttpSchedule extends BaseThread{
             String deviceIp=device.getBoard().getIp();
             if(http.requestRouteTest(deviceIp)){
                 JsonObject change=arest.changeDevice(deviceIp,device.getName());
-                //if(change.findKeyValue("return_value").equals("1")||change.findKeyValue("return_value").equals("0")){
+                if(change.findKeyValue("return_value").equals("1")){
                     String response=http.requestDevice(task.getUrl());
                     // get data required to update device in database
                     if(response!=""){
@@ -57,7 +57,7 @@ public class HttpSchedule extends BaseThread{
                         // add to complete task queue to update device
                         sche.addToComplete(device, sucess, state, warning,complete,task);
                     }else sche.failedTask(task);
-                //}sche.failedTask(task);
+                }sche.failedTask(task);
             }else sche.failedTask(task);
         }else
         // send http request for non devices
