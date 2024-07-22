@@ -70,19 +70,25 @@ public class RoutesService extends Base {
                 List <Mode> modeList=new ArrayList<Mode>();
                 String route=arr[i];
                 Route newRoute=new Route();
+                String[] routeParam=getRoute(route);
+                Route exist=service.findExistingRouteByDevice(routeParam[0],deviceId.getId());
+                if(exist!=null){
+                    newRoute=exist;
+                }else{
                 newRoute.setDevice(deviceId);
-                int bracketStartI=route.indexOf("(");
-                int bracketEndI=route.indexOf(")");
+                }
                 String param="";
                 // if there params 
-                if(bracketEndI>-1&&bracketEndI>-1){
-                    param=route.substring(bracketStartI+1, bracketEndI);
-                    String routeItself=route.substring(0,bracketStartI);
+                if(routeParam[1]!=""){
+                    param=routeParam[1];
+                    String routeItself=routeParam[0];
                     //save param of that route
                     if(param!=""){
                         String [] arrParams=param.split("\\"+paramControl);
                         for(int x=0; x<arrParams.length; x++){
                             Mode newMode=new Mode();
+                            Mode existMode=modeService.findMode(arrParams[x],newRoute.getId());
+                            if(existMode!=null) newMode=existMode;
                             newMode.setRoute(newRoute);
                             newMode.setMode(arrParams[x]);
                             modeList.add(newMode);
@@ -98,6 +104,20 @@ public class RoutesService extends Base {
             }
         }
         return routeList;
+    }
+    private String[] getRoute(String fullRoute){
+        String routeParam[]={"",""};
+        int bracketStartI=fullRoute.indexOf("(");
+        int bracketEndI=fullRoute.indexOf(")");
+        if(bracketEndI>-1&&bracketEndI>-1){
+            String param=fullRoute.substring(bracketStartI+1, bracketEndI);
+            String route=fullRoute.substring(0,bracketStartI);
+            routeParam[0]=route;
+            routeParam[1]=param;
+        }else{
+            routeParam[0]=fullRoute;
+        }
+        return routeParam;
     }
     // routes
     public List<Route> getAllRoutes(){

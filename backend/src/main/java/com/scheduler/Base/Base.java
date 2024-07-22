@@ -118,4 +118,9 @@ public class Base{
         }
         return stringBuilt.toString();
     }
+
+    // create string variable
+    public String stringVariable(String variable){
+        return "\""+variable+"\"";
+    }
 }

@@ -26,8 +26,10 @@ public class Schedule extends ModelBase {
     // mode
     @Column 
     private String mode="";
+    // retry connection
+    @Column
+    private int retries=3;
     // link to task
-    //@PrimaryKeyJoinColumn
     @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY,mappedBy = "schedule", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
@@ -47,13 +49,14 @@ public class Schedule extends ModelBase {
     public Schedule() {
     }
 
-    public Schedule(String name, String time, boolean repeatTask, boolean startup, long nextTask, String mode, Task task, Device device, Route route) {
+    public Schedule(String name, String time, boolean repeatTask, boolean startup, long nextTask, String mode, int retries, Task task, Device device, Route route) {
         this.name = name;
         this.time = time;
         this.repeatTask = repeatTask;
         this.startup = startup;
         this.nextTask = nextTask;
         this.mode = mode;
+        this.retries = retries;
         this.task = task;
         this.device = device;
         this.route = route;
@@ -115,6 +118,14 @@ public class Schedule extends ModelBase {
         this.mode = mode;
     }
 
+    public int getRetries() {
+        return this.retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
     public Task getTask() {
         return this.task;
     }
@@ -169,6 +180,11 @@ public class Schedule extends ModelBase {
         return this;
     }
 
+    public Schedule retries(int retries) {
+        setRetries(retries);
+        return this;
+    }
+
     public Schedule task(Task task) {
         setTask(task);
         return this;
@@ -192,12 +208,12 @@ public class Schedule extends ModelBase {
             return false;
         }
         Schedule schedule = (Schedule) o;
-        return Objects.equals(name, schedule.name) && Objects.equals(time, schedule.time) && repeatTask == schedule.repeatTask && startup == schedule.startup && nextTask == schedule.nextTask && Objects.equals(mode, schedule.mode) && Objects.equals(task, schedule.task) && Objects.equals(device, schedule.device) && Objects.equals(route, schedule.route);
+        return Objects.equals(name, schedule.name) && Objects.equals(time, schedule.time) && repeatTask == schedule.repeatTask && startup == schedule.startup && nextTask == schedule.nextTask && Objects.equals(mode, schedule.mode) && retries == schedule.retries && Objects.equals(task, schedule.task) && Objects.equals(device, schedule.device) && Objects.equals(route, schedule.route);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, repeatTask, startup, nextTask, mode, task, device, route);
+        return Objects.hash(name, time, repeatTask, startup, nextTask, mode, retries, task, device, route);
     }
 
     @Override
@@ -209,6 +225,7 @@ public class Schedule extends ModelBase {
             ", startup='" + isStartup() + "'" +
             ", nextTask='" + getNextTask() + "'" +
             ", mode='" + getMode() + "'" +
+            ", retries='" + getRetries() + "'" +
             ", task='" + getTask() + "'" +
             ", device='" + getDevice() + "'" +
             ", route='" + getRoute() + "'" +

@@ -22,7 +22,7 @@ public class Task extends ModelBase {
     private String url;
     // section 
     @Column
-    private String section;
+    private String section="";
     // task priority
     @Column
     private int priority=1;
@@ -43,8 +43,10 @@ public class Task extends ModelBase {
     // http task
     @Column
     private boolean httpTask=false;
+    // retry attempt
+    @Column
+    private int retry=0;
     // schedule task
-    //@MapsId
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "schedule_id",referencedColumnName = "id")
@@ -54,7 +56,7 @@ public class Task extends ModelBase {
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, Schedule schedule) {
+    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, int retry, Schedule schedule) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
@@ -67,6 +69,7 @@ public class Task extends ModelBase {
         this.updateDevice = updateDevice;
         this.active = active;
         this.httpTask = httpTask;
+        this.retry = retry;
         this.schedule = schedule;
     }
 
@@ -171,6 +174,7 @@ public class Task extends ModelBase {
     }
 
     public void setActive(boolean active) {
+        if(active==false) this.retry=0;
         this.active = active;
     }
 
@@ -184,6 +188,14 @@ public class Task extends ModelBase {
 
     public void setHttpTask(boolean httpTask) {
         this.httpTask = httpTask;
+    }
+
+    public int getRetry() {
+        return this.retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
     }
 
     public Schedule getSchedule() {
@@ -254,6 +266,11 @@ public class Task extends ModelBase {
         return this;
     }
 
+    public Task retry(int retry) {
+        setRetry(retry);
+        return this;
+    }
+
     public Task schedule(Schedule schedule) {
         setSchedule(schedule);
         return this;
@@ -267,12 +284,12 @@ public class Task extends ModelBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && Objects.equals(schedule, task.schedule);
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && retry == task.retry && Objects.equals(schedule, task.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, schedule);
+        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, retry, schedule);
     }
 
     @Override
@@ -290,10 +307,9 @@ public class Task extends ModelBase {
             ", updateDevice='" + isUpdateDevice() + "'" +
             ", active='" + isActive() + "'" +
             ", httpTask='" + isHttpTask() + "'" +
+            ", retry='" + getRetry() + "'" +
             ", schedule='" + getSchedule() + "'" +
             "}";
     }
-
-    
 
 }

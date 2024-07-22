@@ -1,4 +1,6 @@
 package com.scheduler.app.backend.Task.Thread;
+import org.springframework.stereotype.Service;
+
 import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.Base.ThreadBase.BaseThread;
 import com.scheduler.app.backend.aREST.Models.*;
@@ -28,7 +30,7 @@ public class HttpSchedule extends BaseThread{
             String deviceIp=device.getBoard().getIp();
             if(http.requestRouteTest(deviceIp)){
                 JsonObject change=arest.changeDevice(deviceIp,device.getName());
-                if(change.findKeyValue("return_value").equals("1")){
+                if(change!=null&&change.findKeyValue("return_value").equals("1")){
                     String response=http.requestDevice(task.getUrl());
                     // get data required to update device in database
                     if(response!=""){
@@ -56,9 +58,9 @@ public class HttpSchedule extends BaseThread{
                         sche.removeRunningTask(task);
                         // add to complete task queue to update device
                         sche.addToComplete(device, sucess, state, warning,complete,task);
-                    }else sche.failedTask(task);
-                }sche.failedTask(task);
-            }else sche.failedTask(task);
+                    }else sche.failedTask(task,device);
+                }sche.failedTask(task,device);
+            }else sche.failedTask(task,device);
         }else
         // send http request for non devices
         {

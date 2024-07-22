@@ -30,7 +30,7 @@ public class HttpUtil {
 
     public String requestRoute(String ip,String route,String param){
         String responseBody="";
-        long standard=200;
+        long standard=500;
         String routeSet=createRoute(ip,route,param);
         try {
             responseBody=httpRequest(routeSet,standard);
@@ -93,22 +93,6 @@ public class HttpUtil {
         responseBody = response.body();
         return responseBody;
     }
-    // request to express server
-    public String httpRequestExpress(String url,long timeOut) throws URISyntaxException, IOException, InterruptedException{
-        String responseBody="";
-        String expressServerUrl="http://localhost:8000/get-amiami";
-        System.out.println(url);
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            //.version(HttpClient.Version.HTTP_2)
-            .POST(HttpRequest.BodyPublishers.ofString("{\"action\":\"hello\"}"))
-            .uri(URI.create(expressServerUrl))
-            //.timeout(Duration.ofMillis(200))
-            .build();
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        responseBody = response.body();
-        return responseBody;
-    }
     // send request device for action
     private String httpDeviceRequest(String url) throws URISyntaxException,IOException,InterruptedException{
         String responseBody="";
@@ -129,7 +113,6 @@ public class HttpUtil {
         HttpRequest request = HttpRequest.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .uri(URI.create(url))
-            .timeout(Duration.ofMillis(200))
             .build();
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
         int responseStatusCode = response.statusCode();

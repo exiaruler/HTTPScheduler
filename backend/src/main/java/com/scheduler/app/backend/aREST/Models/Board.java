@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.app.backend.aREST.Models.Base.*;
 import java.util.*;
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
+@Table(indexes = @Index(columnList = "boardId"))
 public class Board extends ModelBase {
  
     // arduino board id

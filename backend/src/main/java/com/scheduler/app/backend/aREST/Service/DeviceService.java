@@ -19,19 +19,19 @@ import com.scheduler.app.backend.aREST.Repo.DeviceRepo;
 
 @Service
 public class DeviceService extends Base {
-    private final DeviceRepo device;
+    private final DeviceRepo deviceRepo;
     private final RoutesService routesService;
     public ArestV2Frame arest=new ArestV2Frame();
     private final BoardRepo boardRepo;
 
-    public DeviceService(DeviceRepo device, RoutesService routesService, BoardRepo boardRepo) {
-        this.device = device;
+    public DeviceService(DeviceRepo deviceRepo, RoutesService routesService, BoardRepo boardRepo) {
+        this.deviceRepo = deviceRepo;
         this.routesService = routesService;
         this.boardRepo = boardRepo;
     }
     
     public Device addDevice(Device entry){
-        return device.save(entry);
+        return deviceRepo.save(entry);
     }
     public Device saveDeviceManual(long board,String name,String type,String subtype,boolean framework,boolean custom){
         Device newDev=new Device();
@@ -46,15 +46,15 @@ public class DeviceService extends Base {
             newDev.setSubtype(subtype);
             newDev.setFrameworkFollowed(framework);
             newDev.setCustom(custom);
-            device.save(newDev);
+            deviceRepo.save(newDev);
         }
         return newDev;
     }
     public Device updateDevice(long id,Device deviceObj){
-        Device updateDev=device.getReferenceById(id);
+        Device updateDev=deviceRepo.getReferenceById(id);
         if(updateDev!=null){
             updateDev=deviceObj;
-            device.save(updateDev);
+            deviceRepo.save(updateDev);
         }
         return updateDev;
     }
@@ -67,6 +67,8 @@ public class DeviceService extends Base {
                 for(int i=0; i<deviceArr.length; i++){
                     String deviceName=deviceArr[i];
                     Device newDevice=new Device();
+                    Device exist=deviceRepo.findExistingDevice(board.getId(), deviceName);
+                    if(exist!=null) newDevice=exist;
                     newDevice.setFrameworkFollowed(true);
                     newDevice.setBoard(board);
                     newDevice.setName(deviceName);
@@ -83,6 +85,8 @@ public class DeviceService extends Base {
 
                 }
                 Device newDevice=new Device();
+                Device exist=deviceRepo.findExistingDevice(board.getId(), deviceName);
+                if(exist!=null) newDevice=exist;
                 newDevice.setBoard(board);
                 newDevice.setName(deviceName);
                 Device save=addDevice(newDevice);
@@ -94,13 +98,13 @@ public class DeviceService extends Base {
         return deviceList;
     }
     public List<Device> getAllDevice(){
-        return device.findAll();
+        return deviceRepo.findAll();
     }
     public Device getDevice(long id){
-        return device.findById(id).get();
+        return deviceRepo.findById(id).get();
     }
     public void deleteAllBoard(){
-        device.deleteAll();
+        deviceRepo.deleteAll();
     }
     // update device after http request
     public void updateDeviceAfterAction(CompletedTask task,Device deviceUpdate){
@@ -118,7 +122,11 @@ public class DeviceService extends Base {
                 state="offline";
             }
         }
-        device.updateStateAndWarning(deviceUpdate.getId(),state,warning);
+        try {
+            deviceRepo.updateStateAndWarning(task.getDevice().getId(),state,warning);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         System.out.println(state);
        }
 

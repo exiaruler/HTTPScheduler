@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class SchedulerTask{
     // setting for queue to start
     public static boolean running=true;
+    // start the queue when server starts or reboots
     private boolean start=false;
     
     @Autowired
@@ -30,13 +31,14 @@ public class SchedulerTask{
     private static List<Task> runningQueue=new ArrayList<Task>();
     // task finished processing 
     private static List<CompletedTask> completeTaskQueue=new ArrayList<CompletedTask>();
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 100)
     public void runSche(){
         if(queue.isEmpty()&&!start){
-            service.addToScheduler();
+            boolean active=service.addToScheduler();
             start=true;
         }
         if(running&&!queue.isEmpty()){
+            start=true;
             LocalDateTime dt=LocalDateTime.now();
             System.out.println(dt);
             System.out.println("number of task that are pending in the queue "+queue.size());
@@ -44,17 +46,16 @@ public class SchedulerTask{
 
             for(int i=0; i<queue.size(); i++){
                 Task task=queue.get(i);
-                long taskId=task.getId();
                 LocalDateTime taskDt=task.getScheduledTime();
                 if(dt.isAfter(taskDt)||dt.equals(taskDt)){
                     // add task to running queue if it passes check else let it stick in the queue 
                     if(!checkTaskRunning(task)&&!task.getHttpTask()){
                         Device device=deviceService.getDevice(task.getDeviceId());
+                        updateQueue(task);
                         runningQueue.add(task);
+                        queue.remove(i);
                         HttpSchedule thread=new HttpSchedule(task,device);
                         thread.start();
-                        queue.remove(i);
-                        updateQueue(task);
                     }
                     // run http task
                     if(task.getHttpTask()){
@@ -75,8 +76,8 @@ public class SchedulerTask{
             System.out.println("Number of completed task in queue "+completeTaskQueue.size());
             for(int i=0; i<completeTaskQueue.size(); i++){
                 CompletedTask task=completeTaskQueue.get(i);
-                deviceService.updateDeviceAfterAction(task,task.getDevice());
-                service.modifyTaskFromScheduler(task.getTask());
+                //updateQueue(task.getTask());
+                service.modifyTaskFromScheduler(task.getTask(),task);
                 completeTaskQueue.remove(i);
             }
         }
@@ -150,7 +151,7 @@ public class SchedulerTask{
     }
     // add to completed task array queue
     public void addToComplete(Device device,boolean status,String state,String warning,boolean complete,Task task){
-        if(complete){
+        //if(complete){
             CompletedTask compTask=new CompletedTask();
             compTask.setDevice(device);
             compTask.setStatus(status);
@@ -159,16 +160,29 @@ public class SchedulerTask{
             compTask.setTask(task);
             completeTaskQueue.add(compTask);
             System.out.println(completeTaskQueue.size());
-        }
+        //}
     }
     // add task back into queue if required
-    public void failedTask(Task task){
-        queue.add(task);
+    public void failedTask(Task task,Device dev){
+        runningQueue.remove(task);
+        // retry task before set to fail
+        if(task.getRetry()<task.getSchedule().getRetries()){
+            int tryA=task.getRetry();
+            tryA++;
+            task.setRetry(tryA);
+            queue.add(task);
+            System.out.println("Retry count at "+tryA);
+        }else if(task.getRetry()==task.getSchedule().getRetries()){
+            // add to complete array to deactive and set it to offline
+            if(dev!=null){
+                addToComplete(dev,false,"","",false, task);
+            }
+        }else queue.add(task);
     }
-   
+    
     public void updateQueue(Task task){
-        service.deleteTask(task);
-        service.addToScheduler();
+        task.setActive(false);
+        service.saveTask(task);
     }
     public void clearRunningTask(){
         runningQueue.clear();

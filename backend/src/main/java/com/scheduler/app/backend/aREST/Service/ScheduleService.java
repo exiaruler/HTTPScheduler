@@ -114,6 +114,14 @@ public class ScheduleService extends Base{
         service.save(scheduleTask);
         return scheduleTask;
     }
+    public Schedule updateScheduleTest(Task task){
+        Schedule sche=service.getReferenceById(task.getSchedule().getId());
+        if(sche!=null){
+            sche.setTask(task);
+            service.save(sche);
+        }
+        return sche;
+    }
     // start task schedule start task
     public boolean startupTask(long id){
         Schedule schedule=service.getReferenceById(id);

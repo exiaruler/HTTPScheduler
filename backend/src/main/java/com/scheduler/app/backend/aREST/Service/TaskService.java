@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
 import com.scheduler.app.backend.Task.SchedulerTask;
+import com.scheduler.app.backend.Task.Model.CompletedTask;
 import com.scheduler.app.backend.aREST.Models.*;
 import com.scheduler.app.backend.aREST.Repo.ScheduleRepo;
 import com.scheduler.app.backend.aREST.Repo.TaskRepo;
@@ -16,9 +17,11 @@ public class TaskService extends Base{
     private final TaskRepo service;
     private SchedulerTask sche=new SchedulerTask();
     private final ScheduleRepo serviceSch;
-    public TaskService(TaskRepo service, ScheduleRepo serviceSch) {
+    private final DeviceService deviceService;
+    public TaskService(TaskRepo service, ScheduleRepo serviceSch, DeviceService deviceService) {
         this.service = service;
         this.serviceSch = serviceSch;
+        this.deviceService = deviceService;
     }
     public Task saveTask(Task task){
         return service.save(task);
@@ -44,33 +47,56 @@ public class TaskService extends Base{
             service.delete(task);
         }
         if(task.getSchedule()!=null){
-            task.setActive(false);
-            service.save(task);
+            //task.setActive(false);
+            //service.save(task);
         }
-        addToScheduler();   
+        //addToScheduler();   
     }
     // modify task when finished in scheduler
-    public void modifyTaskFromScheduler(Task task){
-        if(!task.getOneTimeJob()){
-            if(task.getSchedule().getStartup()){
-                task.setActive(false);
-            }
-            if(task.getSchedule().getRepeatTask()){
-                LocalDateTime schedule=addDuration(task.getSchedule().getTime());
-                task.setScheduledTime(schedule);
-                task.setActive(true);
-            }
-            // start next task
-            if(task.getSchedule().getNextTask()!=0){
-                Schedule schedule=serviceSch.getReferenceById(task.getSchedule().getNextTask());
-                if(schedule!=null){
-                    setTaskSchedule(schedule.getTask());
+    public void modifyTaskFromScheduler(Task task,CompletedTask complete){
+        // update device state and warning
+        if(complete.getDevice()!=null){
+            String state="";
+            String warning="";
+            if(complete.getWarning()!=""&&!complete.getStatus()){
+                warning=complete.getWarning();
+            }else{
+                if(complete.getStatusString()!=""){
+                    state=complete.getStatusString();
+                }else{
+                    state="Offline";
                 }
+            }
+            task.getSchedule().getDevice().setState(state);
+            task.getSchedule().getDevice().setWarning(warning);
+        }
+        if(!task.getOneTimeJob()){
+            if(complete.getStatus()){
+                if(task.getSchedule().getStartup()){
+                    task.setActive(false);
+                }
+                
+                if(task.getSchedule().getRepeatTask()){
+                    LocalDateTime schedule=addDuration(task.getSchedule().getTime());
+                    task.setScheduledTime(schedule);
+                    task.setActive(true);
+                }
+                // start next task
+                if(task.getSchedule().getNextTask()!=0){
+                    Schedule schedule=serviceSch.getReferenceById(task.getSchedule().getNextTask());
+                    if(schedule!=null){
+                        setTaskSchedule(schedule.getTask());
+                    }
+                }
+            // disable schedule task and update device state to offline
+            }else if(!complete.getStatus()){
+                task.setActive(false);
             }
             service.save(task);
             addToScheduler();
         }else
         {
+            service.save(task);
             deleteTask(task);
         }
     }
@@ -109,9 +135,12 @@ public class TaskService extends Base{
         return sche.checkRun();
     }
     // add task to scheduler
-    public void addToScheduler(){
+    public boolean addToScheduler(){
+        boolean results=false;
         List <Task> list=service.getAllTaskAct(true);
+        if(list.size()>0) results=true;
         sche.addToQueue(list);
+        return results;
     }
     
     // schedule time and seconds for task

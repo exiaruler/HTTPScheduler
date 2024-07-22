@@ -6,9 +6,9 @@ import com.scheduler.app.backend.aREST.Models.Base.*;
 import java.util.*;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
+@Table(indexes = @Index(columnList = "name"))
 public class Device extends ModelBase{
 
     // device which the board is belong to
@@ -52,18 +52,23 @@ public class Device extends ModelBase{
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Route> routesSchedule;
+    // list of components that device uses. mapping purpose
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
+        CascadeType.DETACH, CascadeType.REFRESH })
+    private List<Component> components;
     /* 
     // variables
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "variable", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
     private List<Variable> variables;
     */
-    
+
 
     public Device() {
     }
 
-    public Device(Board board, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes, List<Schedule> schedules, List<Route> routesSchedule) {
+    public Device(Board board, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes, List<Schedule> schedules, List<Route> routesSchedule, List<Component> components) {
         this.board = board;
         this.name = name;
         this.state = state;
@@ -75,6 +80,7 @@ public class Device extends ModelBase{
         this.routes = routes;
         this.schedules = schedules;
         this.routesSchedule = routesSchedule;
+        this.components = components;
     }
 
     public Board getBoard() {
@@ -173,6 +179,14 @@ public class Device extends ModelBase{
         this.routesSchedule = routesSchedule;
     }
 
+    public List<Component> getComponents() {
+        return this.components;
+    }
+
+    public void setComponents(List<Component> components) {
+        this.components = components;
+    }
+
     public Device board(Board board) {
         setBoard(board);
         return this;
@@ -228,6 +242,11 @@ public class Device extends ModelBase{
         return this;
     }
 
+    public Device components(List<Component> components) {
+        setComponents(components);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -236,12 +255,12 @@ public class Device extends ModelBase{
             return false;
         }
         Device device = (Device) o;
-        return Objects.equals(board, device.board) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(routesSchedule, device.routesSchedule);
+        return Objects.equals(board, device.board) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(routesSchedule, device.routesSchedule) && Objects.equals(components, device.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, name, state, warning, type, subtype, frameworkFollowed, custom, routes, schedules, routesSchedule);
+        return Objects.hash(board, name, state, warning, type, subtype, frameworkFollowed, custom, routes, schedules, routesSchedule, components);
     }
 
     @Override
@@ -258,7 +277,9 @@ public class Device extends ModelBase{
             ", routes='" + getRoutes() + "'" +
             ", schedules='" + getSchedules() + "'" +
             ", routesSchedule='" + getRoutesSchedule() + "'" +
+            ", components='" + getComponents() + "'" +
             "}";
     }
+
 
 }

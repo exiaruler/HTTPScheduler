@@ -68,10 +68,15 @@ public class BoardService extends Base {
             JsonObject json=jsonobj.jsonToObject(rawJson);
             if(arest.testBoardFrameWork(json,ip)){
                 String boardId=json.findKeyValue("id");
+                Board existingBoard=board.findBoardByBoardId(boardId);
+                if(existingBoard!=null){
+                    newBoard=existingBoard;
+                }else{
+                    newBoard.setBoardId(boardId);
+                } 
                 newBoard.setName(json.findKeyValue("name"));
                 newBoard.setArest(true);
                 newBoard.setIp(ip);
-                newBoard.setBoardId(boardId);
                 List<Device> deviceList=deviceService.addDeviceFromScan(newBoard,ip,json);
                 newBoard.setDevice(deviceList);
                 Board save=addBoard(newBoard);

@@ -12,4 +12,6 @@ public interface DeviceRepo  extends JpaRepository<Device, Long> {
     @Transactional
     @Query(value = "update scheduler.device set state= :state,warning= :warning where id= :id",nativeQuery = true)
     int updateStateAndWarning(@Param("id")long id,@Param("state")String state,@Param("warning")String warning);
+    @Query(value = "Select * from scheduler.device where id= :id and name= :name",nativeQuery =true)
+    Device findExistingDevice(@Param("id")long id,@Param("name")String name);
 }
