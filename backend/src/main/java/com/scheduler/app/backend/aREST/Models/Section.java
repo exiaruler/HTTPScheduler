@@ -7,7 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.scheduler.app.backend.aREST.Models.Base.ModelBase;
+import com.scheduler.Base.ModelBase.ModelBase;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,6 +1,7 @@
 package com.scheduler.Base;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Random;
 
 import javax.transaction.Transactional;
@@ -122,5 +123,14 @@ public class Base{
     // create string variable
     public String stringVariable(String variable){
         return "\""+variable+"\"";
+    }
+    // create string boolean
+    public String booleanToString(boolean bool){
+        String res="false";
+        if(bool) res="true";
+        return res;
+    }
+    public String returnDataString(List<String> list){
+        return "{"+String.join(",", list)+"}";
     }
 }

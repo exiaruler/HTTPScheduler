@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import com.scheduler.Base.Base;
+import com.scheduler.Base.FormInputCustom;
 import com.scheduler.app.backend.aREST.Models.Device;
 import com.scheduler.app.backend.aREST.Models.Mode;
 import com.scheduler.app.backend.aREST.Models.Route;
@@ -22,6 +23,10 @@ public class ScheduleService extends Base{
         this.taskService = taskService;
         this.deviceService = deviceService;
         this.routeService = routeService;
+    }
+    public Schedule newRecord(){
+        Schedule record=new Schedule();
+        return record;
     }
     public List<Schedule> getAllSchedule(){
         return service.findAll();
@@ -50,7 +55,73 @@ public class ScheduleService extends Base{
         service.save(scheduleTask);
         return scheduleTask;
     }
-    public Schedule addSchedule(String name,String time,boolean repeat,boolean startup,String request,long deviceId,long routeId,long modeId){
+    
+    public Schedule addScheduleRecord(Object object,FormInputCustom formInputCustom){
+        Task taskSche=new Task();
+        /* 
+        // save task with device and route
+        if(scheduleTask.getDeviceId()!=0&&scheduleTask.getRouteId()!=0){
+            Device device=deviceService.getDevice(scheduleTask.getDeviceId());
+            List <Schedule> deviceSchList=device.getSchedules();
+            scheduleTask.setDevice(device);
+            if(scheduleTask.getStartup()){
+                scheduleTask.setStartup(true);
+            }else
+            {
+                scheduleTask.setRepeatTask(true);
+            }
+            if(device!=null){
+                List <Route> routeList=device.getRoutes();
+                for(int i=0; i<routeList.size(); i++){
+                    long id=routeList.get(i).getId();
+                    if(scheduleTask.getRouteId()==id){
+                        Route route=routeList.get(i);
+                        scheduleTask.setRoute(route);
+                        if(route.getModes()){
+                            Mode mode=routeService.getMode(scheduleTask.getModeId());
+                            if(mode!=null){
+                                scheduleTask.setMode(mode.getMode());
+                            }
+                        }
+                        // save task
+                        taskSche.setApplication(scheduleTask.getName());
+                        taskSche.setDeviceId(scheduleTask.getDeviceId());
+                        taskSche.setBoard(device.getBoard().getId());
+                        String urlTask=taskService.createRouteUrl(device.getBoard().getIp(),route.getRoute(),scheduleTask.getMode());
+                        taskSche.setUrl(urlTask);
+                        taskSche.oneTimeJob(false);
+                        taskSche.setSchedule(scheduleTask);
+                        deviceSchList.add(scheduleTask);
+                        device.setSchedules(deviceSchList);
+                        // set motor 
+                        scheduleTask.setTask(taskSche);
+                    }
+                }
+                
+            }
+        }else
+        // save http task
+        {
+            if(scheduleTask.getStartup()){
+                scheduleTask.setStartup(true);
+            }else
+            {
+                scheduleTask.setRepeatTask(true);
+            }
+            taskSche.setUrl("");
+            taskSche.setHttpTask(true);
+            taskSche.application(scheduleTask.getName());
+            taskSche.oneTimeJob(false);
+            taskSche.setSchedule(scheduleTask);
+            scheduleTask.setTask(taskSche);
+        }
+        service.save(scheduleTask);
+        */
+        return null;
+
+    }
+        
+    public Schedule addSchedule(String name,String time,boolean repeat,boolean startup,String url,long deviceId,long routeId,long modeId){
         Schedule scheduleTask=new Schedule();
         Task taskSche=new Task();
         scheduleTask.setName(name);
@@ -104,7 +175,8 @@ public class ScheduleService extends Base{
             {
                 scheduleTask.setRepeatTask(repeat);
             }
-            taskSche.setUrl(request);
+            scheduleTask.setUrl(url);
+            taskSche.setUrl(url);
             taskSche.setHttpTask(true);
             taskSche.application(name);
             taskSche.oneTimeJob(false);

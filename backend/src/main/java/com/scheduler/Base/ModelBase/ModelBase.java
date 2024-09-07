@@ -18,6 +18,8 @@ public class ModelBase{
     @Column
     private LocalDateTime updatedDate=LocalDateTime.now(ZoneId.of("Australia/Sydney"));
 
+    // record entry
+    
     public LocalDateTime getUpdatedDate() {
         return this.updatedDate;
     }

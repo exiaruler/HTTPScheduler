@@ -4,7 +4,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import com.scheduler.app.backend.aREST.Models.Base.*;
+import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 public class Setting extends ModelBase  {
     @Column

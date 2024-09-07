@@ -1,7 +1,7 @@
 package com.scheduler.app.backend.aREST.Models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.scheduler.app.backend.aREST.Models.Base.*;
+import com.scheduler.Base.ModelBase.ModelBase;
 
 import java.util.*;
 

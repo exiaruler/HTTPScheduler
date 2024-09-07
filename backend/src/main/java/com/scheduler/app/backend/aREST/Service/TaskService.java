@@ -70,6 +70,7 @@ public class TaskService extends Base{
             task.getSchedule().getDevice().setState(state);
             task.getSchedule().getDevice().setWarning(warning);
         }
+        task.setRetry(0);
         if(!task.getOneTimeJob()){
             if(complete.getStatus()){
                 if(task.getSchedule().getStartup()){

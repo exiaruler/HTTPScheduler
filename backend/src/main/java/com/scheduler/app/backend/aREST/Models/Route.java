@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.scheduler.app.backend.aREST.Models.Base.*;
+import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 @Table(indexes = @Index(columnList = "route"))
 public class Route extends ModelBase{

@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.scheduler.app.backend.aREST.Models.Base.*;
+import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 @Table(indexes = @Index(columnList = "mode"))
 public class Mode extends ModelBase{

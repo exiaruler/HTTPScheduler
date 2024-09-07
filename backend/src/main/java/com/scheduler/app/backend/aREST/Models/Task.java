@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.scheduler.app.backend.aREST.Models.Base.*;
+import com.scheduler.Base.ModelBase.ModelBase;
 import java.util.Objects;
 
 @Entity
@@ -174,7 +174,6 @@ public class Task extends ModelBase {
     }
 
     public void setActive(boolean active) {
-        if(active==false) this.retry=0;
         this.active = active;
     }
 

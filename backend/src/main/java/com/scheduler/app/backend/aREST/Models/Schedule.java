@@ -5,12 +5,12 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 import java.util.Objects;
-// schedule http request tasks
+// schedule http request and device tasks
 @Entity
 public class Schedule extends ModelBase {
     // name
     @Column
-    private String name;
+    private String name="";
     // time interval
     @Column
     private String time="00:00";
@@ -29,6 +29,9 @@ public class Schedule extends ModelBase {
     // retry connection
     @Column
     private int retries=3;
+    // url
+    @Column
+    private String url="";
     // link to task
     @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY,mappedBy = "schedule", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -49,7 +52,7 @@ public class Schedule extends ModelBase {
     public Schedule() {
     }
 
-    public Schedule(String name, String time, boolean repeatTask, boolean startup, long nextTask, String mode, int retries, Task task, Device device, Route route) {
+    public Schedule(String name, String time, boolean repeatTask, boolean startup, long nextTask, String mode, int retries, String url, Task task, Device device, Route route) {
         this.name = name;
         this.time = time;
         this.repeatTask = repeatTask;
@@ -57,6 +60,7 @@ public class Schedule extends ModelBase {
         this.nextTask = nextTask;
         this.mode = mode;
         this.retries = retries;
+        this.url = url;
         this.task = task;
         this.device = device;
         this.route = route;
@@ -126,6 +130,14 @@ public class Schedule extends ModelBase {
         this.retries = retries;
     }
 
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public Task getTask() {
         return this.task;
     }
@@ -185,6 +197,11 @@ public class Schedule extends ModelBase {
         return this;
     }
 
+    public Schedule url(String url) {
+        setUrl(url);
+        return this;
+    }
+
     public Schedule task(Task task) {
         setTask(task);
         return this;
@@ -208,12 +225,12 @@ public class Schedule extends ModelBase {
             return false;
         }
         Schedule schedule = (Schedule) o;
-        return Objects.equals(name, schedule.name) && Objects.equals(time, schedule.time) && repeatTask == schedule.repeatTask && startup == schedule.startup && nextTask == schedule.nextTask && Objects.equals(mode, schedule.mode) && retries == schedule.retries && Objects.equals(task, schedule.task) && Objects.equals(device, schedule.device) && Objects.equals(route, schedule.route);
+        return Objects.equals(name, schedule.name) && Objects.equals(time, schedule.time) && repeatTask == schedule.repeatTask && startup == schedule.startup && nextTask == schedule.nextTask && Objects.equals(mode, schedule.mode) && retries == schedule.retries && Objects.equals(url, schedule.url) && Objects.equals(task, schedule.task) && Objects.equals(device, schedule.device) && Objects.equals(route, schedule.route);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, time, repeatTask, startup, nextTask, mode, retries, task, device, route);
+        return Objects.hash(name, time, repeatTask, startup, nextTask, mode, retries, url, task, device, route);
     }
 
     @Override
@@ -226,6 +243,7 @@ public class Schedule extends ModelBase {
             ", nextTask='" + getNextTask() + "'" +
             ", mode='" + getMode() + "'" +
             ", retries='" + getRetries() + "'" +
+            ", url='" + getUrl() + "'" +
             ", task='" + getTask() + "'" +
             ", device='" + getDevice() + "'" +
             ", route='" + getRoute() + "'" +
