@@ -44,10 +44,10 @@ public class HttpUtil {
         return responseBody;
     }
     
-    public String requestDevice(String url){
+    public String requestDevice(String url,long timeout){
         String result="";
         try {
-            result= httpDeviceRequest(url);
+            result= httpDeviceRequest(url,timeout);
         } catch (URISyntaxException e) {
            
             e.printStackTrace();
@@ -94,30 +94,39 @@ public class HttpUtil {
         return responseBody;
     }
     // send request device for action
-    private String httpDeviceRequest(String url) throws URISyntaxException,IOException,InterruptedException{
+    private String httpDeviceRequest(String url,long timeout) throws URISyntaxException,IOException,InterruptedException{
         String responseBody="";
         System.out.println(url);
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .uri(URI.create(url))
+            .timeout(Duration.ofMinutes(timeout))
             .build();
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        responseBody = response.body();
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            responseBody = response.body();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         return responseBody;
     }
     private boolean testHttpDevice(String url) throws URISyntaxException,IOException,InterruptedException{
         boolean result=false;
         System.out.println(url);
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
             .version(HttpClient.Version.HTTP_2)
             .uri(URI.create(url))
             .build();
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        int responseStatusCode = response.statusCode();
-        if(responseStatusCode==200){
-            result=true;
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            int responseStatusCode = response.statusCode();
+            if(responseStatusCode==200){
+                result=true;
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
         }
         return result;
     }

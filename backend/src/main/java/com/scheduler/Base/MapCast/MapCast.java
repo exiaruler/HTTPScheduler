@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.scheduler.Base.MapCast.StoreValue.ArrayListStoreString;
 import com.scheduler.Base.MapCast.StoreValue.BooleanStore;
 import com.scheduler.Base.MapCast.StoreValue.IntegerStore;
 import com.scheduler.Base.MapCast.StoreValue.StringStore;
-import java.util.Objects;
 import java.util.Set;
 // map json from request
 public class MapCast {
@@ -18,6 +18,8 @@ public class MapCast {
     private List<IntegerStore> integerStore=new ArrayList<IntegerStore>();
     // store boolean values
     private List<BooleanStore> booleanStore=new ArrayList<BooleanStore>();
+    // store arraylist strings
+    private List<ArrayListStoreString> arrayListStoreString=new ArrayList<ArrayListStoreString>();
     private String key;
     private int index;
     private String dataType;
@@ -59,6 +61,15 @@ public class MapCast {
         if(obj!=null){
           MapCast map=obj;
           value=booleanStore.get(map.index).getValue();
+        }
+        return value;
+    }
+    public List<String> getKeyArrayListString(String key){
+        List<String>value=new ArrayList<String>();
+        MapCast obj=map.get(key);
+        if(obj!=null){
+            MapCast map=obj;
+            value=arrayListStoreString.get(map.index).getValue();
         }
         return value;
     }
@@ -104,6 +115,15 @@ public class MapCast {
                 storeBool.setValue(valueBool);
                 cast.booleanStore.add(storeBool);
                 index=calculateIndex(cast.booleanStore.size());
+                add=true;
+                break;
+            case "java.util.ArrayList":
+                ArrayListStoreString storeArrString=new ArrayListStoreString();
+                storeArrString.setKey(key);
+                @SuppressWarnings("unchecked") List<String> valueListString=(List<String>) object;
+                storeArrString.setValue(valueListString);
+                cast.arrayListStoreString.add(storeArrString);
+                index=calculateIndex(cast.arrayListStoreString.size());
                 add=true;
                 break;
             default:

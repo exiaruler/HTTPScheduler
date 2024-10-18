@@ -97,6 +97,7 @@ public class TaskService extends Base{
             addToScheduler();
         }else
         {
+            deviceService.updateDeviceAfterAction(complete,complete.getDevice());
             service.save(task);
             deleteTask(task);
         }
@@ -110,8 +111,8 @@ public class TaskService extends Base{
             service.save(update);
         }
         //service.deleteAll();
-        sche.clearRunningTask();
         addToScheduler();
+        sche.clearRunningTask();
     }
     public void clearQueue(){
         service.deleteAll();

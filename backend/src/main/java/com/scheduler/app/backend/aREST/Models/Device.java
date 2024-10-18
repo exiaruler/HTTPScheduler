@@ -6,6 +6,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 import java.util.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(indexes = @Index(columnList = "name"))
@@ -37,6 +38,12 @@ public class Device extends ModelBase{
     // custom device framework
     @Column
     private boolean custom;
+    // switch device type
+    @Column
+    private boolean switchDevice=false;
+    // animation route active
+    @Column
+    private boolean animationActive=false;
     // list of routes
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -46,7 +53,7 @@ public class Device extends ModelBase{
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH })
-    private List<Schedule> schedules;
+    private List<Schedule> schedules=new ArrayList<Schedule>();
     // list of routes used for schedule
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
@@ -68,7 +75,7 @@ public class Device extends ModelBase{
     public Device() {
     }
 
-    public Device(Board board, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, List<Route> routes, List<Schedule> schedules, List<Route> routesSchedule, List<Component> components) {
+    public Device(Board board, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, boolean switchDevice, boolean animationActive, List<Route> routes, List<Schedule> schedules, List<Route> routesSchedule, List<Component> components) {
         this.board = board;
         this.name = name;
         this.state = state;
@@ -77,6 +84,8 @@ public class Device extends ModelBase{
         this.subtype = subtype;
         this.frameworkFollowed = frameworkFollowed;
         this.custom = custom;
+        this.switchDevice = switchDevice;
+        this.animationActive = animationActive;
         this.routes = routes;
         this.schedules = schedules;
         this.routesSchedule = routesSchedule;
@@ -155,6 +164,30 @@ public class Device extends ModelBase{
         this.custom = custom;
     }
 
+    public boolean isSwitchDevice() {
+        return this.switchDevice;
+    }
+
+    public boolean getSwitchDevice() {
+        return this.switchDevice;
+    }
+
+    public void setSwitchDevice(boolean switchDevice) {
+        this.switchDevice = switchDevice;
+    }
+
+    public boolean isAnimationActive() {
+        return this.animationActive;
+    }
+
+    public boolean getAnimationActive() {
+        return this.animationActive;
+    }
+
+    public void setAnimationActive(boolean animationActive) {
+        this.animationActive = animationActive;
+    }
+
     public List<Route> getRoutes() {
         return this.routes;
     }
@@ -227,6 +260,16 @@ public class Device extends ModelBase{
         return this;
     }
 
+    public Device switchDevice(boolean switchDevice) {
+        setSwitchDevice(switchDevice);
+        return this;
+    }
+
+    public Device animationActive(boolean animationActive) {
+        setAnimationActive(animationActive);
+        return this;
+    }
+
     public Device routes(List<Route> routes) {
         setRoutes(routes);
         return this;
@@ -255,12 +298,12 @@ public class Device extends ModelBase{
             return false;
         }
         Device device = (Device) o;
-        return Objects.equals(board, device.board) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(routesSchedule, device.routesSchedule) && Objects.equals(components, device.components);
+        return Objects.equals(board, device.board) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && switchDevice == device.switchDevice && animationActive == device.animationActive && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(routesSchedule, device.routesSchedule) && Objects.equals(components, device.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, name, state, warning, type, subtype, frameworkFollowed, custom, routes, schedules, routesSchedule, components);
+        return Objects.hash(board, name, state, warning, type, subtype, frameworkFollowed, custom, switchDevice, animationActive, routes, schedules, routesSchedule, components);
     }
 
     @Override
@@ -274,12 +317,16 @@ public class Device extends ModelBase{
             ", subtype='" + getSubtype() + "'" +
             ", frameworkFollowed='" + isFrameworkFollowed() + "'" +
             ", custom='" + isCustom() + "'" +
+            ", switchDevice='" + isSwitchDevice() + "'" +
+            ", animationActive='" + isAnimationActive() + "'" +
             ", routes='" + getRoutes() + "'" +
             ", schedules='" + getSchedules() + "'" +
             ", routesSchedule='" + getRoutesSchedule() + "'" +
             ", components='" + getComponents() + "'" +
             "}";
     }
+    
+    
 
 
 }

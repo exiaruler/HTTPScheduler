@@ -1,5 +1,6 @@
 package com.scheduler.app.backend.aREST.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.scheduler.app.backend.aREST.Models.Schedule;
 import com.scheduler.app.backend.aREST.Models.Task;
 import com.scheduler.app.backend.aREST.Repo.ScheduleRepo;
 import com.scheduler.app.backend.aREST.Repo.TaskRepo;
+import com.scheduler.app.backend.Command.Application.MobileSuit;
 @Service
 public class ScheduleService extends Base{
     private final ScheduleRepo service;
@@ -56,80 +58,21 @@ public class ScheduleService extends Base{
         return scheduleTask;
     }
     
-    public Schedule addScheduleRecord(Object object,FormInputCustom formInputCustom){
-        Task taskSche=new Task();
-        /* 
-        // save task with device and route
-        if(scheduleTask.getDeviceId()!=0&&scheduleTask.getRouteId()!=0){
-            Device device=deviceService.getDevice(scheduleTask.getDeviceId());
-            List <Schedule> deviceSchList=device.getSchedules();
-            scheduleTask.setDevice(device);
-            if(scheduleTask.getStartup()){
-                scheduleTask.setStartup(true);
-            }else
-            {
-                scheduleTask.setRepeatTask(true);
-            }
-            if(device!=null){
-                List <Route> routeList=device.getRoutes();
-                for(int i=0; i<routeList.size(); i++){
-                    long id=routeList.get(i).getId();
-                    if(scheduleTask.getRouteId()==id){
-                        Route route=routeList.get(i);
-                        scheduleTask.setRoute(route);
-                        if(route.getModes()){
-                            Mode mode=routeService.getMode(scheduleTask.getModeId());
-                            if(mode!=null){
-                                scheduleTask.setMode(mode.getMode());
-                            }
-                        }
-                        // save task
-                        taskSche.setApplication(scheduleTask.getName());
-                        taskSche.setDeviceId(scheduleTask.getDeviceId());
-                        taskSche.setBoard(device.getBoard().getId());
-                        String urlTask=taskService.createRouteUrl(device.getBoard().getIp(),route.getRoute(),scheduleTask.getMode());
-                        taskSche.setUrl(urlTask);
-                        taskSche.oneTimeJob(false);
-                        taskSche.setSchedule(scheduleTask);
-                        deviceSchList.add(scheduleTask);
-                        device.setSchedules(deviceSchList);
-                        // set motor 
-                        scheduleTask.setTask(taskSche);
-                    }
-                }
-                
-            }
-        }else
-        // save http task
-        {
-            if(scheduleTask.getStartup()){
-                scheduleTask.setStartup(true);
-            }else
-            {
-                scheduleTask.setRepeatTask(true);
-            }
-            taskSche.setUrl("");
-            taskSche.setHttpTask(true);
-            taskSche.application(scheduleTask.getName());
-            taskSche.oneTimeJob(false);
-            taskSche.setSchedule(scheduleTask);
-            scheduleTask.setTask(taskSche);
-        }
-        service.save(scheduleTask);
-        */
-        return null;
-
-    }
-        
     public Schedule addSchedule(String name,String time,boolean repeat,boolean startup,String url,long deviceId,long routeId,long modeId){
         Schedule scheduleTask=new Schedule();
         Task taskSche=new Task();
+        boolean hasMotor=false;
         scheduleTask.setName(name);
         scheduleTask.setTime(time);
         // save task with device and route
         if(deviceId!=0&&routeId!=0){
             Device device=deviceService.getDevice(deviceId);
-            List <Schedule> deviceSchList=device.getSchedules();
+            List <Schedule> deviceSchList=new ArrayList<Schedule>();
+            try {
+                if(device.getSchedules().size()>0) deviceSchList=device.getSchedules();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
             scheduleTask.setDevice(device);
             if(startup){
                 scheduleTask.setStartup(startup);
@@ -144,6 +87,7 @@ public class ScheduleService extends Base{
                     if(routeId==id){
                         Route route=routeList.get(i);
                         scheduleTask.setRoute(route);
+                        if(route.getCommand()!=null&&route.getCommand().getHasMotor()) hasMotor=true;
                         if(route.getModes()){
                             Mode mode=routeService.getMode(modeId);
                             if(mode!=null){
@@ -154,8 +98,14 @@ public class ScheduleService extends Base{
                         taskSche.setApplication(name);
                         taskSche.setDeviceId(deviceId);
                         taskSche.setBoard(device.getBoard().getId());
-                        String urlTask=taskService.createRouteUrl(device.getBoard().getIp(),route.getRoute(),scheduleTask.getMode());
-                        taskSche.setUrl(urlTask);
+                        if(device.getBoard().getArestCommand()){
+                            taskSche.setRouteId(routeId);
+                            taskSche.setModeId(modeId);
+                            taskSche.setMotor(hasMotor);
+                        }else{
+                            String urlTask=taskService.createRouteUrl(device.getBoard().getIp(),route.getRoute(),scheduleTask.getMode());
+                            taskSche.setUrl(urlTask);
+                        }
                         taskSche.oneTimeJob(false);
                         taskSche.setSchedule(scheduleTask);
                         deviceSchList.add(scheduleTask);
@@ -204,6 +154,10 @@ public class ScheduleService extends Base{
             success=true;
         }
         return success;
+    }
+    // start scheduled tasks when board is turned on
+    public void startUpBoard(String ip){
+        //
     }
     public boolean testTask(long id){
         boolean success=false;

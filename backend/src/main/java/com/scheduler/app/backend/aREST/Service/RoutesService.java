@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
 import com.scheduler.Base.JsonObject.JsonObject;
+import com.scheduler.app.backend.Command.Models.Command;
+import com.scheduler.app.backend.Command.Service.CommandService;
 import com.scheduler.app.backend.aREST.ArestV2Frame;
 import com.scheduler.app.backend.aREST.Models.Device;
 import com.scheduler.app.backend.aREST.Models.Mode;
@@ -19,11 +21,15 @@ public class RoutesService extends Base {
     private final RoutesRepo service;
     private final ModeRepo modeService;
     private final DeviceRepo deviceRepo;
+    private final CommandService commandService;
+    private final ParameterService parameterService;
     public ArestV2Frame arest=new ArestV2Frame();
-    public RoutesService(RoutesRepo service, ModeRepo modeService, DeviceRepo deviceRepo) {
+    public RoutesService(RoutesRepo service, ModeRepo modeService, DeviceRepo deviceRepo, CommandService commandService, ParameterService parameterService) {
         this.service = service;
         this.modeService = modeService;
         this.deviceRepo = deviceRepo;
+        this.commandService = commandService;
+        this.parameterService = parameterService;
     }
     
     public Route addRoute(long deviceId,String route,boolean modes,List<Mode>modeList){
@@ -38,10 +44,43 @@ public class RoutesService extends Base {
         service.save(newRoute);
         return newRoute;
     }
+    public Route addRouteCommand(long deviceId,String route,long commandId){
+        Route newRoute=new Route();
+        newRoute.setRoute(route);
+        Device device=deviceRepo.getReferenceById(deviceId);
+        Command command=commandService.getCommand(commandId);
+        if(device!=null&&command!=null){
+            if(command.getParams()) newRoute.setModes(true);
+            newRoute.setDevice(device);
+            newRoute.setCommand(command);
+        }
+        service.save(newRoute);
+        return newRoute;
+    }
     public Mode addMode(long routeId,Mode entry){
         return modeService.save(entry);
     }
-    
+    public Mode addModeCommand(long deviceId,String modeName,long routeId,List<String> params){
+        Mode newMode=new Mode();
+        List<Mode> modeList=new ArrayList<Mode>();
+        Device device=deviceRepo.getReferenceById(deviceId);
+        Route route=service.getReferenceById(routeId);
+        newMode.setMode(modeName);
+        if(device!=null&&route!=null){
+            Command command=route.getCommand();
+            if(params.size()==command.getTotalParam()){
+                // create mode
+                newMode.setParams(parameterService.addParameters(params, newMode));
+                newMode.setRoute(route);
+                //Mode save=modeService.save(newMode);
+                modeList.add(newMode);
+                route.setMode(modeList);
+            }
+        }
+        service.save(route);
+        Mode savedMode=route.getMode().get(route.getMode().size()-1);
+        return savedMode;
+    }
     public Route updateRoute(Route entry,long id){
         Route rec=null;
         if(service.existsById(id)){
@@ -131,8 +170,9 @@ public class RoutesService extends Base {
         return modeService.findAll();
     }
     public Mode getMode(long id){
-        return modeService.getReferenceById(id);
+        return modeService.findById(id).get();
     }
+    
 
     
 }

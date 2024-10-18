@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 import java.util.*;
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
-@Table(indexes = @Index(columnList = "boardId"))
+@Table(indexes = @Index(columnList = "boardId,ip"))
 public class Board extends ModelBase {
  
     // arduino board id
@@ -22,7 +23,11 @@ public class Board extends ModelBase {
     @Column
     private boolean status=false;
     // arestFramework installed
-    @Column boolean arest=true;
+    @Column 
+    boolean arest=false;
+    // arestFramework command install
+    @Column
+    boolean arestCommand=false;
     // scan device version
     @Column
     private long ScanDeviceVersion=0;
@@ -42,12 +47,13 @@ public class Board extends ModelBase {
     public Board() {
     }
 
-    public Board(String boardId, String name, String ip, boolean status, boolean arest, long ScanDeviceVersion, List<Device> device, Section section) {
+    public Board(String boardId, String name, String ip, boolean status, boolean arest, boolean arestCommand, long ScanDeviceVersion, List<Device> device, Section section) {
         this.boardId = boardId;
         this.name = name;
         this.ip = ip;
         this.status = status;
         this.arest = arest;
+        this.arestCommand = arestCommand;
         this.ScanDeviceVersion = ScanDeviceVersion;
         this.device = device;
         this.section = section;
@@ -101,6 +107,18 @@ public class Board extends ModelBase {
         this.arest = arest;
     }
 
+    public boolean isArestCommand() {
+        return this.arestCommand;
+    }
+
+    public boolean getArestCommand() {
+        return this.arestCommand;
+    }
+
+    public void setArestCommand(boolean arestCommand) {
+        this.arestCommand = arestCommand;
+    }
+
     public long getScanDeviceVersion() {
         return this.ScanDeviceVersion;
     }
@@ -150,6 +168,11 @@ public class Board extends ModelBase {
         return this;
     }
 
+    public Board arestCommand(boolean arestCommand) {
+        setArestCommand(arestCommand);
+        return this;
+    }
+
     public Board ScanDeviceVersion(long ScanDeviceVersion) {
         setScanDeviceVersion(ScanDeviceVersion);
         return this;
@@ -173,12 +196,12 @@ public class Board extends ModelBase {
             return false;
         }
         Board board = (Board) o;
-        return Objects.equals(boardId, board.boardId) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && arest == board.arest && ScanDeviceVersion == board.ScanDeviceVersion && Objects.equals(device, board.device) && Objects.equals(section, board.section);
+        return Objects.equals(boardId, board.boardId) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && arest == board.arest && arestCommand == board.arestCommand && ScanDeviceVersion == board.ScanDeviceVersion && Objects.equals(device, board.device) && Objects.equals(section, board.section);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(boardId, name, ip, status, arest, ScanDeviceVersion, device, section);
+        return Objects.hash(boardId, name, ip, status, arest, arestCommand, ScanDeviceVersion, device, section);
     }
 
     @Override
@@ -189,11 +212,11 @@ public class Board extends ModelBase {
             ", ip='" + getIp() + "'" +
             ", status='" + isStatus() + "'" +
             ", arest='" + isArest() + "'" +
+            ", arestCommand='" + isArestCommand() + "'" +
             ", ScanDeviceVersion='" + getScanDeviceVersion() + "'" +
             ", device='" + getDevice() + "'" +
             ", section='" + getSection() + "'" +
             "}";
     }
     
-   
 }

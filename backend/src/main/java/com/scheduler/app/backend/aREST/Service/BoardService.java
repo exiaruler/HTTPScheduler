@@ -81,6 +81,21 @@ public class BoardService extends Base {
                 newBoard.setDevice(deviceList);
                 Board save=addBoard(newBoard);
                 add=save;
+            }else
+            // arest Command
+            {
+                String boardId=json.findKeyValue("id");
+                Board existingBoard=board.findBoardByBoardId(boardId);
+                if(existingBoard!=null){
+                    newBoard=existingBoard;
+                }else{
+                    newBoard.setBoardId(boardId);
+                } 
+                newBoard.setName(json.findKeyValue("name"));
+                newBoard.setIp(ip);
+                newBoard.setArestCommand(true);
+                Board save=addBoard(newBoard);
+                add=save;
             }
             }
         return add;

@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Random;
-
-import javax.transaction.Transactional;
-
 import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.app.backend.HTTPHandle.HttpUtil;
 
@@ -119,7 +116,10 @@ public class Base{
         }
         return stringBuilt.toString();
     }
-
+    public int getRandomNumber(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max - min) + min;
+    }
     // create string variable
     public String stringVariable(String variable){
         return "\""+variable+"\"";

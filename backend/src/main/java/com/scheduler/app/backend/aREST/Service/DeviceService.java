@@ -101,7 +101,8 @@ public class DeviceService extends Base {
         return deviceRepo.findAll();
     }
     public Device getDevice(long id){
-        return deviceRepo.findById(id).get();
+        Device device=deviceRepo.findById(id).get();
+        return device;
     }
     public void deleteAllBoard(){
         deviceRepo.deleteAll();

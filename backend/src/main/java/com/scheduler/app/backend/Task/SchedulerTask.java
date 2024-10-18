@@ -18,13 +18,18 @@ public class SchedulerTask{
     public static boolean running=true;
     // start the queue when server starts or reboots
     private boolean start=false;
-    
+    // running queue active
+    public static boolean queueRun=false;
     @Autowired
     private TaskService service;
     @Autowired
     private BoardService boardService;
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private RoutesService routeService;
+    @Autowired
+    private ParameterService parameterService;
     // task queue
     private static List<Task> queue=new ArrayList<Task>();
     // task running 
@@ -48,24 +53,51 @@ public class SchedulerTask{
                 Task task=queue.get(i);
                 LocalDateTime taskDt=task.getScheduledTime();
                 if(dt.isAfter(taskDt)||dt.equals(taskDt)){
+                    String [] paramsArr={};
                     // add task to running queue if it passes check else let it stick in the queue 
                     if(!checkTaskRunning(task)&&!task.getHttpTask()){
                         Device device=deviceService.getDevice(task.getDeviceId());
+                        Route route=routeService.getRoute(task.getRouteId());
+                        Mode mode=routeService.getMode(task.getModeId());
+                        paramsArr=parameterService.getParamsArray(task.getModeId());
                         updateQueue(task);
                         runningQueue.add(task);
                         queue.remove(i);
-                        HttpSchedule thread=new HttpSchedule(task,device);
+                        HttpSchedule thread=new HttpSchedule(task,device,route,mode,paramsArr);
                         thread.start();
                     }
                     // run http task
                     if(task.getHttpTask()){
-                        HttpSchedule thread=new HttpSchedule(task,null);
+                        HttpSchedule thread=new HttpSchedule(task,null,null,null,paramsArr);
                         thread.start();
                         queue.remove(i);
                     }
                     
                 }
 
+            }
+        }
+    }
+    @Scheduled(fixedRate = 60000)
+    public void checkRunningQueue(){
+        if(queueRun){
+            LocalDateTime dt=LocalDateTime.now();
+            for(int i=0; i<runningQueue.size(); i++){
+                Task task=queue.get(i);
+                LocalDateTime taskDt=task.getScheduledTime();
+                if(dt.isAfter(taskDt)&&checkTaskRunning(task)){
+                    if(task.getRetry()!=task.getSchedule().getRetries()){
+                        runningQueue.remove(i);
+                        int tries=task.getRetry();
+                        tries++;
+                        task.setRetry(tries);
+                        queue.add(task);
+                        if(runningQueue.size()<0){
+                            queueRun=false;
+                        }
+                    }
+
+                }
             }
         }
     }
@@ -82,6 +114,7 @@ public class SchedulerTask{
             }
         }
     }
+
     // check if the device or board is running to avoid clashing or strain on power
     public boolean checkTaskRunning(Task task){
         boolean result=false;
@@ -89,31 +122,38 @@ public class SchedulerTask{
         long tboard=task.getBoard();
         String tsection=task.getSection();
         boolean tmotor=task.getMotor();
-        for(int i=0; i<runningQueue.size(); i++){
-            Task running=runningQueue.get(i);
-            String rdevice=running.getApplication();
-            long rboard=running.getBoard();
-            String rsection=running.getSection();
-            boolean rmotor=running.getMotor();
-            if(tdevice.equals(rdevice)){
-                result=true;
-            }
-            if(tboard==rboard){
-                result=true;
-            }
-            // validate if servo or any motor device running in that section or board
-            if(tsection.equals(rsection)&&rsection!=""){
-                if(tmotor==rmotor&&tdevice.equals(rdevice)&&tboard==rboard&&tsection.equals(rsection)){
+        boolean synchronous=false;
+        // if command is synchronous by pass check
+        if(task.getSchedule().getDevice().getBoard().getArestCommand()){
+            Route route=routeService.getRoute(task.getRouteId());
+            if(route.getCommand().getSynchronous()) synchronous=true;
+        }
+        if(!synchronous){
+            for(int i=0; i<runningQueue.size(); i++){
+                Task running=runningQueue.get(i);
+                String rdevice=running.getApplication();
+                long rboard=running.getBoard();
+                String rsection=running.getSection();
+                boolean rmotor=running.getMotor();
+                if(tdevice.equals(rdevice)){
                     result=true;
-                }else{
-                    if(rmotor){
+                }
+                if(tboard==rboard){
+                    result=true;
+                }
+                // validate if servo or any motor device running in that section or board
+                if(tsection.equals(rsection)&&rsection!=""){
+                    if(tmotor==rmotor&&tdevice.equals(rdevice)&&tboard==rboard&&tsection.equals(rsection)){
                         result=true;
+                    }else{
+                        if(rmotor){
+                            result=true;
+                        }
                     }
                 }
+                
             }
-            
         }
-
         return result;
     }
     // get priority task 

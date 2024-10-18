@@ -17,6 +17,11 @@ public class Task extends ModelBase {
     // board id 
     @Column
     private long board;
+    // route id
+    @Column long routeId;
+    // mode id
+    @Column
+    private long modeId;
     // url
     @Column
     private String url;
@@ -56,10 +61,12 @@ public class Task extends ModelBase {
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, int retry, Schedule schedule) {
+    public Task(String application, long deviceId, long board, long routeId, long modeId, String url, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, int retry, Schedule schedule) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
+        this.routeId = routeId;
+        this.modeId = modeId;
         this.url = url;
         this.section = section;
         this.priority = priority;
@@ -95,6 +102,22 @@ public class Task extends ModelBase {
 
     public void setBoard(long board) {
         this.board = board;
+    }
+
+    public long getRouteId() {
+        return this.routeId;
+    }
+
+    public void setRouteId(long routeId) {
+        this.routeId = routeId;
+    }
+
+    public long getModeId() {
+        return this.modeId;
+    }
+
+    public void setModeId(long modeId) {
+        this.modeId = modeId;
     }
 
     public String getUrl() {
@@ -220,6 +243,16 @@ public class Task extends ModelBase {
         return this;
     }
 
+    public Task routeId(long routeId) {
+        setRouteId(routeId);
+        return this;
+    }
+
+    public Task modeId(long modeId) {
+        setModeId(modeId);
+        return this;
+    }
+
     public Task url(String url) {
         setUrl(url);
         return this;
@@ -283,12 +316,12 @@ public class Task extends ModelBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && retry == task.retry && Objects.equals(schedule, task.schedule);
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && routeId == task.routeId && modeId == task.modeId && Objects.equals(url, task.url) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && retry == task.retry && Objects.equals(schedule, task.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, retry, schedule);
+        return Objects.hash(application, deviceId, board, routeId, modeId, url, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, retry, schedule);
     }
 
     @Override
@@ -297,6 +330,8 @@ public class Task extends ModelBase {
             " application='" + getApplication() + "'" +
             ", deviceId='" + getDeviceId() + "'" +
             ", board='" + getBoard() + "'" +
+            ", routeId='" + getRouteId() + "'" +
+            ", modeId='" + getModeId() + "'" +
             ", url='" + getUrl() + "'" +
             ", section='" + getSection() + "'" +
             ", priority='" + getPriority() + "'" +
@@ -310,5 +345,4 @@ public class Task extends ModelBase {
             ", schedule='" + getSchedule() + "'" +
             "}";
     }
-
 }

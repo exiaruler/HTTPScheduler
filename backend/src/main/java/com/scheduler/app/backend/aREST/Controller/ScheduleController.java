@@ -3,6 +3,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scheduler.Base.ControllerBase;
@@ -15,38 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
+@RequestMapping(value = "/schedule")
 public class ScheduleController extends ControllerBase {
     @Autowired
     private ScheduleService service;
    
-    @GetMapping("/schedule/new-record")
+    @GetMapping("/new-record")
     public ScheduleForm getNewRecord() {
         ScheduleForm test=new ScheduleForm();
         return test;
     }
     
-    @PostMapping(value="/schedule/add-http-Schedule")
+    @PostMapping(value="/add-http-schedule")
     public Schedule addHttpScheduleTest(@RequestBody Map<String, Object> payload){
-        String name=(String) payload.get("name");
-        String time=(String) payload.get("time");
-        String url=(String) payload.get("url");
-        boolean startup=(boolean) payload.get("startup");
-        boolean repeat=(boolean) payload.get("repeat");
-        long deviceId=(int) payload.get("device");
-        long routeId=(int) payload.get("route");
-        long modeId=(int) payload.get("mode");
-        MapCast t=mapCast.mapJson(payload);
-        return service.addSchedule(t.getKeyString("name"),t.getKeyString("time"),t.getKeyBoolean("repeat"),t.getKeyBoolean("startup"),t.getKeyString("url"),t.getKeyInteger("device"), t.getKeyInteger("route"),t.getKeyInteger("mode"));
+        MapCast cast=mapCast.mapJson(payload);
+        return service.addSchedule(cast.getKeyString("name"),cast.getKeyString("time"),cast.getKeyBoolean("repeat"),cast.getKeyBoolean("startup"),cast.getKeyString("url"),cast.getKeyInteger("device"),cast.getKeyInteger("route"),cast.getKeyInteger("mode"));
     }
-    @PostMapping(value="/schedule/add-http-schedule-form")
-    public Schedule addHttpSchedule(@RequestBody ScheduleForm form){
-        return service.addScheduleRecord(form.getModel(),form.getCustomComponents().get(0));
-    }
-    @GetMapping("/schedule/get-schedules")
+    @GetMapping("/get-schedules")
     public List<Schedule> getAllSchedule() {
         return service.getAllSchedule();
     }
-    @PostMapping("/schedule/startup")
+    @PostMapping("/startup")
     public boolean startup(@RequestBody Map<String, Object> entity) {
         boolean success=false;
         long id=(int) entity.get("id");
@@ -54,7 +44,7 @@ public class ScheduleController extends ControllerBase {
         return success;
     }
     // boot route from device
-    @PostMapping("/schedule/device-startup")
+    @PostMapping("/device-startup")
     public boolean startupDevice(@RequestBody Map<String, Object> entity) {
         boolean success=false;
         String id=(String) entity.get("id");
@@ -62,7 +52,7 @@ public class ScheduleController extends ControllerBase {
         success=service.startupTask(intId);
         return success;
     }
-    @PostMapping("/schedule/test-task")
+    @PostMapping("/test-task")
     public boolean testTask(@RequestBody Map<String, Object> entity) {
         boolean success=false;
         long id=(int) entity.get("id");
