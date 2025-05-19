@@ -1,0 +1,119 @@
+package com.scheduler.app.backend.aREST.Controller;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.scheduler.Base.ControllerBase;
+import com.scheduler.Base.MapCast.MapCast;
+import com.scheduler.app.backend.Messaging.Board.Models.BoardRegister;
+import com.scheduler.app.backend.Messaging.Board.Models.DeviceCheck;
+import com.scheduler.app.backend.aREST.Models.Board;
+import com.scheduler.app.backend.aREST.Service.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.catalina.connector.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.scheduler.app.backend.InterfaceModels.Input.BoardInput;
+
+@RestController
+@RequestMapping(value = "/board")
+public class BoardController extends ControllerBase{
+    @Autowired
+    private BoardService boardService;
+
+    public BoardController() {
+        this.objectClass=this.pathBase+".InterfaceModels.Input.BoardInput";
+    }
+    
+    @PostMapping(value="/addboard")
+    @ResponseBody
+    public Board addBoardTest(@RequestBody Map<String, Object> payload){
+        String name=(String)payload.get("name");
+        String ip=(String) payload.get("ip");
+        boolean arest=(boolean) payload.get("aRest");
+        boolean status=(boolean) payload.get("status");
+        return boardService.addBoardManual(name, ip, arest, status);
+    }
+    @PostMapping(value="/add-board-socket", consumes = "application/json")
+    public ResponseEntity<Board> addBoard(@RequestBody BoardInput input) {
+        Board boardSave=boardService.addBoardSocket(input.getBoardName(),input.getHardwareModel());
+        return ResponseEntity.ok(boardSave);
+    }
+    @PutMapping(value="/update-board/{id}", consumes = {"application/xml","application/json"})
+    public ResponseEntity<Board> updateBoard(@RequestBody Board board,@PathVariable long id){
+        Board a=boardService.updateBoard(board, id);
+        return ResponseEntity.ok(a);
+        
+    }
+    
+    @PostMapping(value="/addboardscan")
+    public ArrayList<Board> addBoardScan(){
+        ArrayList<Board> addedList=new ArrayList<Board>();
+        addedList=boardService.scanNewBoards();
+        return addedList;
+    }
+    @PostMapping(value="/addboardip")
+    public Board addBoardByIP(@RequestBody String ip){
+        return boardService.addBoardByIp(ip);
+    }
+    
+    @GetMapping(value="/getboards")
+    public List<Board> all(){
+        return boardService.getBoards();
+    }
+    @GetMapping(value="/getboard/{id}")
+    public ResponseEntity<Optional<Board>> getBoard(@PathVariable long id){
+        Optional<Board> board=boardService.findBoard(id);
+        if(board!=null){
+            return ResponseEntity.ok(board);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @DeleteMapping(value="/delete/{id}")
+    public String deleteBoard(@PathVariable long id){
+        String result="";
+        result=boardService.deleteBoard(id);
+        return result;
+    }
+    // board routes
+    // routine status check by http request
+    @GetMapping(value="/status-check/{id}")
+    public ResponseEntity<DeviceCheck> routineCheck(@RequestHeader("ram-usage")String ram,@RequestHeader("ip")String ip,@PathVariable long id){
+        System.out.println("Connection check "+id+" "+LocalTime.now()+" "+ram+" "+ip);
+        DeviceCheck check=boardService.routineCheck(id,Integer.parseInt(ram),ip);
+        return ResponseEntity.ok(check);
+    }
+    // when board starts-up verify credentials
+    @PostMapping("/startup")
+    public ResponseEntity<DeviceCheck> startup(@RequestBody BoardRegister entity,@RequestHeader("ram-usage")String ram,@RequestHeader("ip")String ip) {
+        DeviceCheck check=boardService.startup(entity,ip,Integer.parseInt(ram));
+        if(check!=null){
+            ResponseEntity.ok(check);
+        }
+        return ResponseEntity.ok(check);
+    }
+    
+    
+    
+
+    
+
+}
