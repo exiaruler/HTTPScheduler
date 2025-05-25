@@ -42,8 +42,16 @@ export default class UiBase {
     public getPagesSession(){
         return this.util.getPagesSession();
     }
+    public booleanStatus(bool:boolean){
+        var show="Inactive";
+        if(bool) show="Active";
+        return show;
+    }
     // form on change handler
     public onChange(key:any,value:any,setForm:any,form:any){
         setForm({...form,[key]:value});
+    }
+    public onChangeObject(key:any,value:any,setForm:any,form:any){
+        setForm({...form,[key]:JSON.parse(value)});
     }
 }

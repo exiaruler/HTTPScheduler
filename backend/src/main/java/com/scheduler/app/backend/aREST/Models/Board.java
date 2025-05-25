@@ -1,5 +1,4 @@
 package com.scheduler.app.backend.aREST.Models;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,29 +64,28 @@ public class Board extends ModelBase {
     // last connection date and time (HTTP or websocket)
     // restart device timeout (mins to hours)
     // restart device timeout enabled
-    // scan device version
-    @Column
-    private long ScanDeviceVersion=0;
+    
     // device list
-    @JsonManagedReference
+    @JsonManagedReference("device-board")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "board", cascade =CascadeType.ALL)
-    private List<Device> device=new ArrayList<>();
+    private List<Device> device;
     // section that the board belongs to
-    @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonBackReference("board-section")
+    @ManyToOne
     @JoinColumn(name="section_id")
     private Section section;
     // hardware model
-    @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonBackReference("board-hardware")
+    @ManyToOne
     @JoinColumn(name="hardware_id")
     private Hardware hardware;
+
 
 
     public Board() {
     }
 
-    public Board(String boardId, String boardKey, String name, String ip, boolean status, boolean arest, boolean arestCommand, boolean socket, int periodicCheck, int ramUsage, boolean activated, boolean devMode, long ScanDeviceVersion, List<Device> device, Section section, Hardware hardware) {
+    public Board(String boardId, String boardKey, String name, String ip, boolean status, boolean arest, boolean arestCommand, boolean socket, int periodicCheck, int ramUsage, boolean activated, boolean devMode, List<Device> device, Section section, Hardware hardware) {
         this.boardId = boardId;
         this.boardKey = boardKey;
         this.name = name;
@@ -100,7 +98,6 @@ public class Board extends ModelBase {
         this.ramUsage = ramUsage;
         this.activated = activated;
         this.devMode = devMode;
-        this.ScanDeviceVersion = ScanDeviceVersion;
         this.device = device;
         this.section = section;
         this.hardware = hardware;
@@ -226,14 +223,6 @@ public class Board extends ModelBase {
         this.devMode = devMode;
     }
 
-    public long getScanDeviceVersion() {
-        return this.ScanDeviceVersion;
-    }
-
-    public void setScanDeviceVersion(long ScanDeviceVersion) {
-        this.ScanDeviceVersion = ScanDeviceVersion;
-    }
-
     public List<Device> getDevice() {
         return this.device;
     }
@@ -318,11 +307,6 @@ public class Board extends ModelBase {
         return this;
     }
 
-    public Board ScanDeviceVersion(long ScanDeviceVersion) {
-        setScanDeviceVersion(ScanDeviceVersion);
-        return this;
-    }
-
     public Board device(List<Device> device) {
         setDevice(device);
         return this;
@@ -346,12 +330,12 @@ public class Board extends ModelBase {
             return false;
         }
         Board board = (Board) o;
-        return Objects.equals(boardId, board.boardId) && Objects.equals(boardKey, board.boardKey) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && arest == board.arest && arestCommand == board.arestCommand && socket == board.socket && periodicCheck == board.periodicCheck && ramUsage == board.ramUsage && activated == board.activated && devMode == board.devMode && ScanDeviceVersion == board.ScanDeviceVersion && Objects.equals(device, board.device) && Objects.equals(section, board.section) && Objects.equals(hardware, board.hardware);
+        return Objects.equals(boardId, board.boardId) && Objects.equals(boardKey, board.boardKey) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && arest == board.arest && arestCommand == board.arestCommand && socket == board.socket && periodicCheck == board.periodicCheck && ramUsage == board.ramUsage && activated == board.activated && devMode == board.devMode && Objects.equals(device, board.device) && Objects.equals(section, board.section) && Objects.equals(hardware, board.hardware);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(boardId, boardKey, name, ip, status, arest, arestCommand, socket, periodicCheck, ramUsage, activated, devMode, ScanDeviceVersion, device, section, hardware);
+        return Objects.hash(boardId, boardKey, name, ip, status, arest, arestCommand, socket, periodicCheck, ramUsage, activated, devMode, device, section, hardware);
     }
 
     @Override
@@ -369,12 +353,10 @@ public class Board extends ModelBase {
             ", ramUsage='" + getRamUsage() + "'" +
             ", activated='" + isActivated() + "'" +
             ", devMode='" + isDevMode() + "'" +
-            ", ScanDeviceVersion='" + getScanDeviceVersion() + "'" +
             ", device='" + getDevice() + "'" +
             ", section='" + getSection() + "'" +
             ", hardware='" + getHardware() + "'" +
             "}";
     }
-    
     
 }

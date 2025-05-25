@@ -1,0 +1,19 @@
+export interface Board{
+    id:number;
+    createdDate:Date;
+    updatedDate:Date;
+    boardId:string;
+    boardKey:string;
+    name:string;
+    ip:string;
+    status:boolean;
+    arest:boolean;
+    arestCommand:boolean;
+    socket:boolean;
+    periodicCheck:number;
+    ramUsage:number;
+    activated:boolean;
+    devMode:boolean;
+    device:Array<any>;
+    scanDeviceVersion:boolean;
+}

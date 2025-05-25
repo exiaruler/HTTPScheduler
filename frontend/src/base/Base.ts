@@ -10,7 +10,7 @@ class Base{
   // encryption key
   public encryptKey:string=process.env.REACT_APP_API_ENCRYPTKEY||"";
   // js vanilla fetch
-  public apiCallConfig(method:string,body=null){
+  public apiCallConfig(method:string,body:any=null){
       let date=new Date();
       var config:any={
         method:method,
@@ -24,6 +24,9 @@ class Base{
         },
       };
       if(body!=null){
+        if(typeof body!='string'){
+          body=JSON.stringify(body);
+        }
         config={
           method:method,
           credentials: 'include',

@@ -35,6 +35,9 @@ const ModalBox=forwardRef(function ModalBox(props:modalContent,ref){
     if(props.submitCaption){
         saveCaption=props.submitCaption;
     }
+    if(props.hideSubmit){
+        setShowSubmit(props.hideSubmit);
+    }
     useImperativeHandle(ref,()=>{
         return {
             open,

@@ -2,7 +2,6 @@ package com.scheduler.app.backend.Messaging.Models;
 
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -14,7 +13,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 public class OutputCurrent extends ModelBase {
     
-    @ManyToOne(cascade =CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="board_variable_id")
     @JsonBackReference
     private BoardVariable boardVariable;

@@ -102,7 +102,7 @@ export class Util extends Base {
         return data;
     }
 
-    public async fetchRequest(api:string,method:string="GET",body=null,externalUrl:string=""){
+    public async fetchRequest(api:string,method:string="GET",body:any=null,externalUrl:string=""){
       var config=this.apiCallConfig(method.toUpperCase(),body);
       var request:any;
       var baseUrl=this.getApiUrl();

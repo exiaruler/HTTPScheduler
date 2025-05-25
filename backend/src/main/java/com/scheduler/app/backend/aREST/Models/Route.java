@@ -23,8 +23,8 @@ import com.scheduler.app.backend.Messaging.Models.BoardTask;
 @Entity
 @Table(indexes = @Index(columnList = "route"))
 public class Route extends ModelBase{
-    @JsonBackReference
-    @ManyToOne(cascade =CascadeType.ALL)
+    @JsonBackReference("device-routes")
+    @ManyToOne
     @JoinColumn(name="device_id")
     private Device device;
     // route of the device
@@ -38,22 +38,22 @@ public class Route extends ModelBase{
     private String electrode="";
     // arest Command route
     @JsonBackReference
-    @ManyToOne(cascade =CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="command_id")
     private Command command;
     // switch device type
     @Column
     private boolean switchDevice=false;
     // list of modes
-    @JsonManagedReference
+    @JsonManagedReference("route-mode")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade =CascadeType.ALL)
     private List<Mode> mode;
     // Set of pins used for command 
-    @JsonManagedReference
+    @JsonManagedReference("route-pins")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade =CascadeType.ALL)
     private Set<PinsParameter> pins;
     // Board Task
-    @JsonManagedReference
+    @JsonManagedReference("route-boardAction")
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "route", cascade = CascadeType.ALL)
     private BoardTask boardAction;
     

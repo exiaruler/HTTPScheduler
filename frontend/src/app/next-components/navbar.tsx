@@ -95,7 +95,7 @@ export default function NavBar(){
           <Nav className="me-auto">
             {
                 routes.map((route:any,key:number)=>(
-                    <Nav.Link><Link href={route.url}>{route.name}</Link></Nav.Link>
+                    <Nav.Link key={key}><Link href={route.url}>{route.name}</Link></Nav.Link>
                 ))
             }
           {login?

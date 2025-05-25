@@ -1,37 +1,35 @@
 package com.scheduler.app.backend.aREST.Service;
-import java.io.Console;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Validator;
 
 import com.scheduler.Base.Base;
 import com.scheduler.Base.JsonObject.JsonObject;
+import com.scheduler.app.backend.Hardware.Models.Hardware;
+import com.scheduler.app.backend.Hardware.Repo.HardwareRepo;
+import com.scheduler.app.backend.Hardware.Service.HardwareService;
+import com.scheduler.app.backend.Messaging.Board.Models.BoardRegister;
+import com.scheduler.app.backend.Messaging.Board.Models.DeviceCheck;
 import com.scheduler.app.backend.aREST.ArestV2Frame;
 import com.scheduler.app.backend.aREST.Models.Board;
 import com.scheduler.app.backend.aREST.Models.Device;
-import com.scheduler.app.backend.aREST.Repo.*;
-
-import java.util.*;
-
-import javax.validation.ConstraintViolation;
-
-import com.scheduler.app.backend.Hardware.Models.Hardware;
-import com.scheduler.app.backend.Messaging.Board.Models.BoardRegister;
-import com.scheduler.app.backend.Messaging.Board.Models.DeviceCheck;
-
-import io.netty.handler.ipfilter.IpSubnetFilter;
+import com.scheduler.app.backend.aREST.Repo.BoardRepo;
 
 
 @Service
 public class BoardService extends Base {
     
     private final BoardRepo board;
+    public final HardwareService hardwareService;
     private final DeviceService deviceService;
     public ArestV2Frame arest=new ArestV2Frame();
 
-    public BoardService(BoardRepo board, DeviceService deviceService) {
+    public BoardService(BoardRepo board, DeviceService deviceService,HardwareService hardwareService) {
         this.board = board;
+        this.hardwareService = hardwareService;
         this.deviceService = deviceService;
     }
    
@@ -66,12 +64,16 @@ public class BoardService extends Base {
         return boardId;
     }
     // socket board add
-    public Board addBoardSocket(String name,Hardware hardware){
+    public Board addBoardSocket(String name,Hardware hardwareObj){
         Board newBoard=new Board();
         newBoard.setName(name);
         newBoard.setBoardId(genereateBoardId());
         newBoard.setSocket(true);
-        newBoard.setHardware(hardware);
+        if (hardwareObj != null) {
+            long id=hardwareObj.getId();
+            Hardware existingHardware = hardwareService.getBoard(id);
+            newBoard.setHardware(existingHardware);
+        }
         Board save=board.save(newBoard);
         return save;
     }
@@ -212,6 +214,7 @@ public class BoardService extends Base {
         if(board.existsById(id)){
             Board item=board.getReferenceById(id);
             // delete children
+            /* *
             for(int i=0; i<item.getDevice().size(); i++){
                 if(item.getDevice().get(i).getRoutes().size()>0){
                     for(int x=0; x<item.getDevice().get(i).getRoutes().size(); x++){
@@ -225,8 +228,9 @@ public class BoardService extends Base {
                 }
                 item.getDevice().remove(i);
             }
-            output="board remove "+item.getName();
+                */
             board.deleteById(id);
+            output="board remove "+item.getName();
         }
         return output;
     }
@@ -237,9 +241,13 @@ public class BoardService extends Base {
     }
    
     public Optional<Board> findBoard(long id){
-        //Board record;
         return board.findById(id);
-        //return record;
+    }
+    public Hardware getBoardHardwareId(String id){
+        return board.findBoardByBoardId(id).getHardware();
+    }
+    public Board getBoardByBoardId(String id){
+        return board.findBoardByBoardId(id);
     }
     
 }

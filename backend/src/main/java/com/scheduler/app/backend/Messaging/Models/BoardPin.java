@@ -2,7 +2,6 @@ package com.scheduler.app.backend.Messaging.Models;
 
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -15,7 +14,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 @Table(name="Board_pin")
 public class BoardPin extends ModelBase {
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="board_task_id")
     @JsonBackReference
     private BoardTask boardTask;

@@ -5,17 +5,16 @@ import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 import com.scheduler.app.backend.aREST.Models.Board;
 
 @Entity
-@Embeddable
 public class Hardware extends ModelBase {
     // board model
     @Column
@@ -25,11 +24,12 @@ public class Hardware extends ModelBase {
     private int maxRam;
     // pins
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "hardware", cascade =CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "hardware", cascade =CascadeType.ALL, orphanRemoval = true)
     private List<HardwarePins> pins;
     // boards that use this hardware model
     //@JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "hardware", cascade =CascadeType.ALL)
+    @JsonIgnore
     private List<Board> boardsUsed;
 
 

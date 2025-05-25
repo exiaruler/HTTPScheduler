@@ -2,7 +2,6 @@ package com.scheduler.app.backend.aREST.Models;
 
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -15,7 +14,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 public class PinsParameter extends ModelBase {
     // route
     @JsonBackReference
-    @ManyToOne(cascade =CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;
     // pin

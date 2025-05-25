@@ -45,13 +45,13 @@ public class Schedule extends ModelBase {
             CascadeType.DETACH, CascadeType.REFRESH})
     private Task task;
     // link to device
-    @JsonBackReference
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JsonBackReference("device-schedules")
+    @ManyToOne
     @JoinColumn(name="device_id")
     private Device device;
     // link route from device
     @JsonBackReference
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;
     

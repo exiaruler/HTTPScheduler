@@ -2,7 +2,6 @@ package com.scheduler.app.backend.Command.Models;
 
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -16,7 +15,7 @@ public class CommandParameter extends ModelBase{
 
     // link to command
     @JsonBackReference
-    @ManyToOne(cascade =CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="command_id")
     private Command command;
 

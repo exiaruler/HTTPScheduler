@@ -33,6 +33,15 @@ public class DeviceService extends Base {
     public Device addDevice(Device entry){
         return deviceRepo.save(entry);
     }
+    public Device addDeviceSocket(Device entry,long boardId){
+        Board board=boardRepo.getReferenceById(boardId);
+        if(board!=null){
+            entry.setBoard(board);
+            Device save=deviceRepo.save(entry);
+            entry=save;
+        }
+        return entry;
+    }
     public Device saveDeviceManual(long board,String name,String type,String subtype,boolean framework,boolean custom){
         Device newDev=new Device();
         Board boardObj=boardRepo.getReferenceById(board);
@@ -106,6 +115,15 @@ public class DeviceService extends Base {
     public Device getDevice(long id){
         Device device=deviceRepo.findById(id).get();
         return device;
+    }
+    public String deleteDevice(long id){
+        String res="";
+        Device device=deviceRepo.getReferenceById(id);
+        if(device!=null){
+            deviceRepo.deleteById(id);
+            res=device.getName()+" is deleted";
+        }else res="Device does not exist";
+        return res;
     }
     public void deleteAllBoard(){
         deviceRepo.deleteAll();

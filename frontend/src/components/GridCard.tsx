@@ -1,55 +1,57 @@
 'use client'
 import Link from "next/link";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Card, CardBody, CardTitle, Col, Row } from "react-bootstrap"
 interface Props{
     data:Array<Object>;
     valueKey:string;
     titleKey:string;
     bodyKey:string;
-    enableLink?:boolean;
-    linkUrl?:any;
     onClick?:any;
     mdCol?:number;
     smCol?:number;
 }
-export default function GridCard(props:Props){
+const GridCard=forwardRef(function GridCard(props:Props,ref){
     var valueKey="";
-    var disableLink='disabled-link';
-    var link='';
-    if(props.linkUrl&&props.linkUrl!=""){
-        link=props.linkUrl;
+    var data:any=[];
+    var recordRef=useRef(null);
+    if(props.data){
+        data=props.data;
     }
     if(props.valueKey){
         valueKey=props.valueKey;
     }
-    if(props.enableLink){
-        disableLink='';
-    }
-    const createLink=(obj:any)=>{
-        var url=link+obj[valueKey];
-        return url;
-    }
-    const onClick=(event:any)=>{
+    const onClick=(event:any,index:number)=>{
+        recordRef.current=data[index];
         if(props.onClick){
             props.onClick(event);
         }
     }
+    const getSelectedCard=()=>{
+        return recordRef.current;
+    }
+    useImperativeHandle(ref,()=>{
+            return {
+               getSelectedCard
+            }
+        },[]);
     return(
         <div>
         <Row>
         {
             props.data.map((obj:any,num:number)=>(
                 <Col sm={props.smCol} md={props.mdCol}key={obj[valueKey]||num}>
-                <Link href={createLink(obj)} className={disableLink} onClick={(event:any)=>onClick(event)}>
-                <Card>
+                <div>
+                <Card key={obj[valueKey]||num} onClick={(event:any)=>onClick(event,num)}>
                 <CardTitle>{obj[props.titleKey]}</CardTitle>
                 <CardBody>{obj[props.bodyKey]}</CardBody>
                 </Card>
-                </Link>
+                </div>
                 </Col>
             ))
         }
         </Row>
         </div>
     )
-}
+})
+export default GridCard;

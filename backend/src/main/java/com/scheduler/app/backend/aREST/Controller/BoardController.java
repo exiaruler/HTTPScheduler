@@ -32,6 +32,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.scheduler.app.backend.InterfaceModels.Input.BoardInput;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.scheduler.app.backend.Hardware.Models.Hardware;
+
+
 @RestController
 @RequestMapping(value = "/board")
 public class BoardController extends ControllerBase{
@@ -53,7 +58,7 @@ public class BoardController extends ControllerBase{
     }
     @PostMapping(value="/add-board-socket", consumes = "application/json")
     public ResponseEntity<Board> addBoard(@RequestBody BoardInput input) {
-        Board boardSave=boardService.addBoardSocket(input.getBoardName(),input.getHardwareModel());
+        Board boardSave=boardService.addBoardSocket(input.getName(),input.getHardwareModel());
         return ResponseEntity.ok(boardSave);
     }
     @PutMapping(value="/update-board/{id}", consumes = {"application/xml","application/json"})
@@ -87,11 +92,33 @@ public class BoardController extends ControllerBase{
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping(value="/get-board-id/{id}")
+    public ResponseEntity<Board> getBoardId(@PathVariable String id){
+        Board board=boardService.getBoardByBoardId(id);
+        if(board!=null){
+            return ResponseEntity.ok(board);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @GetMapping(value="/get-board-hardware/{id}")
+    public ResponseEntity<Hardware> getBoardHardware(@PathVariable String id){
+        Hardware hardware=boardService.getBoardHardwareId(id);
+        if(hardware!=null){
+            return ResponseEntity.ok(hardware);
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+    
     @DeleteMapping(value="/delete/{id}")
-    public String deleteBoard(@PathVariable long id){
+    public ResponseEntity<String> deleteBoard(@PathVariable long id){
         String result="";
         result=boardService.deleteBoard(id);
-        return result;
+        return ResponseEntity.ok(result);
     }
     // board routes
     // routine status check by http request

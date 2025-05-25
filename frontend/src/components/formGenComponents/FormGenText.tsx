@@ -1,7 +1,7 @@
 'use client'
 import { ChangeEventHandler, Component } from 'react';
 import Form from 'react-bootstrap/Form';
-import { Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 type Props={
     label:string,
     type:string,
@@ -13,7 +13,9 @@ type Props={
     onChange?:ChangeEventHandler,
     warning?:string,
     value:string,
-    size?:any
+    size?:any,
+    md?:number,
+    xs?:number
 }
 // text field of react bootstrap forms
 export class FormGenText extends Component<Props>{
@@ -28,6 +30,7 @@ export class FormGenText extends Component<Props>{
     render(){
         return(
             <Row>
+            <Col xs={this.props.xs} md={this.props.md}>
             <Form.Group>
             <Form.Label>{this.props.label}</Form.Label>
             <div className="mb-3">
@@ -35,6 +38,7 @@ export class FormGenText extends Component<Props>{
             </div>
             <Form.Text id={this.props.name+"Warning"} >{this.props.warning} </Form.Text>
             </Form.Group>
+            </Col>
             </Row>
         );
     }

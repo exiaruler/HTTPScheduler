@@ -6,10 +6,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if(req.method=='GET'){
         const request=await base.fetchRequest('/board/getboards','GET',null,base.baseUrlIo);
         if(request.ok){
-            response.data=await request.json();
+            var boards=await request.json();
+            boards.push({id:0,name:'Add Board'});
+            response.data=boards;
         }
     }
     if(req.method=='POST'){
+        var body=req.body;
+        const request=await base.fetchRequest('/board/add-board-socket','Post',body,base.baseUrlIo);
+        response.status=await request.status;
+        if(request.ok){
+
+        }
         
     }
     res.status(response.status).json(response.data);

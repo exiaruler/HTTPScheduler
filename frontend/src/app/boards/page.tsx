@@ -11,7 +11,8 @@ async function getBoards() {
   };
   const base=new NextBase();
   // fetch user boards
-  dataResp.boards=await base.fetchClientGet('/board/board');
+  var boards=await base.fetchClientGet('/board/board');
+  dataResp.boards=boards;
   // fetch hardware boards
   dataResp.hardwares=await base.fetchClientGet('/hardware/hardware');
   return dataResp;

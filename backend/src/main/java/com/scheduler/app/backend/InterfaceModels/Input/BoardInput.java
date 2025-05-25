@@ -2,31 +2,38 @@ package com.scheduler.app.backend.InterfaceModels.Input;
 
 import java.util.Objects;
 
-import javax.persistence.Embedded;
-
 import com.scheduler.app.backend.Hardware.Models.Hardware;
 
 public class BoardInput {
 
-    private String boardName="";
-    //@Embeddable
-    @Embedded
+    private String name="";
+    private String password;
     private Hardware hardwareModel;
+
 
     public BoardInput() {
     }
 
-    public BoardInput(String boardName, Hardware hardwareModel) {
-        this.boardName = boardName;
+    public BoardInput(String name, String password, Hardware hardwareModel) {
+        this.name = name;
+        this.password = password;
         this.hardwareModel = hardwareModel;
     }
 
-    public String getBoardName() {
-        return this.boardName;
+    public String getName() {
+        return this.name;
     }
 
-    public void setBoardName(String boardName) {
-        this.boardName = boardName;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Hardware getHardwareModel() {
@@ -37,8 +44,13 @@ public class BoardInput {
         this.hardwareModel = hardwareModel;
     }
 
-    public BoardInput boardName(String boardName) {
-        setBoardName(boardName);
+    public BoardInput name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public BoardInput password(String password) {
+        setPassword(password);
         return this;
     }
 
@@ -55,18 +67,19 @@ public class BoardInput {
             return false;
         }
         BoardInput boardInput = (BoardInput) o;
-        return Objects.equals(boardName, boardInput.boardName) && Objects.equals(hardwareModel, boardInput.hardwareModel);
+        return Objects.equals(name, boardInput.name) && Objects.equals(password, boardInput.password) && Objects.equals(hardwareModel, boardInput.hardwareModel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(boardName, hardwareModel);
+        return Objects.hash(name, password, hardwareModel);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " boardName='" + getBoardName() + "'" +
+            " name='" + getName() + "'" +
+            ", password='" + getPassword() + "'" +
             ", hardwareModel='" + getHardwareModel() + "'" +
             "}";
     }

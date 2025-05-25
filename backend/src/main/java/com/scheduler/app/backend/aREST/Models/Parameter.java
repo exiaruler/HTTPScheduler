@@ -1,21 +1,20 @@
 package com.scheduler.app.backend.aREST.Models;
 
-import javax.persistence.CascadeType;
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.scheduler.Base.ModelBase.ModelBase;
-import java.util.Objects;
 // parameters for command
 @Entity
 public class Parameter extends ModelBase {
     
     @JsonBackReference
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @ManyToOne
     @JoinColumn(name="mode_id")
     private Mode mode;
     // array order

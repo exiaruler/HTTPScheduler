@@ -60,6 +60,10 @@ public class HardwareService extends Base {
         }
         return pinList;
     }
+    public Hardware getBoard(long id){
+        Hardware res=hardware.getReferenceById(id);
+        return res;
+    }
     public List<Hardware> getBoards(){
         return hardware.findAll();
     }

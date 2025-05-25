@@ -1,7 +1,6 @@
 package com.scheduler.app.backend.Hardware.Models;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -13,7 +12,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 public class HardwarePins extends ModelBase {
     
-    @ManyToOne(cascade =CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="hardware_id")
     @JsonBackReference
     private Hardware hardware;

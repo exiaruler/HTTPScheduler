@@ -1,13 +1,24 @@
-import { RegularButton } from "@/app/next-components/buttons/RegularButton";
 import PageGroup from "@/app/next-components/pageGroup";
-import { FormGenText } from "@/components/formGenComponents/FormGenText";
-import TabComponent from "@/components/Tab/TabComponent";
-import TabGroup from "@/components/Tab/TabGroup";
-import { Col, Row } from "react-bootstrap";
 import Client from "./client";
-
-export default function Page(){
+import { NextBase } from "@/NextBase";
+async function getBoard(id:any) {
+  var dataResp={
+    board:null,
+    deviceForm:null
+  };
+  const base=new NextBase();
+  var boards=await base.fetchClientGet('/board/uni-board/'+id);
+  var form=await base.fetchClientGet('form/board');
+  dataResp.board=boards;
+  dataResp.deviceForm=form;
+  return dataResp;
+}
+export default async function Page({params}:any){
+    var param=await params?.id;
+    var board=await getBoard(param);
     return (
-        <Client/>
+        <PageGroup url={'/board/'}>
+        <Client data={board}/>
+        </PageGroup>
     )
 }

@@ -6,18 +6,19 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scheduler.Base.ControllerBase;
 import com.scheduler.Base.MapCast.MapCast;
-import com.scheduler.app.backend.aREST.Models.*;
+import com.scheduler.app.backend.aREST.Models.Mode;
+import com.scheduler.app.backend.aREST.Models.Route;
 import com.scheduler.app.backend.aREST.Service.RoutesService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping(value = "/routes")
+@RequestMapping(value = "/route")
 public class RoutesController extends ControllerBase {
     @Autowired
     private RoutesService service;
@@ -45,6 +46,14 @@ public class RoutesController extends ControllerBase {
         MapCast cast=mapCast.mapJson(payload); 
         return service.addRouteCommand(id,cast.getKeyString("route"),cast.getKeyInteger("command"),cast.getKeyArrayListString("pins"));
     }
+    @PostMapping("/add-route-socket/{id}")
+    public String addRouteSocket(@PathVariable long id,@RequestBody Route entity) {
+        //TODO: process POST request
+        
+        return "";
+    }
+    
+
     @PostMapping("/add-mode-com/{deviceId}/{routeId}")
     public Mode addModeCommand(@PathVariable long deviceId,@PathVariable long routeId,@RequestBody Map<String, Object> payload) {
         MapCast cast=mapCast.mapJson(payload); 

@@ -1,6 +1,7 @@
 package com.scheduler.app.backend.aREST.Models;
 
-import javax.persistence.CascadeType;
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -8,13 +9,12 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.scheduler.Base.ModelBase.ModelBase;
-import java.util.Objects;
 
 // component of device. not use within the application but for mapping data structure for aREST v2.
 @Entity
 public class Component extends ModelBase {
-    @JsonBackReference
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH })
+    @JsonBackReference("device-components")
+    @ManyToOne
     @JoinColumn(name="device_id")
     private Device device;
     // part name

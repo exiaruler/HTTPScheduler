@@ -17,7 +17,7 @@ public class Section extends ModelBase {
     @Column
     private String location;
     // list of board in that location
-    @JsonManagedReference
+    @JsonManagedReference("board-section")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "section", cascade =CascadeType.ALL)
     private List<Board> boards;
     

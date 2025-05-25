@@ -21,7 +21,7 @@ import com.scheduler.app.backend.Messaging.Models.BoardTask;
 @Table(indexes = @Index(columnList = "mode"))
 public class Mode extends ModelBase{
     @JsonBackReference
-    @ManyToOne(cascade =CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;
     // mode
