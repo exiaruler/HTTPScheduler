@@ -70,14 +70,7 @@ public class Device extends ModelBase{
     @JsonManagedReference("device-components")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device",cascade =CascadeType.ALL)
     private List<Component> components;
-    /* 
-    // variables
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "variable", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
-        CascadeType.DETACH, CascadeType.REFRESH })
-    private List<Variable> variables;
-    */
-
-
+  
     public Device() {
     }
 

@@ -13,7 +13,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 public class PinsParameter extends ModelBase {
     // route
-    @JsonBackReference
+    @JsonBackReference("route-pins")
     @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;

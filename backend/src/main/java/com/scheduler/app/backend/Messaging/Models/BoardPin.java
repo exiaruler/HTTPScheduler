@@ -9,14 +9,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.scheduler.Base.ModelBase.ModelBase;
+import com.scheduler.Base.ModelBase.TaskModelBase;
 // rgb pins
 @Entity
 @Table(name="Board_pin")
-public class BoardPin extends ModelBase {
+public class BoardPin extends TaskModelBase {
     @ManyToOne
     @JoinColumn(name="board_task_id")
-    @JsonBackReference
+    @JsonBackReference("boardtask-rgb")
     private BoardTask boardTask;
     @Column
     private int pin;

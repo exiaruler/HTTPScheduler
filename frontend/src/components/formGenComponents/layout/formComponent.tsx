@@ -14,6 +14,7 @@ import {FormInterface} from "./formInterface";
 
 // cross compatible component
 const  FormLayout=forwardRef (function FormComponent(props:FormInterface,ref){
+  console.log(props);
   let formJson;
   //let location = useLocation();
   const [formLay,setFormLay]=useState({

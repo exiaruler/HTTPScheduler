@@ -14,20 +14,20 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.scheduler.Base.ModelBase.ModelBase;
+import com.scheduler.Base.ModelBase.TaskModelBase;
 // background task variables data structure in device
 @Entity
 @Table(name="board_variable")
-public class BoardVariable extends ModelBase {
+public class BoardVariable extends TaskModelBase {
     
-    @JsonBackReference
+    @JsonBackReference("boardtask-variable")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "board_task_id",referencedColumnName = "id")
     private BoardTask task;
     @Column
     private int x=1;
     @OneToMany(mappedBy = "boardVariable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonManagedReference("boardvariable-downput")
     private List<OutputCurrent> downput;
     @Column
     private int output=255;

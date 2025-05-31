@@ -12,8 +12,8 @@ export default function PageGroup(props:Props){
     var exPage=null;
     if(props.url){
         var url=props.url;
-        exPage=util.getPageUrl(url);
-    }else exPage=util.getPageUrl(url);
+    }
+    exPage=util.getPageUrl(url);
     var show=true;
     
     if(util.checkPageUrl(pathname)||exPage!=null){

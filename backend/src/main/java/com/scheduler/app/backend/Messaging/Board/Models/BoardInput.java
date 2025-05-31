@@ -2,6 +2,8 @@ package com.scheduler.app.backend.Messaging.Board.Models;
 import java.util.Objects;
 // board message after executed commands
 public class BoardInput {
+    // board 
+    private long board;
     // message type
     private String messageType;
     // command exection sucess
@@ -10,19 +12,32 @@ public class BoardInput {
     private String data;
     // position of task in array
     private int taskPosition;
+    // system queue
+    private boolean systemQueue;
     // RAM space left on board
     private int ramSpace;
     // milliseconds took to process message
-    private int responseTime;
+    //private int responseTime;
     public BoardInput() {
     }
 
-    public BoardInput(String messageType, boolean success, String data, int taskPosition, int ramSpace) {
+
+    public BoardInput(long board, String messageType, boolean success, String data, int taskPosition, boolean systemQueue, int ramSpace) {
+        this.board = board;
         this.messageType = messageType;
         this.success = success;
         this.data = data;
         this.taskPosition = taskPosition;
+        this.systemQueue = systemQueue;
         this.ramSpace = ramSpace;
+    }
+
+    public long getBoard() {
+        return this.board;
+    }
+
+    public void setBoard(long board) {
+        this.board = board;
     }
 
     public String getMessageType() {
@@ -61,12 +76,29 @@ public class BoardInput {
         this.taskPosition = taskPosition;
     }
 
+    public boolean isSystemQueue() {
+        return this.systemQueue;
+    }
+
+    public boolean getSystemQueue() {
+        return this.systemQueue;
+    }
+
+    public void setSystemQueue(boolean systemQueue) {
+        this.systemQueue = systemQueue;
+    }
+
     public int getRamSpace() {
         return this.ramSpace;
     }
 
     public void setRamSpace(int ramSpace) {
         this.ramSpace = ramSpace;
+    }
+
+    public BoardInput board(long board) {
+        setBoard(board);
+        return this;
     }
 
     public BoardInput messageType(String messageType) {
@@ -89,6 +121,11 @@ public class BoardInput {
         return this;
     }
 
+    public BoardInput systemQueue(boolean systemQueue) {
+        setSystemQueue(systemQueue);
+        return this;
+    }
+
     public BoardInput ramSpace(int ramSpace) {
         setRamSpace(ramSpace);
         return this;
@@ -102,21 +139,23 @@ public class BoardInput {
             return false;
         }
         BoardInput boardInput = (BoardInput) o;
-        return Objects.equals(messageType, boardInput.messageType) && success == boardInput.success && Objects.equals(data, boardInput.data) && taskPosition == boardInput.taskPosition && ramSpace == boardInput.ramSpace;
+        return board == boardInput.board && Objects.equals(messageType, boardInput.messageType) && success == boardInput.success && Objects.equals(data, boardInput.data) && taskPosition == boardInput.taskPosition && systemQueue == boardInput.systemQueue && ramSpace == boardInput.ramSpace;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(messageType, success, data, taskPosition, ramSpace);
+        return Objects.hash(board, messageType, success, data, taskPosition, systemQueue, ramSpace);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " messageType='" + getMessageType() + "'" +
+            " board='" + getBoard() + "'" +
+            ", messageType='" + getMessageType() + "'" +
             ", success='" + isSuccess() + "'" +
             ", data='" + getData() + "'" +
             ", taskPosition='" + getTaskPosition() + "'" +
+            ", systemQueue='" + isSystemQueue() + "'" +
             ", ramSpace='" + getRamSpace() + "'" +
             "}";
     }

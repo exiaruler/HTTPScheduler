@@ -1,0 +1,174 @@
+[
+    {
+        "createdDate": "2025-04-21T03:18:58.65104",
+        "updatedDate": "2025-04-21T03:18:58.65104",
+        "commandType": "action",
+        "command": "setled",
+        "className": "",
+        "params": true,
+        "totalParam": 3,
+        "hasMotor": false,
+        "animation": false,
+        "synchronous": false,
+        "commandParameter": [
+            {
+                "createdDate": "2025-04-21T03:18:59.214939",
+                "updatedDate": "2025-04-21T03:18:59.214939",
+                "parameterOrder": 0,
+                "component": "ElectodeSelect",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "electo",
+                "className": ""
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.214939",
+                "updatedDate": "2025-04-21T03:18:59.214939",
+                "parameterOrder": 0,
+                "component": "PinSelect",
+                "type": null,
+                "pin": true,
+                "backgroundKey": "pin",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.214939",
+                "updatedDate": "2025-04-21T03:18:59.214939",
+                "parameterOrder": 0,
+                "component": "OutputText",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "output",
+                "className": "BoardVariable"
+            }
+        ]
+    },
+    {
+        "createdDate": "2025-04-21T03:18:58.65104",
+        "updatedDate": "2025-04-21T03:18:58.65104",
+        "commandType": "action",
+        "command": "setrgb",
+        "className": "",
+        "params": true,
+        "totalParam": 5,
+        "hasMotor": false,
+        "animation": false,
+        "synchronous": false,
+        "commandParameter": [
+            {
+                "createdDate": "2025-04-21T03:18:59.356714",
+                "updatedDate": "2025-04-21T03:18:59.356714",
+                "parameterOrder": 0,
+                "component": "RgbTypeSelect",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "rgbType",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.356714",
+                "updatedDate": "2025-04-21T03:18:59.356714",
+                "parameterOrder": 0,
+                "component": "RgbPinsInput",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "rgbSet",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.356714",
+                "updatedDate": "2025-04-21T03:18:59.356714",
+                "parameterOrder": 0,
+                "component": "OutputText",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "rgbRed",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.356714",
+                "updatedDate": "2025-04-21T03:18:59.356714",
+                "parameterOrder": 0,
+                "component": "OutputText",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "rgbGreen",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.356714",
+                "updatedDate": "2025-04-21T03:18:59.356714",
+                "parameterOrder": 0,
+                "component": "OutputText",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "rgbBlue",
+                "className": "BoardTask"
+            }
+        ]
+    },
+    {
+        "createdDate": "2025-04-21T03:18:58.65104",
+        "updatedDate": "2025-04-21T03:18:58.65104",
+        "commandType": "action",
+        "command": "setservo",
+        "className": "",
+        "params": true,
+        "totalParam": 6,
+        "hasMotor": true,
+        "animation": false,
+        "synchronous": false,
+        "commandParameter": [
+            {
+                "createdDate": "2025-04-21T03:18:59.385414",
+                "updatedDate": "2025-04-21T03:18:59.385414",
+                "parameterOrder": 0,
+                "component": "PinSelect",
+                "type": null,
+                "pin": true,
+                "backgroundKey": "pin",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.386522",
+                "updatedDate": "2025-04-21T03:18:59.386522",
+                "parameterOrder": 0,
+                "component": "AngleInput",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "startAngle",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.386522",
+                "updatedDate": "2025-04-21T03:18:59.386522",
+                "parameterOrder": 0,
+                "component": "AngleInput",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "moveAngle",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.386522",
+                "updatedDate": "2025-04-21T03:18:59.386522",
+                "parameterOrder": 0,
+                "component": "TimeControl",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "beginDelay",
+                "className": "BoardTask"
+            },
+            {
+                "createdDate": "2025-04-21T03:18:59.386522",
+                "updatedDate": "2025-04-21T03:18:59.386522",
+                "parameterOrder": 0,
+                "component": "TimeControl",
+                "type": null,
+                "pin": false,
+                "backgroundKey": "interval",
+                "className": "BoardTask"
+            }
+        ]
+    }
+]

@@ -13,7 +13,7 @@ export default function TabComponent(props:TabProps){
     )
 }
     */
-const TabComponent: React.FC<TabProps> = ({eventKey,title,childen}) => {
+const TabComponent: React.FC<TabProps> = ({eventKey,title,childen}:any) => {
     return (
       <Tab eventKey={eventKey} title={title}>
         {childen}

@@ -56,6 +56,9 @@ public class Board extends ModelBase {
     // board registered status
     @Column
     private boolean activated=false;
+    // board websocket connection id
+    @Column
+    private String websocketId="";
     // development mode
     @Column
     private boolean devMode;
@@ -81,11 +84,10 @@ public class Board extends ModelBase {
     private Hardware hardware;
 
 
-
     public Board() {
     }
 
-    public Board(String boardId, String boardKey, String name, String ip, boolean status, boolean arest, boolean arestCommand, boolean socket, int periodicCheck, int ramUsage, boolean activated, boolean devMode, List<Device> device, Section section, Hardware hardware) {
+    public Board(String boardId, String boardKey, String name, String ip, boolean status, boolean arest, boolean arestCommand, boolean socket, int periodicCheck, int ramUsage, boolean activated, String websocketId, boolean devMode, List<Device> device, Section section, Hardware hardware) {
         this.boardId = boardId;
         this.boardKey = boardKey;
         this.name = name;
@@ -97,6 +99,7 @@ public class Board extends ModelBase {
         this.periodicCheck = periodicCheck;
         this.ramUsage = ramUsage;
         this.activated = activated;
+        this.websocketId = websocketId;
         this.devMode = devMode;
         this.device = device;
         this.section = section;
@@ -211,6 +214,14 @@ public class Board extends ModelBase {
         this.activated = activated;
     }
 
+    public String getWebsocketId() {
+        return this.websocketId;
+    }
+
+    public void setWebsocketId(String websocketId) {
+        this.websocketId = websocketId;
+    }
+
     public boolean isDevMode() {
         return this.devMode;
     }
@@ -302,6 +313,11 @@ public class Board extends ModelBase {
         return this;
     }
 
+    public Board websocketId(String websocketId) {
+        setWebsocketId(websocketId);
+        return this;
+    }
+
     public Board devMode(boolean devMode) {
         setDevMode(devMode);
         return this;
@@ -330,12 +346,12 @@ public class Board extends ModelBase {
             return false;
         }
         Board board = (Board) o;
-        return Objects.equals(boardId, board.boardId) && Objects.equals(boardKey, board.boardKey) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && arest == board.arest && arestCommand == board.arestCommand && socket == board.socket && periodicCheck == board.periodicCheck && ramUsage == board.ramUsage && activated == board.activated && devMode == board.devMode && Objects.equals(device, board.device) && Objects.equals(section, board.section) && Objects.equals(hardware, board.hardware);
+        return Objects.equals(boardId, board.boardId) && Objects.equals(boardKey, board.boardKey) && Objects.equals(name, board.name) && Objects.equals(ip, board.ip) && status == board.status && arest == board.arest && arestCommand == board.arestCommand && socket == board.socket && periodicCheck == board.periodicCheck && ramUsage == board.ramUsage && activated == board.activated && Objects.equals(websocketId, board.websocketId) && devMode == board.devMode && Objects.equals(device, board.device) && Objects.equals(section, board.section) && Objects.equals(hardware, board.hardware);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(boardId, boardKey, name, ip, status, arest, arestCommand, socket, periodicCheck, ramUsage, activated, devMode, device, section, hardware);
+        return Objects.hash(boardId, boardKey, name, ip, status, arest, arestCommand, socket, periodicCheck, ramUsage, activated, websocketId, devMode, device, section, hardware);
     }
 
     @Override
@@ -352,11 +368,12 @@ public class Board extends ModelBase {
             ", periodicCheck='" + getPeriodicCheck() + "'" +
             ", ramUsage='" + getRamUsage() + "'" +
             ", activated='" + isActivated() + "'" +
+            ", websocketId='" + getWebsocketId() + "'" +
             ", devMode='" + isDevMode() + "'" +
             ", device='" + getDevice() + "'" +
             ", section='" + getSection() + "'" +
             ", hardware='" + getHardware() + "'" +
             "}";
     }
-    
+
 }

@@ -2,17 +2,22 @@ import Util from "./base/Util";
 // override class
 export class NextBase extends Util{
     // override origin
-    originUrl=this.getOrigin();
+    //originUrl=this.getOrigin();
     // override encrypt key in next.js
     encryptKey=process.env.NEXT_PUBLIC_API_ENCRYPTKEY||'';
     // application URL
     baseURL="http://localhost:3000";
     // IoT URL
     baseUrlIo="http://localhost:8080";
-
+    /*
     public getOrigin(){
         var url='http://localhost:3000';
         return url;
+    }
+        */
+    public getOriginUrl(){
+      var url=process.env.NEXT_PUBLIC_API_DOMAIN||'http://localhost:3000';
+      return url;
     }
     public async fetchClientGet(url:string){
         var response=null;

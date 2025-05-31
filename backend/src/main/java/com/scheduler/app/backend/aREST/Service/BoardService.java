@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import com.scheduler.Base.Base;
@@ -20,6 +22,7 @@ import com.scheduler.app.backend.aREST.Repo.BoardRepo;
 
 
 @Service
+@Transactional
 public class BoardService extends Base {
     
     private final BoardRepo board;
@@ -101,7 +104,7 @@ public class BoardService extends Base {
         Board boardExist=board.getReferenceById(id);
         if(boardExist!=null){
             boardExist.setRamUsage(ram);
-            if(boardExist.getIp()!=ip) boardExist.setIp(ip);
+            if(boardExist.getIp()!=ip&&ip!="") boardExist.setIp(ip);
             check=createDeviceCheck(boardExist);
             board.save(boardExist);
         }
@@ -191,7 +194,16 @@ public class BoardService extends Base {
         }
         return board;
     }
-
+    // save ws session id into database for use
+    public Board setWsConnection(long id,String sessionId,int ram){
+        Board boardRec=board.findById(id).get();
+        if(boardRec!=null){
+            boardRec.setWebsocketId(sessionId);
+            boardRec.setRamUsage(ram);
+            boardRec=board.save(boardRec);
+        }
+        return boardRec;
+    }
 
     public Board updateBoard(Board obj,long id){
         Board rec=board.findById(id).get();

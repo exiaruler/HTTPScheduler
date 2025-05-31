@@ -13,7 +13,6 @@ public class CompletedTask {
     private boolean oneTimeJob=true;
     private Task task;
 
-
     public CompletedTask() {
     }
 

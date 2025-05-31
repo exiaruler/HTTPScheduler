@@ -1,9 +1,12 @@
 package com.scheduler.app.backend.Task;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.scheduler.app.backend.Task.Model.CompletedTask;
 import com.scheduler.app.backend.Task.Thread.HttpSchedule;
+import com.scheduler.app.backend.Task.Thread.SocketSchedule;
 import com.scheduler.app.backend.Task.Thread.CheckRun;
 import com.scheduler.app.backend.aREST.Models.*;
 import com.scheduler.app.backend.aREST.Service.*;
@@ -11,7 +14,14 @@ import com.scheduler.app.backend.aREST.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
+
+import com.scheduler.app.backend.Command.Models.Command;
+import com.scheduler.app.backend.Messaging.Board.WebSocketHandlerRaw;
+import com.scheduler.app.backend.Messaging.Models.BoardTask;
 @Component
 public class SchedulerTask{
     // setting for queue to start
@@ -30,12 +40,16 @@ public class SchedulerTask{
     private RoutesService routeService;
     @Autowired
     private ParameterService parameterService;
+    @Autowired
+    public WebSocketHandlerRaw websocketHandler;
     // task queue
     private static List<Task> queue=new ArrayList<Task>();
     // task running 
     private static List<Task> runningQueue=new ArrayList<Task>();
     // task finished processing 
     private static List<CompletedTask> completeTaskQueue=new ArrayList<CompletedTask>();
+    // complete received websocket messages
+    private static Map<String,String> completeMessages=new ConcurrentHashMap<>();
     @Scheduled(fixedRate = 100)
     public void runSche(){
         if(queue.isEmpty()&&!start){
@@ -68,7 +82,26 @@ public class SchedulerTask{
                             thread.start();
                         }
                         if(device.getBoard().getSocket()){
-                            
+                            String wsId=device.getBoard().getWebsocketId();
+                            BoardTask commandInput=null;
+                            updateQueue(task);
+                            queue.remove(i);
+                            if(task.getOneTimeJob()){
+                                
+                            }
+                            // if it server side command that uses a motor or servo add to running queue
+                            if(task.getMotor()){
+                                runningQueue.add(task);
+                            }
+                            /* 
+                            if(route.getModes()){
+                                commandInput=mode.getBoardAction();
+                            }else if(!route.getModes()){
+                                commandInput=route.getBoardAction();
+                            }
+                            */
+                            SocketSchedule thread=new SocketSchedule(task, device, route, mode, paramsArr);
+                            thread.start();
                         }
                     }
                     // run http task
@@ -113,6 +146,10 @@ public class SchedulerTask{
             System.out.println("Number of completed task in queue "+completeTaskQueue.size());
             for(int i=0; i<completeTaskQueue.size(); i++){
                 CompletedTask task=completeTaskQueue.get(i);
+                // if task involved a servo or motor remove from running task
+                if(task.getTask().isMotor()&&task.getDevice().getBoard().getSocket()){
+                    removeRunningTask(task.getTask());
+                }
                 //updateQueue(task.getTask());
                 service.modifyTaskFromScheduler(task.getTask(),task);
                 completeTaskQueue.remove(i);

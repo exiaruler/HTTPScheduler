@@ -15,7 +15,7 @@ public class HttpSchedule extends BaseThread{
     private Route route;
     private Mode mode;
     private String[] params;
-   
+    
     public HttpSchedule(Task task,Device device,Route route,Mode mode,String[] params) {
         this.task=task;
         this.device=device;
@@ -36,6 +36,7 @@ public class HttpSchedule extends BaseThread{
     // send request and sends reponse to services to update devices
     public void sendRequest(Task task,Device device,Route route,Mode mode,String[] params) throws InstantiationException{
         long startTime = System.nanoTime();
+        
         boolean sucess=false;
         String state="";
         String warning="";

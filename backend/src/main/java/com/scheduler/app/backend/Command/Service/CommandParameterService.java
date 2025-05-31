@@ -36,7 +36,9 @@ public class CommandParameterService extends Base{
     }
     // electrode 
     public String electode[]={"anode","cathode"};
+
     public String rgbType[]={"COMMON_ANODE"};
+    
     public CommandParameter saveParameter(CommandParameter rec){
         return commandParameter.save(rec);
     }

@@ -53,11 +53,9 @@ class Base{
     }
     public getOriginUrl(){
       var url='http://localhost:3000';
-      /*
       if(typeof window !== 'undefined'){
         url=window.location.origin;
       }
-      */
       return url;
     }
 

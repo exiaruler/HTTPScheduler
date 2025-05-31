@@ -13,10 +13,13 @@ import { NextUIBase } from "@/NextUIBase"
 import FormComponent from "@/components/formGenComponents/layout/formComponent"
 import FormLayout from "@/components/formGenComponents/layout/formComponent"
 import { useRouter } from 'next/navigation';
+import TableComponent from "@/components/Table/TableComponent"
+import TableComponentColumn from "@/components/Table/TableComponentColumn"
 
 export default function Client(props:any){
     const passwordModalRef:any=useRef(null);
     const deleteModalRef:any=useRef(null);
+    const formRefs:any=useRef([]);
     const [activated,setActivated]=useState(true);
     const [board,setBoard]:Board=useState(null);
     const [hardware,setHardware]:Hardware=useState(null);
@@ -35,6 +38,10 @@ export default function Client(props:any){
     const loadHardware=(hardware:Hardware)=>{
         setHardware(hardware);
     }
+    const loadForms=(forms:any)=>{
+
+        formRefs.current.push(forms);
+    }
     const status=(bool:boolean)=>{
         var show="Inactive";
         if(!bool) show="Active";
@@ -46,6 +53,7 @@ export default function Client(props:any){
     useEffect(()=>{
         loadBoard(props.data.board.board);
         loadHardware(props.data.board.hardware);
+        loadForms(props.data.deviceForm);
         console.log(props.data);
     },[])
     return(
@@ -88,13 +96,24 @@ export default function Client(props:any){
                 
             </TabComponent>
             <TabComponent title={"Functions"} eventKey={"functions"}>
-                
+            <Row>
+            <Col>
+            <TableComponent results={[]} idKey={""}>
+            
+            </TableComponent>
+            </Col>
+            </Row>
+            <Row>
+            <Col>
+            <RegularButton caption={"Add Function"} size={undefined} type={undefined}/>
+            </Col>
+            </Row>
             </TabComponent>
             </TabGroup>
             </TabComponent>
         }
         <TabComponent title={"Add Device"} eventKey={"add"} disabled={!activated}>
-        <FormLayout id={""} formId={""} valueKey={""} externalUrl={uiBase.util.baseUrlIo}/>
+        <FormLayout id={""} formId={""} valueKey={""} externalUrl={uiBase.util.baseUrlIo} form={formRefs.current[0]}/>
         </TabComponent>
         </TabGroup>
         </Col>

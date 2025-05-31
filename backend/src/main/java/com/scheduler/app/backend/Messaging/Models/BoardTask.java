@@ -14,13 +14,13 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.scheduler.Base.ModelBase.ModelBase;
+import com.scheduler.Base.ModelBase.TaskModelBase;
 import com.scheduler.app.backend.aREST.Models.Mode;
 import com.scheduler.app.backend.aREST.Models.Route;
 // background task data structure in device
 @Entity
 @Table(name="board_task")
-public class BoardTask extends ModelBase {
+public class BoardTask extends TaskModelBase {
     // type of task and name of task
     @Column
     private String task="";
@@ -73,7 +73,7 @@ public class BoardTask extends ModelBase {
     private int runTarget=0;
     // RGB pins
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "boardTask", cascade =CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("boardtask-rgb")
     private List<BoardPin> rgbSet;
     // target angle
     @Column
@@ -91,16 +91,16 @@ public class BoardTask extends ModelBase {
     @Column
     private boolean systemTask=false;
     // background variables
-    @JsonManagedReference
+    @JsonManagedReference("boardtask-variable")
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "task", cascade = CascadeType.ALL)
     private BoardVariable variable;
     // route
-    @JsonBackReference
+    @JsonBackReference("boardtask-route")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "route_id",referencedColumnName = "id")
     private Route route;
     // mode
-    @JsonBackReference
+    @JsonBackReference("boardtask-mode")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "mode_id",referencedColumnName = "id")
     private Mode mode;

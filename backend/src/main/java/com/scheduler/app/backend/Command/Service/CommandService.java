@@ -1,13 +1,17 @@
 package com.scheduler.app.backend.Command.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scheduler.Base.Base;
 import com.scheduler.app.backend.Command.CommandFunction;
 import com.scheduler.app.backend.Command.Models.Command;
@@ -22,6 +26,7 @@ public class CommandService extends Base {
     public CommandFunction function=new CommandFunction();
     public final CommandParameterService commandParaService;
     public final HardwareService hardwareService;
+    private final ObjectMapper objectMapper;
     private final CommandFunction commandArr[]={
         new CommandFunction(new Command("action","setLed", "", true, 3, false, false, false, null,null), new String[]{"electo","pin","output"}),
         //new CommandFunction(new Command("background","ledblink", "", true, 4, true, false, false, null, null), new String[] {"pin","interval","number","number","number","number"}),
@@ -32,10 +37,11 @@ public class CommandService extends Base {
     };
     
     //public TaskService taskService;
-    public CommandService(CommandRepo command,CommandParameterService commandParaService,HardwareService hardwareService) {
+    public CommandService(CommandRepo command,CommandParameterService commandParaService,HardwareService hardwareService, ObjectMapper objectMapper) {
         this.command = command;
         this.commandParaService=commandParaService;
         this.hardwareService=hardwareService;
+        this.objectMapper = objectMapper;
     }
     public Command getCommand(long id){
         return command.getReferenceById(id);
@@ -43,23 +49,23 @@ public class CommandService extends Base {
     @Bean(initMethod="init")
     public void initData(){
     
-        for(int i=0; i<commandArr.length; i++){
-            Command commandItem=commandArr[i].command;
-            String [] para=commandArr[i].commandParameters;
-            Command exist=command.findCommand(commandItem.getCommandType(), commandItem.getCommand());
-            if(exist!=null){
-                exist.setCommandType(commandItem.getCommandType());
-                exist.setCommand(commandItem.getCommand());
-                exist.setHasMotor(commandItem.getHasMotor());
-                exist.setParams(commandItem.getParams());
-                exist.setTotalParam(commandItem.getTotalParam());
-                //exist.setCommandParameter(createParameterSet(para, exist));
-                command.save(exist);
-            }else
-            {
-                commandItem.setCommandParameter(createParameterSet(para, commandItem));
-                command.save(commandItem);
+        try {
+            // Load the JSON file from resources
+            ClassPathResource resource = new ClassPathResource("json/commands.json");
+            // Deserialize JSON array into a List
+            List<Command> jsonCom=objectMapper.readValue(resource.getInputStream(),new TypeReference<List<Command>>() {});
+            for(int i=0; i<jsonCom.size(); i++){
+                Command commandItem=jsonCom.get(i);
+                Command exist=command.findCommand(commandItem.getCommandType(), commandItem.getCommand());
+                if(commandItem!=null&&exist==null){
+                    Command save=command.save(commandItem);
+                }else if(exist!=null){
+                    command.save(exist);
+                }
+
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         hardwareService.initData();
             
@@ -99,7 +105,9 @@ public class CommandService extends Base {
         if(type=="pin") newPara.setPin(true);
         return newPara;
     }
-
+    public List<Command> getCommands(){
+        return command.findAll();
+    }
     public CommandFunction[] getCommandArr() {
         return commandArr;
     }

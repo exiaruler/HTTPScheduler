@@ -20,7 +20,7 @@ import com.scheduler.app.backend.Messaging.Models.BoardTask;
 @Entity
 @Table(indexes = @Index(columnList = "mode"))
 public class Mode extends ModelBase{
-    @JsonBackReference
+    @JsonBackReference("route-mode")
     @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;
@@ -31,11 +31,11 @@ public class Mode extends ModelBase{
     @Column
     private boolean switchOff=false;    
     // aREST command
-    @JsonManagedReference
+    @JsonManagedReference("mode-params")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "mode",cascade =CascadeType.ALL)
     private List<Parameter> params;
     // Board Task
-    @JsonManagedReference
+    @JsonManagedReference("boardtask-mode")
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "mode", cascade = CascadeType.ALL)
     private BoardTask boardAction;
     

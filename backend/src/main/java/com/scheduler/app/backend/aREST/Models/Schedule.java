@@ -40,7 +40,7 @@ public class Schedule extends ModelBase {
     @Column
     private String url="";
     // link to task
-    @JsonBackReference
+    @JsonBackReference("schedule-task")
     @OneToOne(fetch = FetchType.LAZY,mappedBy = "schedule", cascade = { CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     private Task task;
@@ -50,7 +50,7 @@ public class Schedule extends ModelBase {
     @JoinColumn(name="device_id")
     private Device device;
     // link route from device
-    @JsonBackReference
+    @JsonBackReference("route-schedule")
     @ManyToOne
     @JoinColumn(name="route_id")
     private Route route;

@@ -1,20 +1,22 @@
 package com.scheduler.app.backend.Messaging;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
 public class WebSocketEventListener {
     @EventListener
-    private String handleSessionConnected(SessionConnectEvent event) {
-        System.out.println(event);
-        return "connect";
+    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
+        StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
+        System.out.println("New WebSocket connection: sessionId=" + sha.getSessionId());
     }
 
     @EventListener
-    private void handleSessionDisconnect(SessionDisconnectEvent event) {
-        System.out.println("🔴 WebSocket connection closed");
+    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+        StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
+        System.out.println("WebSocket disconnected: sessionId=" + sha.getSessionId());
     }
 }

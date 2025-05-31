@@ -11,6 +11,7 @@ import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 import com.scheduler.app.backend.aREST.Models.Route;
@@ -43,11 +44,12 @@ public class Command extends ModelBase{
     @Column
     private boolean synchronous=false;
     // list of routes that use command
-    @JsonManagedReference
+    //@JsonManagedReference("command-route")
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "command", cascade =CascadeType.ALL)
     private List<Route> commandUsedRoutes;
     // list of parameters used for this command
-    @JsonManagedReference
+    @JsonManagedReference("command-commandParameter")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "command", cascade =CascadeType.ALL)
     private List<CommandParameter> commandParameter;
     

@@ -27,6 +27,9 @@ public class Task extends ModelBase {
     // mode id
     @Column
     private long modeId;
+    // command id
+    @Column
+    private long commandId;
     // url
     @Column
     private String url;
@@ -60,22 +63,22 @@ public class Task extends ModelBase {
     @Column
     private int retry=0;
     // schedule task
-    @JsonBackReference
+    @JsonBackReference("schedule-task")
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "schedule_id",referencedColumnName = "id")
     private Schedule schedule;
 
 
-
     public Task() {
     }
 
-    public Task(String application, long deviceId, long board, long routeId, long modeId, String url, String payload, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, int retry, Schedule schedule) {
+    public Task(String application, long deviceId, long board, long routeId, long modeId, long commandId, String url, String payload, String section, int priority, boolean motor, LocalDateTime scheduledTime, boolean oneTimeJob, boolean updateDevice, boolean active, boolean httpTask, int retry, Schedule schedule) {
         this.application = application;
         this.deviceId = deviceId;
         this.board = board;
         this.routeId = routeId;
         this.modeId = modeId;
+        this.commandId = commandId;
         this.url = url;
         this.payload = payload;
         this.section = section;
@@ -128,6 +131,14 @@ public class Task extends ModelBase {
 
     public void setModeId(long modeId) {
         this.modeId = modeId;
+    }
+
+    public long getCommandId() {
+        return this.commandId;
+    }
+
+    public void setCommandId(long commandId) {
+        this.commandId = commandId;
     }
 
     public String getUrl() {
@@ -271,6 +282,11 @@ public class Task extends ModelBase {
         return this;
     }
 
+    public Task commandId(long commandId) {
+        setCommandId(commandId);
+        return this;
+    }
+
     public Task url(String url) {
         setUrl(url);
         return this;
@@ -339,12 +355,12 @@ public class Task extends ModelBase {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && routeId == task.routeId && modeId == task.modeId && Objects.equals(url, task.url) && Objects.equals(payload, task.payload) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && retry == task.retry && Objects.equals(schedule, task.schedule);
+        return Objects.equals(application, task.application) && deviceId == task.deviceId && board == task.board && routeId == task.routeId && modeId == task.modeId && commandId == task.commandId && Objects.equals(url, task.url) && Objects.equals(payload, task.payload) && Objects.equals(section, task.section) && priority == task.priority && motor == task.motor && Objects.equals(scheduledTime, task.scheduledTime) && oneTimeJob == task.oneTimeJob && updateDevice == task.updateDevice && active == task.active && httpTask == task.httpTask && retry == task.retry && Objects.equals(schedule, task.schedule);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(application, deviceId, board, routeId, modeId, url, payload, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, retry, schedule);
+        return Objects.hash(application, deviceId, board, routeId, modeId, commandId, url, payload, section, priority, motor, scheduledTime, oneTimeJob, updateDevice, active, httpTask, retry, schedule);
     }
 
     @Override
@@ -355,6 +371,7 @@ public class Task extends ModelBase {
             ", board='" + getBoard() + "'" +
             ", routeId='" + getRouteId() + "'" +
             ", modeId='" + getModeId() + "'" +
+            ", commandId='" + getCommandId() + "'" +
             ", url='" + getUrl() + "'" +
             ", payload='" + getPayload() + "'" +
             ", section='" + getSection() + "'" +
@@ -369,5 +386,5 @@ public class Task extends ModelBase {
             ", schedule='" + getSchedule() + "'" +
             "}";
     }
-    
+
 }

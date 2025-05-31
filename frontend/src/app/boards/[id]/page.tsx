@@ -8,14 +8,14 @@ async function getBoard(id:any) {
   };
   const base=new NextBase();
   var boards=await base.fetchClientGet('/board/uni-board/'+id);
-  var form=await base.fetchClientGet('form/board');
+  var form=await base.fetchClientGet('/form/board');
   dataResp.board=boards;
   dataResp.deviceForm=form;
   return dataResp;
 }
 export default async function Page({params}:any){
-    var param=await params?.id;
-    var board=await getBoard(param);
+    const { id } = await params
+    var board=await getBoard(id);
     return (
         <PageGroup url={'/board/'}>
         <Client data={board}/>

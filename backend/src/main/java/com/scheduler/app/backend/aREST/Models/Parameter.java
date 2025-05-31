@@ -13,7 +13,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 @Entity
 public class Parameter extends ModelBase {
     
-    @JsonBackReference
+    @JsonBackReference("mode-params")
     @ManyToOne
     @JoinColumn(name="mode_id")
     private Mode mode;

@@ -27,7 +27,7 @@ public class Route extends ModelBase{
     @ManyToOne
     @JoinColumn(name="device_id")
     private Device device;
-    // route of the device
+    // route/function of the device
     @Column
     private String route;
     // true if the route has modes
@@ -37,7 +37,7 @@ public class Route extends ModelBase{
     @Column
     private String electrode="";
     // arest Command route
-    @JsonBackReference
+    //@JsonBackReference("command-route")
     @ManyToOne
     @JoinColumn(name="command_id")
     private Command command;
@@ -53,15 +53,19 @@ public class Route extends ModelBase{
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade =CascadeType.ALL)
     private Set<PinsParameter> pins;
     // Board Task
-    @JsonManagedReference("route-boardAction")
+    @JsonManagedReference("boardtask-route")
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "route", cascade = CascadeType.ALL)
     private BoardTask boardAction;
-    
+    // routes that are scheduled
+    @JsonManagedReference("route-schedule")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade =CascadeType.ALL)
+    private List<Schedule> scheduledRoutes;
+
 
     public Route() {
     }
 
-    public Route(Device device, String route, boolean modes, String electrode, Command command, boolean switchDevice, List<Mode> mode, Set<PinsParameter> pins, BoardTask boardAction) {
+    public Route(Device device, String route, boolean modes, String electrode, Command command, boolean switchDevice, List<Mode> mode, Set<PinsParameter> pins, BoardTask boardAction, List<Schedule> scheduledRoutes) {
         this.device = device;
         this.route = route;
         this.modes = modes;
@@ -71,6 +75,7 @@ public class Route extends ModelBase{
         this.mode = mode;
         this.pins = pins;
         this.boardAction = boardAction;
+        this.scheduledRoutes = scheduledRoutes;
     }
 
     public Device getDevice() {
@@ -153,6 +158,14 @@ public class Route extends ModelBase{
         this.boardAction = boardAction;
     }
 
+    public List<Schedule> getScheduledRoutes() {
+        return this.scheduledRoutes;
+    }
+
+    public void setScheduledRoutes(List<Schedule> scheduledRoutes) {
+        this.scheduledRoutes = scheduledRoutes;
+    }
+
     public Route device(Device device) {
         setDevice(device);
         return this;
@@ -198,6 +211,11 @@ public class Route extends ModelBase{
         return this;
     }
 
+    public Route scheduledRoutes(List<Schedule> scheduledRoutes) {
+        setScheduledRoutes(scheduledRoutes);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -206,12 +224,12 @@ public class Route extends ModelBase{
             return false;
         }
         Route route = (Route) o;
-        return Objects.equals(device, route.device) && Objects.equals(route, route.route) && modes == route.modes && Objects.equals(electrode, route.electrode) && Objects.equals(command, route.command) && switchDevice == route.switchDevice && Objects.equals(mode, route.mode) && Objects.equals(pins, route.pins) && Objects.equals(boardAction, route.boardAction);
+        return Objects.equals(device, route.device) && Objects.equals(route, route.route) && modes == route.modes && Objects.equals(electrode, route.electrode) && Objects.equals(command, route.command) && switchDevice == route.switchDevice && Objects.equals(mode, route.mode) && Objects.equals(pins, route.pins) && Objects.equals(boardAction, route.boardAction) && Objects.equals(scheduledRoutes, route.scheduledRoutes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(device, route, modes, electrode, command, switchDevice, mode, pins, boardAction);
+        return Objects.hash(device, route, modes, electrode, command, switchDevice, mode, pins, boardAction, scheduledRoutes);
     }
 
     @Override
@@ -226,8 +244,8 @@ public class Route extends ModelBase{
             ", mode='" + getMode() + "'" +
             ", pins='" + getPins() + "'" +
             ", boardAction='" + getBoardAction() + "'" +
+            ", scheduledRoutes='" + getScheduledRoutes() + "'" +
             "}";
     }
-
     
 }

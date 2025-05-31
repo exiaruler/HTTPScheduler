@@ -8,14 +8,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.scheduler.Base.ModelBase.ModelBase;
+import com.scheduler.Base.ModelBase.TaskModelBase;
 // current output
 @Entity
-public class OutputCurrent extends ModelBase {
+public class OutputCurrent extends TaskModelBase {
     
     @ManyToOne
     @JoinColumn(name="board_variable_id")
-    @JsonBackReference
+    @JsonBackReference("boardvariable-downput")
     private BoardVariable boardVariable;
     // current
     @Column

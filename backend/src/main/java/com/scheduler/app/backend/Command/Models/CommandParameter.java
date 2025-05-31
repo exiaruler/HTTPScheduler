@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -14,8 +15,8 @@ import com.scheduler.Base.ModelBase.ModelBase;
 public class CommandParameter extends ModelBase{
 
     // link to command
-    @JsonBackReference
-    @ManyToOne
+    @JsonBackReference("command-commandParameter")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="command_id")
     private Command command;
 
