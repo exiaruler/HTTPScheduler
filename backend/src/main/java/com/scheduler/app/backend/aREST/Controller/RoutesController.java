@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,9 @@ import com.scheduler.Base.MapCast.MapCast;
 import com.scheduler.app.backend.aREST.Models.Mode;
 import com.scheduler.app.backend.aREST.Models.Route;
 import com.scheduler.app.backend.aREST.Service.RoutesService;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 
 @RestController
 @RequestMapping(value = "/route")
@@ -31,6 +36,11 @@ public class RoutesController extends ControllerBase {
     public List<Route> getAllRoutes(){
         return service.getAllRoutes();
     }
+    @GetMapping("/get-route/{id}")
+    public Route getRoute(@PathVariable long id) {
+        return service.getRouteById(id);
+    }
+    
     @PostMapping("/add-route")
     public Route postMethodName(@RequestBody Map<String, Object> payload) {
         int deviceId=(int) payload.get("deviceid");
@@ -46,11 +56,19 @@ public class RoutesController extends ControllerBase {
         MapCast cast=mapCast.mapJson(payload); 
         return service.addRouteCommand(id,cast.getKeyString("route"),cast.getKeyInteger("command"),cast.getKeyArrayListString("pins"));
     }
-    @PostMapping("/add-route-socket/{id}")
-    public String addRouteSocket(@PathVariable long id,@RequestBody Route entity) {
+    @PostMapping("/add-route-socket/{deviceId}")
+    public Route addRouteSocket(@PathVariable String deviceId,@RequestBody Route entity) {
         //TODO: process POST request
-        
+        return service.addRouteandModes(entity, deviceId);
+    }
+    @PutMapping("/update-route/{id}")
+    public String updateRouteSocket(@PathVariable long id, @RequestBody Route entity) {
+        //TODO: process PUT request
         return "";
+    }
+    @DeleteMapping("/delete-route/{id}")
+    public void deleteRoute(@PathVariable long id){
+        service.deleteRoute(id);
     }
     
 

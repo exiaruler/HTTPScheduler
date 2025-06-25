@@ -15,7 +15,8 @@ import {FormInterface} from "./formInterface";
 // cross compatible component
 const  FormLayout=forwardRef (function FormComponent(props:FormInterface,ref){
   console.log(props);
-  let formJson;
+  const formRef:any=useRef(null);
+  //let formJson;
   //let location = useLocation();
   const [formLay,setFormLay]=useState({
     urlLocation:"",
@@ -66,7 +67,8 @@ const  FormLayout=forwardRef (function FormComponent(props:FormInterface,ref){
   const setFormProp=()=>{
     errorClearRef.current=[];
     if(props.form){
-      formJson=props.form;
+      var formJson=props.form;
+      formRef.current=props.form;
       setLoadState(10);
       if(formJson){
         setFormLay({
@@ -153,7 +155,7 @@ const  FormLayout=forwardRef (function FormComponent(props:FormInterface,ref){
         }
         setFormError(errorJson);
         setLoadState(50);
-        renderFormFields(formObj.form,keyArr.current,formObj.setting);
+        //renderFormFields(formObj.form,keyArr.current,formObj.setting);
       },
       // display error message
       function(){
@@ -422,6 +424,8 @@ const  FormLayout=forwardRef (function FormComponent(props:FormInterface,ref){
       clearError
     }
   },[]);
+  
+  /*
   if(changeForm()){
     const form:any=document.getElementById('FormRender') as HTMLElement;
     //form.innerHTML=""
@@ -435,10 +439,11 @@ const  FormLayout=forwardRef (function FormComponent(props:FormInterface,ref){
       insertValuesEntry(record.current);
     }else id="0";
   }
-  
+  */
+ //setFormProp();
   useEffect(() => {
-     //setFormProp();
-  },[]);
+    setFormProp();
+  },[formRef]);
   return(
     <div>
     <Row>

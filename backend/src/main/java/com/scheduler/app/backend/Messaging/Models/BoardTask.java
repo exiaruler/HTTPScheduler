@@ -15,12 +15,16 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.Base.ModelBase.TaskModelBase;
+import com.scheduler.app.backend.Command.Models.Command;
 import com.scheduler.app.backend.aREST.Models.Mode;
 import com.scheduler.app.backend.aREST.Models.Route;
 // background task data structure in device
 @Entity
 @Table(name="board_task")
 public class BoardTask extends TaskModelBase {
+    // task id (taskId|deviceId|date(day,month,year)|time(hour,minute))
+    @Column
+    private String taskId;
     // type of task and name of task
     @Column
     private String task="";
@@ -33,6 +37,21 @@ public class BoardTask extends TaskModelBase {
     // GPIO pin
     @Column
     private int pin=-1;
+    // GPIO pins array (max is 10)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "boardTask", cascade =CascadeType.ALL)
+    @JsonManagedReference("boardtask-pins")
+    private List<BoardPin> pins;
+    // pins used
+    @Column
+    private int pinsUsed; 
+    // current input
+    @OneToMany(mappedBy = "boardTaskInput", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("boardvariable-input")
+    private List<InputCurrent> input;
+    //current output
+    @OneToMany(mappedBy = "boardTaskOutput", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("boardvariable-output")
+    private List<OutputCurrent> output;
     // RGB used in task
     @Column
     private boolean rgb=false;
@@ -71,10 +90,6 @@ public class BoardTask extends TaskModelBase {
     // background run target
     @Column
     private int runTarget=0;
-    // RGB pins
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "boardTask", cascade =CascadeType.ALL)
-    @JsonManagedReference("boardtask-rgb")
-    private List<BoardPin> rgbSet;
     // target angle
     @Column
     private int targetAngle=-1;
@@ -87,13 +102,14 @@ public class BoardTask extends TaskModelBase {
     // http request to retrieve the next task
     @Column
     private boolean requestNext=false;
-    // task is mandatory and used for server connection
+    // task that run in the sysQueue
     @Column
     private boolean systemTask=false;
     // background variables
     @JsonManagedReference("boardtask-variable")
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "task", cascade = CascadeType.ALL)
     private BoardVariable variable;
+
     // route
     @JsonBackReference("boardtask-route")
     @OneToOne(cascade = CascadeType.ALL)
@@ -104,16 +120,26 @@ public class BoardTask extends TaskModelBase {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "mode_id",referencedColumnName = "id")
     private Mode mode;
+    // command associated
+    @JsonBackReference("command-boardtask")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "command_id",referencedColumnName = "id")
+    private Command command;
 
 
     public BoardTask() {
     }
 
-    public BoardTask(String task, String method, String param, int pin, boolean rgb, int startAngle, int moveAngle, int loops, int beginDelay, long delayInterval, int rgbRed, int rgbGreen, int rgbBlue, String rgbType, int deduction, int runTarget, List<BoardPin> rgbSet, int targetAngle, boolean status, int nextTask, boolean requestNext, boolean systemTask, BoardVariable variable, Route route, Mode mode) {
+    public BoardTask(String taskId, String task, String method, String param, int pin, List<BoardPin> pins, int pinsUsed, List<InputCurrent> input, List<OutputCurrent> output, boolean rgb, int startAngle, int moveAngle, int loops, int beginDelay, long delayInterval, int rgbRed, int rgbGreen, int rgbBlue, String rgbType, int deduction, int runTarget, int targetAngle, boolean status, int nextTask, boolean requestNext, boolean systemTask, BoardVariable variable, Route route, Mode mode, Command command) {
+        this.taskId = taskId;
         this.task = task;
         this.method = method;
         this.param = param;
         this.pin = pin;
+        this.pins = pins;
+        this.pinsUsed = pinsUsed;
+        this.input = input;
+        this.output = output;
         this.rgb = rgb;
         this.startAngle = startAngle;
         this.moveAngle = moveAngle;
@@ -126,7 +152,6 @@ public class BoardTask extends TaskModelBase {
         this.rgbType = rgbType;
         this.deduction = deduction;
         this.runTarget = runTarget;
-        this.rgbSet = rgbSet;
         this.targetAngle = targetAngle;
         this.status = status;
         this.nextTask = nextTask;
@@ -135,6 +160,15 @@ public class BoardTask extends TaskModelBase {
         this.variable = variable;
         this.route = route;
         this.mode = mode;
+        this.command = command;
+    }
+
+    public String getTaskId() {
+        return this.taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getTask() {
@@ -167,6 +201,38 @@ public class BoardTask extends TaskModelBase {
 
     public void setPin(int pin) {
         this.pin = pin;
+    }
+
+    public List<BoardPin> getPins() {
+        return this.pins;
+    }
+
+    public void setPins(List<BoardPin> pins) {
+        this.pins = pins;
+    }
+
+    public int getPinsUsed() {
+        return this.pinsUsed;
+    }
+
+    public void setPinsUsed(int pinsUsed) {
+        this.pinsUsed = pinsUsed;
+    }
+
+    public List<InputCurrent> getInput() {
+        return this.input;
+    }
+
+    public void setInput(List<InputCurrent> input) {
+        this.input = input;
+    }
+
+    public List<OutputCurrent> getOutput() {
+        return this.output;
+    }
+
+    public void setOutput(List<OutputCurrent> output) {
+        this.output = output;
     }
 
     public boolean isRgb() {
@@ -269,14 +335,6 @@ public class BoardTask extends TaskModelBase {
         this.runTarget = runTarget;
     }
 
-    public List<BoardPin> getRgbSet() {
-        return this.rgbSet;
-    }
-
-    public void setRgbSet(List<BoardPin> rgbSet) {
-        this.rgbSet = rgbSet;
-    }
-
     public int getTargetAngle() {
         return this.targetAngle;
     }
@@ -353,6 +411,19 @@ public class BoardTask extends TaskModelBase {
         this.mode = mode;
     }
 
+    public Command getCommand() {
+        return this.command;
+    }
+
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    public BoardTask taskId(String taskId) {
+        setTaskId(taskId);
+        return this;
+    }
+
     public BoardTask task(String task) {
         setTask(task);
         return this;
@@ -370,6 +441,26 @@ public class BoardTask extends TaskModelBase {
 
     public BoardTask pin(int pin) {
         setPin(pin);
+        return this;
+    }
+
+    public BoardTask pins(List<BoardPin> pins) {
+        setPins(pins);
+        return this;
+    }
+
+    public BoardTask pinsUsed(int pinsUsed) {
+        setPinsUsed(pinsUsed);
+        return this;
+    }
+
+    public BoardTask input(List<InputCurrent> input) {
+        setInput(input);
+        return this;
+    }
+
+    public BoardTask output(List<OutputCurrent> output) {
+        setOutput(output);
         return this;
     }
 
@@ -433,11 +524,6 @@ public class BoardTask extends TaskModelBase {
         return this;
     }
 
-    public BoardTask rgbSet(List<BoardPin> rgbSet) {
-        setRgbSet(rgbSet);
-        return this;
-    }
-
     public BoardTask targetAngle(int targetAngle) {
         setTargetAngle(targetAngle);
         return this;
@@ -478,6 +564,11 @@ public class BoardTask extends TaskModelBase {
         return this;
     }
 
+    public BoardTask command(Command command) {
+        setCommand(command);
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -486,21 +577,26 @@ public class BoardTask extends TaskModelBase {
             return false;
         }
         BoardTask boardTask = (BoardTask) o;
-        return Objects.equals(task, boardTask.task) && Objects.equals(method, boardTask.method) && Objects.equals(param, boardTask.param) && pin == boardTask.pin && rgb == boardTask.rgb && startAngle == boardTask.startAngle && moveAngle == boardTask.moveAngle && loops == boardTask.loops && beginDelay == boardTask.beginDelay && delayInterval == boardTask.delayInterval && rgbRed == boardTask.rgbRed && rgbGreen == boardTask.rgbGreen && rgbBlue == boardTask.rgbBlue && Objects.equals(rgbType, boardTask.rgbType) && deduction == boardTask.deduction && runTarget == boardTask.runTarget && Objects.equals(rgbSet, boardTask.rgbSet) && targetAngle == boardTask.targetAngle && status == boardTask.status && nextTask == boardTask.nextTask && requestNext == boardTask.requestNext && systemTask == boardTask.systemTask && Objects.equals(variable, boardTask.variable) && Objects.equals(route, boardTask.route) && Objects.equals(mode, boardTask.mode);
+        return Objects.equals(taskId, boardTask.taskId) && Objects.equals(task, boardTask.task) && Objects.equals(method, boardTask.method) && Objects.equals(param, boardTask.param) && pin == boardTask.pin && Objects.equals(pins, boardTask.pins) && pinsUsed == boardTask.pinsUsed && Objects.equals(input, boardTask.input) && Objects.equals(output, boardTask.output) && rgb == boardTask.rgb && startAngle == boardTask.startAngle && moveAngle == boardTask.moveAngle && loops == boardTask.loops && beginDelay == boardTask.beginDelay && delayInterval == boardTask.delayInterval && rgbRed == boardTask.rgbRed && rgbGreen == boardTask.rgbGreen && rgbBlue == boardTask.rgbBlue && Objects.equals(rgbType, boardTask.rgbType) && deduction == boardTask.deduction && runTarget == boardTask.runTarget && targetAngle == boardTask.targetAngle && status == boardTask.status && nextTask == boardTask.nextTask && requestNext == boardTask.requestNext && systemTask == boardTask.systemTask && Objects.equals(variable, boardTask.variable) && Objects.equals(route, boardTask.route) && Objects.equals(mode, boardTask.mode) && Objects.equals(command, boardTask.command);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(task, method, param, pin, rgb, startAngle, moveAngle, loops, beginDelay, delayInterval, rgbRed, rgbGreen, rgbBlue, rgbType, deduction, runTarget, rgbSet, targetAngle, status, nextTask, requestNext, systemTask, variable, route, mode);
+        return Objects.hash(taskId, task, method, param, pin, pins, pinsUsed, input, output, rgb, startAngle, moveAngle, loops, beginDelay, delayInterval, rgbRed, rgbGreen, rgbBlue, rgbType, deduction, runTarget, targetAngle, status, nextTask, requestNext, systemTask, variable, route, mode, command);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " task='" + getTask() + "'" +
+            " taskId='" + getTaskId() + "'" +
+            ", task='" + getTask() + "'" +
             ", method='" + getMethod() + "'" +
             ", param='" + getParam() + "'" +
             ", pin='" + getPin() + "'" +
+            ", pins='" + getPins() + "'" +
+            ", pinsUsed='" + getPinsUsed() + "'" +
+            ", input='" + getInput() + "'" +
+            ", output='" + getOutput() + "'" +
             ", rgb='" + isRgb() + "'" +
             ", startAngle='" + getStartAngle() + "'" +
             ", moveAngle='" + getMoveAngle() + "'" +
@@ -513,14 +609,18 @@ public class BoardTask extends TaskModelBase {
             ", rgbType='" + getRgbType() + "'" +
             ", deduction='" + getDeduction() + "'" +
             ", runTarget='" + getRunTarget() + "'" +
-            ", rgbSet='" + getRgbSet() + "'" +
             ", targetAngle='" + getTargetAngle() + "'" +
             ", status='" + isStatus() + "'" +
             ", nextTask='" + getNextTask() + "'" +
             ", requestNext='" + isRequestNext() + "'" +
             ", systemTask='" + isSystemTask() + "'" +
             ", variable='" + getVariable() + "'" +
+            ", route='" + getRoute() + "'" +
+            ", mode='" + getMode() + "'" +
+            ", command='" + getCommand() + "'" +
             "}";
     }
+   
+    
     
 }

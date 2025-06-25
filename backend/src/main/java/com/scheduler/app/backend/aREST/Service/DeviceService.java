@@ -38,6 +38,9 @@ public class DeviceService extends Base {
         if(board!=null){
             entry.setBoard(board);
             Device save=deviceRepo.save(entry);
+            String deviceId=board.getBoardId()+save.getId();
+            save.setDeviceId(deviceId);
+            save=deviceRepo.save(entry);
             entry=save;
         }
         return entry;

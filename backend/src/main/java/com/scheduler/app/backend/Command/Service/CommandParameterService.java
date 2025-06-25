@@ -1,6 +1,7 @@
 package com.scheduler.app.backend.Command.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,16 @@ public class CommandParameterService extends Base{
     public String electode[]={"anode","cathode"};
 
     public String rgbType[]={"COMMON_ANODE"};
-    
+
+    public CommandParameter getParameter(long id){
+        return commandParameter.getReferenceById(id);
+    }
+    public CommandParameter getParameterInit(long id){
+        return commandParameter.getParameter(id);
+    }
+    public List<CommandParameter> getParameterListInit(long id){
+        return commandParameter.findParametersByCommand(id);
+    }
     public CommandParameter saveParameter(CommandParameter rec){
         return commandParameter.save(rec);
     }

@@ -16,6 +16,9 @@ public interface DeviceRepo  extends JpaRepository<Device, Long> {
     @Query(value = "Select * from scheduler.device where id= :id and name= :name",nativeQuery =true)
     Device findExistingDevice(@Param("id")long id,@Param("name")String name);
 
+    @Query(value = "Select * from scheduler.device where deviceId=:id",nativeQuery =true)
+    Device findDeviceByDeviceId(@Param("id")String id);
+
     @Query(value = "SELECT id FROM scheduler.device where board_id= :id",nativeQuery =true)
     long [] findDevicesByBoard(@Param("id") long id);
 }

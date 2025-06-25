@@ -1,4 +1,8 @@
 import Util from "./base/Util";
+interface GetInput{
+    api:string,
+    key:string
+}
 // override class
 export class NextBase extends Util{
     // override origin
@@ -33,8 +37,8 @@ export class NextBase extends Util{
     }
     public async fetchClient(url:string,method:string,body:any){
         var request=null;
-        var payload=JSON.stringify(body);
-        var config=this.apiCallConfig(method,payload);
+        const payload=JSON.stringify(body);
+        const config=this.apiCallConfig(method,payload);
         try{
             request=await fetch(this.baseURL+'/api'+url,config);
             
@@ -42,6 +46,16 @@ export class NextBase extends Util{
 
         }
         return request;
+    }
+    public async fetchGetApi(input:Array<GetInput>){
+        var result={};
+        for(var i=0; i<input.length; i++){
+            var req=input[i];
+            const request=await this.fetchClientGet(req.api);
+            var key=req.key;
+            result={...result,[req.key]:request};
+        }
+        return result;
     }
 
 }

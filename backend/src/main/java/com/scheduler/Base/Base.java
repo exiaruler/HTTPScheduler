@@ -30,24 +30,43 @@ public class Base{
     }
     public String getDataString(String query){
         String data="";
-        data=entityManager.createQuery(query).getResultList().toString();
-        return data;
-    }
-    public int getDataInt(String query){
-        int data=0;
-        data=Integer.parseInt(entityManager.createQuery(query).getResultList().toString());
-        return data;
-    }
-    public long getDataLong(String query){
-        long data=0;
-        EntityManager em=entityManager;
         try{
-            List<?> test=em.createQuery(query).getResultList();
-            System.out.println(test);
-        }catch(Exception err){
+            data=entityManager.createNativeQuery(query).getSingleResult().toString();
+        }catch(Exception e){
 
         }
         return data;
+    }
+    public int getDataInt(String query){
+        int data=-1;
+        String executeQuery="";
+        try{
+            executeQuery=entityManager.createNativeQuery(query).getSingleResult().toString();
+            if(executeQuery!=""){
+                data=Integer.parseInt(executeQuery);
+            }
+        }catch(Exception e){
+
+        }
+        return data;
+    }
+    public long getDataLong(String query){
+        long data=-1;
+        String executeQuery="";
+        try {
+            executeQuery=entityManager.createNativeQuery(query).getSingleResult().toString();
+            if(executeQuery!=""){
+                data=Long.parseLong(executeQuery);
+            }
+        } catch (Exception e) {
+        }
+        return data;
+    }
+    public void executeQuery(String query){
+        try {
+            entityManager.createNativeQuery(query).executeUpdate();
+        } catch (Exception e) {
+        }
     }
     public String quoteParam(String value){
         return "'"+value+"'";
@@ -173,5 +192,8 @@ public class Base{
     }
     public String returnDataString(List<String> list){
         return "{"+String.join(",", list)+"}";
+    }
+    public int currentAnodeCalculate(int value){
+        return 255-value;
     }
 }

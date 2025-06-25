@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 
 @Entity
-@Table(indexes = @Index(columnList = "name"))
+@Table(indexes = @Index(columnList = "name,deviceId"))
 public class Device extends ModelBase{
 
     // device which the board is belong to
@@ -25,6 +25,9 @@ public class Device extends ModelBase{
     @JoinColumn(name="board_id")
     @JsonBackReference("device-board")
     private Board board;
+    // boardId+id
+    @Column
+    private String deviceId;
     // name of device
     @Column
     private String name;
@@ -71,11 +74,13 @@ public class Device extends ModelBase{
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "device",cascade =CascadeType.ALL)
     private List<Component> components;
   
+
     public Device() {
     }
 
-    public Device(Board board, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, boolean switchDevice, boolean animationActive, List<Route> routes, List<Schedule> schedules, List<Component> components) {
+    public Device(Board board, String deviceId, String name, String state, String warning, String type, String subtype, boolean frameworkFollowed, boolean custom, boolean switchDevice, boolean animationActive, List<Route> routes, List<Schedule> schedules, List<Component> components) {
         this.board = board;
+        this.deviceId = deviceId;
         this.name = name;
         this.state = state;
         this.warning = warning;
@@ -96,6 +101,14 @@ public class Device extends ModelBase{
 
     public void setBoard(Board board) {
         this.board = board;
+    }
+
+    public String getDeviceId() {
+        return this.deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getName() {
@@ -215,6 +228,11 @@ public class Device extends ModelBase{
         return this;
     }
 
+    public Device deviceId(String deviceId) {
+        setDeviceId(deviceId);
+        return this;
+    }
+
     public Device name(String name) {
         setName(name);
         return this;
@@ -283,18 +301,19 @@ public class Device extends ModelBase{
             return false;
         }
         Device device = (Device) o;
-        return Objects.equals(board, device.board) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && switchDevice == device.switchDevice && animationActive == device.animationActive && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(components, device.components);
+        return Objects.equals(board, device.board) && Objects.equals(deviceId, device.deviceId) && Objects.equals(name, device.name) && Objects.equals(state, device.state) && Objects.equals(warning, device.warning) && Objects.equals(type, device.type) && Objects.equals(subtype, device.subtype) && frameworkFollowed == device.frameworkFollowed && custom == device.custom && switchDevice == device.switchDevice && animationActive == device.animationActive && Objects.equals(routes, device.routes) && Objects.equals(schedules, device.schedules) && Objects.equals(components, device.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, name, state, warning, type, subtype, frameworkFollowed, custom, switchDevice, animationActive, routes, schedules, components);
+        return Objects.hash(board, deviceId, name, state, warning, type, subtype, frameworkFollowed, custom, switchDevice, animationActive, routes, schedules, components);
     }
 
     @Override
     public String toString() {
         return "{" +
             " board='" + getBoard() + "'" +
+            ", deviceId='" + getDeviceId() + "'" +
             ", name='" + getName() + "'" +
             ", state='" + getState() + "'" +
             ", warning='" + getWarning() + "'" +
@@ -309,7 +328,7 @@ public class Device extends ModelBase{
             ", components='" + getComponents() + "'" +
             "}";
     }
-
+   
 
 
 }

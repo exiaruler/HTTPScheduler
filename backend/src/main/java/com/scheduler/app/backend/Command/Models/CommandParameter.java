@@ -26,6 +26,9 @@ public class CommandParameter extends ModelBase{
     // component
     @Column 
     private String component;
+    // component label
+    @Column 
+    private String label="";
     // input type
     @Column
     private String type;
@@ -35,20 +38,27 @@ public class CommandParameter extends ModelBase{
     // key of background task
     @Column
     private String backgroundKey;
+    // sub key of background task
+    @Column 
+    private String subKey="";
     // class of key that it belongs to
     @Column
     private String className;
 
+
+
     public CommandParameter() {
     }
 
-    public CommandParameter(Command command, int parameterOrder, String component, String type, boolean pin, String backgroundKey, String className) {
+    public CommandParameter(Command command, int parameterOrder, String component, String label, String type, boolean pin, String backgroundKey, String subKey, String className) {
         this.command = command;
         this.parameterOrder = parameterOrder;
         this.component = component;
+        this.label = label;
         this.type = type;
         this.pin = pin;
         this.backgroundKey = backgroundKey;
+        this.subKey = subKey;
         this.className = className;
     }
 
@@ -74,6 +84,14 @@ public class CommandParameter extends ModelBase{
 
     public void setComponent(String component) {
         this.component = component;
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getType() {
@@ -104,6 +122,14 @@ public class CommandParameter extends ModelBase{
         this.backgroundKey = backgroundKey;
     }
 
+    public String getSubKey() {
+        return this.subKey;
+    }
+
+    public void setSubKey(String subKey) {
+        this.subKey = subKey;
+    }
+
     public String getClassName() {
         return this.className;
     }
@@ -127,6 +153,11 @@ public class CommandParameter extends ModelBase{
         return this;
     }
 
+    public CommandParameter label(String label) {
+        setLabel(label);
+        return this;
+    }
+
     public CommandParameter type(String type) {
         setType(type);
         return this;
@@ -139,6 +170,11 @@ public class CommandParameter extends ModelBase{
 
     public CommandParameter backgroundKey(String backgroundKey) {
         setBackgroundKey(backgroundKey);
+        return this;
+    }
+
+    public CommandParameter subKey(String subKey) {
+        setSubKey(subKey);
         return this;
     }
 
@@ -155,12 +191,12 @@ public class CommandParameter extends ModelBase{
             return false;
         }
         CommandParameter commandParameter = (CommandParameter) o;
-        return Objects.equals(command, commandParameter.command) && parameterOrder == commandParameter.parameterOrder && Objects.equals(component, commandParameter.component) && Objects.equals(type, commandParameter.type) && pin == commandParameter.pin && Objects.equals(backgroundKey, commandParameter.backgroundKey) && Objects.equals(className, commandParameter.className);
+        return Objects.equals(command, commandParameter.command) && parameterOrder == commandParameter.parameterOrder && Objects.equals(component, commandParameter.component) && Objects.equals(label, commandParameter.label) && Objects.equals(type, commandParameter.type) && pin == commandParameter.pin && Objects.equals(backgroundKey, commandParameter.backgroundKey) && Objects.equals(subKey, commandParameter.subKey) && Objects.equals(className, commandParameter.className);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(command, parameterOrder, component, type, pin, backgroundKey, className);
+        return Objects.hash(command, parameterOrder, component, label, type, pin, backgroundKey, subKey, className);
     }
 
     @Override
@@ -169,11 +205,15 @@ public class CommandParameter extends ModelBase{
             " command='" + getCommand() + "'" +
             ", parameterOrder='" + getParameterOrder() + "'" +
             ", component='" + getComponent() + "'" +
+            ", label='" + getLabel() + "'" +
             ", type='" + getType() + "'" +
             ", pin='" + isPin() + "'" +
             ", backgroundKey='" + getBackgroundKey() + "'" +
+            ", subKey='" + getSubKey() + "'" +
             ", className='" + getClassName() + "'" +
             "}";
     }
+    
+    
     
 }

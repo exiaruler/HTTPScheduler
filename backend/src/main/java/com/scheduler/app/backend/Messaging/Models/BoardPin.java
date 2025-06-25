@@ -16,7 +16,7 @@ import com.scheduler.Base.ModelBase.TaskModelBase;
 public class BoardPin extends TaskModelBase {
     @ManyToOne
     @JoinColumn(name="board_task_id")
-    @JsonBackReference("boardtask-rgb")
+    @JsonBackReference("boardtask-pins")
     private BoardTask boardTask;
     @Column
     private int pin;

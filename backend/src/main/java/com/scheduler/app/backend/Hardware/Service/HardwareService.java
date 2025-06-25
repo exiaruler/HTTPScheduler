@@ -27,6 +27,7 @@ public class HardwareService extends Base {
     public HardwareService(HardwareRepo hardware,HardwarePinsRepo pins){
         this.hardware=hardware;
         this.pins=pins;
+        pinMap.put("A0", 0);
         pinMap.put("D0", 16);
         pinMap.put("D1", 5);
         pinMap.put("D2", 4);
@@ -42,6 +43,7 @@ public class HardwareService extends Base {
         for(int i=0; i<boards.length; i++){
             Hardware board=boards[i];
             Hardware existBoard=hardware.findHardwareByBoardName(board.getBoardName());
+            //existBoard=hardware.getById(existBoard.getId());
             if(existBoard!=null){
 
             }else

@@ -12,6 +12,7 @@ interface Props{
     boards:Array<Object>;
     addForm:Object;
 }
+// user boards page
 export default function Client(props:any){
     const router = useRouter();
     const modalRef:any=useRef(null);
@@ -36,6 +37,13 @@ export default function Client(props:any){
         const postForm=await uiBase.util.fetchClient('/board/board','POST',form);
         const status=await postForm?.status;
         if(postForm.ok){
+            var addedBoard=await postForm?.json();
+            /*
+            if(addedBoard!=null){
+                setBoards(boards.push(addedBoard));
+                modalRef.close();
+            }
+                */
             window.location.reload();
         }else console.log( await postForm?.json());
     }

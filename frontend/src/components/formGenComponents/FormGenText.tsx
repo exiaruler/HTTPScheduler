@@ -2,27 +2,14 @@
 import { ChangeEventHandler, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import { Col, Row } from 'react-bootstrap';
-type Props={
-    label:string,
-    type:string,
-    name?:string,
-    rows:number,
-    required?:boolean,
-    readOnly?:boolean,
-    disable?:boolean,
-    onChange?:ChangeEventHandler,
-    warning?:string,
-    value:string,
-    size?:any,
-    md?:number,
-    xs?:number
-}
+import { Props,State } from './interface/textInterface';
+
 // text field of react bootstrap forms
-export class FormGenText extends Component<Props>{
+export class FormGenText extends Component<Props,State>{
     constructor(props:Props) {
         super(props);
         this.state = {
-            
+            value:""
         };
     }
     private dataType=this.props.type;

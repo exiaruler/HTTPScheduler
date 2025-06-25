@@ -1,5 +1,6 @@
 package com.scheduler.app.backend.Messaging.Models;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,9 +27,7 @@ public class BoardVariable extends TaskModelBase {
     private BoardTask task;
     @Column
     private int x=1;
-    @OneToMany(mappedBy = "boardVariable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference("boardvariable-downput")
-    private List<OutputCurrent> downput;
+    // redudant
     @Column
     private int output=255;
     @Column
@@ -38,6 +37,11 @@ public class BoardVariable extends TaskModelBase {
     // fade
     @Column
     private int brightness = 0;
+    // brightness array
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "boardVariable", cascade =CascadeType.ALL)
+    @JsonManagedReference("boardvariable-bright")
+    private List<Brightness> brightArray=new ArrayList<>();
+
     //variables to hold our color intensities and direction
     //and define some initial "random" values to seed it
     @Column
@@ -58,18 +62,17 @@ public class BoardVariable extends TaskModelBase {
     private int currentAngle=0;
 
 
-
     public BoardVariable() {
     }
 
-    public BoardVariable(BoardTask task, int x, List<OutputCurrent> downput, int output, Long d1, Long d2, int brightness, int red, int green, int blue, int red_direction, int green_direction, int blue_direction, int count, int currentAngle) {
+    public BoardVariable(BoardTask task, int x, int output, Long d1, Long d2, int brightness, List<Brightness> brightArray, int red, int green, int blue, int red_direction, int green_direction, int blue_direction, int count, int currentAngle) {
         this.task = task;
         this.x = x;
-        this.downput = downput;
         this.output = output;
         this.d1 = d1;
         this.d2 = d2;
         this.brightness = brightness;
+        this.brightArray = brightArray;
         this.red = red;
         this.green = green;
         this.blue = blue;
@@ -94,14 +97,6 @@ public class BoardVariable extends TaskModelBase {
 
     public void setX(int x) {
         this.x = x;
-    }
-
-    public List<OutputCurrent> getDownput() {
-        return this.downput;
-    }
-
-    public void setDownput(List<OutputCurrent> downput) {
-        this.downput = downput;
     }
 
     public int getOutput() {
@@ -134,6 +129,14 @@ public class BoardVariable extends TaskModelBase {
 
     public void setBrightness(int brightness) {
         this.brightness = brightness;
+    }
+
+    public List<Brightness> getBrightArray() {
+        return this.brightArray;
+    }
+
+    public void setBrightArray(List<Brightness> brightArray) {
+        this.brightArray = brightArray;
     }
 
     public int getRed() {
@@ -210,11 +213,6 @@ public class BoardVariable extends TaskModelBase {
         return this;
     }
 
-    public BoardVariable downput(List<OutputCurrent> downput) {
-        setDownput(downput);
-        return this;
-    }
-
     public BoardVariable output(int output) {
         setOutput(output);
         return this;
@@ -232,6 +230,11 @@ public class BoardVariable extends TaskModelBase {
 
     public BoardVariable brightness(int brightness) {
         setBrightness(brightness);
+        return this;
+    }
+
+    public BoardVariable brightArray(List<Brightness> brightArray) {
+        setBrightArray(brightArray);
         return this;
     }
 
@@ -283,12 +286,12 @@ public class BoardVariable extends TaskModelBase {
             return false;
         }
         BoardVariable boardVariable = (BoardVariable) o;
-        return Objects.equals(task, boardVariable.task) && x == boardVariable.x && Objects.equals(downput, boardVariable.downput) && output == boardVariable.output && Objects.equals(d1, boardVariable.d1) && Objects.equals(d2, boardVariable.d2) && brightness == boardVariable.brightness && red == boardVariable.red && green == boardVariable.green && blue == boardVariable.blue && red_direction == boardVariable.red_direction && green_direction == boardVariable.green_direction && blue_direction == boardVariable.blue_direction && count == boardVariable.count && currentAngle == boardVariable.currentAngle;
+        return Objects.equals(task, boardVariable.task) && x == boardVariable.x && output == boardVariable.output && Objects.equals(d1, boardVariable.d1) && Objects.equals(d2, boardVariable.d2) && brightness == boardVariable.brightness && Objects.equals(brightArray, boardVariable.brightArray) && red == boardVariable.red && green == boardVariable.green && blue == boardVariable.blue && red_direction == boardVariable.red_direction && green_direction == boardVariable.green_direction && blue_direction == boardVariable.blue_direction && count == boardVariable.count && currentAngle == boardVariable.currentAngle;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(task, x, downput, output, d1, d2, brightness, red, green, blue, red_direction, green_direction, blue_direction, count, currentAngle);
+        return Objects.hash(task, x, output, d1, d2, brightness, brightArray, red, green, blue, red_direction, green_direction, blue_direction, count, currentAngle);
     }
 
     @Override
@@ -296,11 +299,11 @@ public class BoardVariable extends TaskModelBase {
         return "{" +
             " task='" + getTask() + "'" +
             ", x='" + getX() + "'" +
-            ", downput='" + getDownput() + "'" +
             ", output='" + getOutput() + "'" +
             ", d1='" + getD1() + "'" +
             ", d2='" + getD2() + "'" +
             ", brightness='" + getBrightness() + "'" +
+            ", brightArray='" + getBrightArray() + "'" +
             ", red='" + getRed() + "'" +
             ", green='" + getGreen() + "'" +
             ", blue='" + getBlue() + "'" +
@@ -312,4 +315,5 @@ public class BoardVariable extends TaskModelBase {
             "}";
     }
 
+    
 }

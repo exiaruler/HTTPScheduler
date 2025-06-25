@@ -4,19 +4,11 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 
 @Entity
 public class PinsParameter extends ModelBase {
-    // route
-    @JsonBackReference("route-pins")
-    @ManyToOne
-    @JoinColumn(name="route_id")
-    private Route route;
     // pin
     @Column
     private int pin;
@@ -31,19 +23,10 @@ public class PinsParameter extends ModelBase {
     public PinsParameter() {
     }
 
-    public PinsParameter(Route route, int pin, String key, int pinOrder) {
-        this.route = route;
+    public PinsParameter(int pin, String key, int pinOrder) {
         this.pin = pin;
         this.key = key;
         this.pinOrder = pinOrder;
-    }
-
-    public Route getRoute() {
-        return this.route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
     }
 
     public int getPin() {
@@ -70,11 +53,6 @@ public class PinsParameter extends ModelBase {
         this.pinOrder = pinOrder;
     }
 
-    public PinsParameter route(Route route) {
-        setRoute(route);
-        return this;
-    }
-
     public PinsParameter pin(int pin) {
         setPin(pin);
         return this;
@@ -98,23 +76,21 @@ public class PinsParameter extends ModelBase {
             return false;
         }
         PinsParameter pinsParameter = (PinsParameter) o;
-        return Objects.equals(route, pinsParameter.route) && pin == pinsParameter.pin && Objects.equals(key, pinsParameter.key) && pinOrder == pinsParameter.pinOrder;
+        return pin == pinsParameter.pin && Objects.equals(key, pinsParameter.key) && pinOrder == pinsParameter.pinOrder;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(route, pin, key, pinOrder);
+        return Objects.hash(pin, key, pinOrder);
     }
 
     @Override
     public String toString() {
         return "{" +
-            " route='" + getRoute() + "'" +
-            ", pin='" + getPin() + "'" +
+            " pin='" + getPin() + "'" +
             ", key='" + getKey() + "'" +
             ", pinOrder='" + getPinOrder() + "'" +
             "}";
     }
 
-    
 }

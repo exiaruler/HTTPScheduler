@@ -16,7 +16,7 @@ export class ButtonComponent extends Component<props>{
     render(){
         return(
         <ButtonGroup className="Button-Regular">
-        <Button variant={this.props.variant||"primary"} onClick={this.props.onClick} type={this.props.type} size={this.props.size} tabIndex={this.props.tabIndex}>
+        <Button variant={this.props.variant||"primary"} onClick={this.props.onClick} type={this.props.type} size={this.props.size} tabIndex={this.props.tabIndex} disabled={this.props.disabled}>
         {this.props.caption} 
         </Button> 
         </ButtonGroup>  

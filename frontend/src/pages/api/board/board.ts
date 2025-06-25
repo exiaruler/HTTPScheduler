@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const request=await base.fetchRequest('/board/add-board-socket','Post',body,base.baseUrlIo);
         response.status=await request.status;
         if(request.ok){
-
+            response.data=await request.json();
         }
         
     }

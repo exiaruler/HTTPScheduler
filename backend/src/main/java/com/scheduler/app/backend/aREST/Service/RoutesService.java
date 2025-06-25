@@ -8,6 +8,10 @@ import com.scheduler.Base.JsonObject.JsonObject;
 import com.scheduler.app.backend.Command.Models.Command;
 import com.scheduler.app.backend.Command.Models.CommandParameter;
 import com.scheduler.app.backend.Command.Service.CommandService;
+import com.scheduler.app.backend.Messaging.Models.BoardPin;
+import com.scheduler.app.backend.Messaging.Models.BoardTask;
+import com.scheduler.app.backend.Messaging.Models.InputCurrent;
+import com.scheduler.app.backend.Messaging.Models.OutputCurrent;
 import com.scheduler.app.backend.aREST.ArestV2Frame;
 import com.scheduler.app.backend.aREST.Models.Device;
 import com.scheduler.app.backend.aREST.Models.Mode;
@@ -16,17 +20,17 @@ import com.scheduler.app.backend.aREST.Models.ScanDevice;
 import com.scheduler.app.backend.aREST.Repo.DeviceRepo;
 import com.scheduler.app.backend.aREST.Repo.ModeRepo;
 import com.scheduler.app.backend.aREST.Repo.RoutesRepo;
-// save routes and modes
+// Functio and modes
 @Service
 public class RoutesService extends Base {
-    private final RoutesRepo service;
+    private final RoutesRepo routeRepo;
     private final ModeRepo modeService;
     private final DeviceRepo deviceRepo;
     private final CommandService commandService;
     private final ParameterService parameterService;
     public ArestV2Frame arest=new ArestV2Frame();
-    public RoutesService(RoutesRepo service, ModeRepo modeService, DeviceRepo deviceRepo, CommandService commandService, ParameterService parameterService) {
-        this.service = service;
+    public RoutesService(RoutesRepo routeRepo, ModeRepo modeService, DeviceRepo deviceRepo, CommandService commandService, ParameterService parameterService) {
+        this.routeRepo = routeRepo;
         this.modeService = modeService;
         this.deviceRepo = deviceRepo;
         this.commandService = commandService;
@@ -42,7 +46,7 @@ public class RoutesService extends Base {
                 newRoute.setMode(null);
             }else newRoute.setMode(modeList);
         }
-        service.save(newRoute);
+        routeRepo.save(newRoute);
         return newRoute;
     }
     public Route addRouteCommand(long deviceId,String route,long commandId,List<String> pins){
@@ -57,7 +61,7 @@ public class RoutesService extends Base {
             newRoute.setDevice(device);
             newRoute.setCommand(command);
         }
-        service.save(newRoute);
+        routeRepo.save(newRoute);
         return newRoute;
     }
     public Mode addMode(long routeId,Mode entry){
@@ -67,7 +71,7 @@ public class RoutesService extends Base {
         Mode newMode=new Mode();
         List<Mode> modeList=new ArrayList<Mode>();
         Device device=deviceRepo.getReferenceById(deviceId);
-        Route route=service.getReferenceById(routeId);
+        Route route=routeRepo.getReferenceById(routeId);
         newMode.setMode(modeName);
         if(device!=null&&route!=null){
             Command command=route.getCommand();
@@ -80,18 +84,93 @@ public class RoutesService extends Base {
                 route.setMode(modeList);
             }
         }
-        service.save(route);
+        routeRepo.save(route);
         Mode savedMode=route.getMode().get(route.getMode().size()-1);
         return savedMode;
     }
+    // add route and mode socket
+    public Route addRouteandModes(Route route,String deviceId){
+        if(deviceId!=""){
+            Device dev=deviceRepo.findDeviceByDeviceId(deviceId);
+            if(dev!=null){
+                route.setDevice(dev);
+                if(route.getMode().size()>0){
+                    route.setModes(true);
+                }
+                // set id to 0
+                List<Mode> modeList=route.getMode();
+                for(int i=0; i<modeList.size(); i++){
+                    BoardTask tsk=modeList.get(i).getBoardAction();
+                    // update pin id to 0
+                    for(int p=0; p<tsk.getPins().size(); p++){
+                        BoardPin pin=tsk.getPins().get(p);
+                        pin.setId(0);
+                        tsk.getPins().set(p,pin);
+                    }
+                    tsk.setId(0);
+                    // calculate current
+                    if(tsk.getInput().size()==tsk.getOutput().size()){
+                        int totLength=tsk.getOutput().size();
+                        for(int x=0; x<totLength; x++){
+                            InputCurrent in=tsk.getInput().get(x);
+                            in.setId(0);
+                            if(route.getElectrode()=="anode") in.setCurrent(currentAnodeCalculate(in.getCurrent()));
+                            tsk.getInput().set(x, in);
+                            OutputCurrent out=tsk.getOutput().get(x);
+                            out.setId(0);
+                            if(route.getElectrode()=="anode") out.setCurrent(currentAnodeCalculate(out.getCurrent()));
+                            tsk.getOutput().set(x,out);
+                        }
+                    }else
+                    {
+                        if(tsk.getInput().size()>0){
+                            //currentAnodeCalculate
+                            for(int a=0; a<tsk.getInput().size(); a++){
+                                InputCurrent in=tsk.getInput().get(a);
+                                in.setId(0);
+                                if(route.getElectrode()=="anode"){
+                                    in.setCurrent(currentAnodeCalculate(in.getCurrent()));
+                                }
+                                tsk.getInput().set(a, in);
+                            }
+                        }
+                        if(tsk.getOutput().size()>0){
+                            for(int b=0; b<tsk.getOutput().size(); b++){
+                                OutputCurrent out=tsk.getOutput().get(b);
+                                out.setId(0);
+                                if(route.getElectrode()=="anode"){
+                                    out.setCurrent(currentAnodeCalculate(out.getCurrent()));
+                                }
+                                tsk.getOutput().set(b,out);
+                            }
+                        }
+                    }
+                    modeList.get(i).setBoardAction(tsk);
+                    
+                }
+            route.setMode(modeList);
+            
+            Route save=routeRepo.save(route);
+            route=save;
+            }
+        }
+
+        
+
+        return route;
+    }
+    
     public Route updateRoute(Route entry,long id){
         Route rec=null;
-        if(service.existsById(id)){
-            rec=service.findById(id).get();
+        if(routeRepo.existsById(id)){
+            rec=routeRepo.findById(id).get();
             rec=entry;
-            service.save(rec);
+            routeRepo.save(rec);
         }
         return rec;
+    }
+    public void deleteRoute(long id){
+        deviceRepo.deleteById(id);
     }
     public List<Route> addRoutesByScan(Device deviceId,String ip){
         List<Route> routeList=new ArrayList<Route>();
@@ -113,7 +192,7 @@ public class RoutesService extends Base {
                 String route=arr[i];
                 Route newRoute=new Route();
                 String[] routeParam=getRoute(route);
-                Route exist=service.findExistingRouteByDevice(routeParam[0],deviceId.getId());
+                Route exist=routeRepo.findExistingRouteByDevice(routeParam[0],deviceId.getId());
                 if(exist!=null){
                     newRoute=exist;
                 }else{
@@ -163,10 +242,11 @@ public class RoutesService extends Base {
     }
     // routes
     public List<Route> getAllRoutes(){
-        return service.findAll();
+        return routeRepo.findAll();
     }
-    public Route getRoute(long id){
-        return service.findById(id).get();
+    public Route getRouteById(Long id){
+        Route rou=routeRepo.getReferenceById(id);
+        return rou;
     }
     // modes
     public List<Mode> getAllModes(){

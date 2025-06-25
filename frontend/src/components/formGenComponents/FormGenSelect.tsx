@@ -22,6 +22,7 @@ type Props={
 type state={
     options:any;
     value:any;
+    
 }
 export default class FormGenSelect extends Component<Props,state>{
     constructor(props:Props) {

@@ -2,116 +2,38 @@ package com.scheduler.app.backend.Messaging.Models;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.scheduler.Base.ModelBase.TaskModelBase;
-// current output
+// store output current
 @Entity
-public class OutputCurrent extends TaskModelBase {
-    
-    @ManyToOne
-    @JoinColumn(name="board_variable_id")
-    @JsonBackReference("boardvariable-downput")
-    private BoardVariable boardVariable;
-    // current
-    @Column
-    private int current=0;
-    // order of output
-    @Column
-    private int orderPosition;
-    // if it's downput
-    @Column
-    private boolean downput;
-    // if it's output
-    @Column
-    private boolean output;
+public class OutputCurrent extends Current {
 
+    // output
+    @ManyToOne
+    @JoinColumn(name="board_task_id")
+    @JsonBackReference("boardvariable-output")
+    private BoardTask boardTaskOutput;
 
     public OutputCurrent() {
     }
 
-    public OutputCurrent(BoardVariable boardVariable, int current, int orderPosition, boolean downput, boolean output) {
-        this.boardVariable = boardVariable;
-        this.current = current;
-        this.orderPosition = orderPosition;
-        this.downput = downput;
-        this.output = output;
+    public OutputCurrent(BoardTask boardTaskOutput) {
+        this.boardTaskOutput = boardTaskOutput;
     }
 
-    public BoardVariable getBoardVariable() {
-        return this.boardVariable;
+    public BoardTask getBoardTaskOutput() {
+        return this.boardTaskOutput;
     }
 
-    public void setBoardVariable(BoardVariable boardVariable) {
-        this.boardVariable = boardVariable;
+    public void setBoardTaskOutput(BoardTask boardTaskOutput) {
+        this.boardTaskOutput = boardTaskOutput;
     }
 
-    public int getCurrent() {
-        return this.current;
-    }
-
-    public void setCurrent(int current) {
-        this.current = current;
-    }
-
-    public int getOrderPosition() {
-        return this.orderPosition;
-    }
-
-    public void setOrderPosition(int orderPosition) {
-        this.orderPosition = orderPosition;
-    }
-
-    public boolean isDownput() {
-        return this.downput;
-    }
-
-    public boolean getDownput() {
-        return this.downput;
-    }
-
-    public void setDownput(boolean downput) {
-        this.downput = downput;
-    }
-
-    public boolean isOutput() {
-        return this.output;
-    }
-
-    public boolean getOutput() {
-        return this.output;
-    }
-
-    public void setOutput(boolean output) {
-        this.output = output;
-    }
-
-    public OutputCurrent boardVariable(BoardVariable boardVariable) {
-        setBoardVariable(boardVariable);
-        return this;
-    }
-
-    public OutputCurrent current(int current) {
-        setCurrent(current);
-        return this;
-    }
-
-    public OutputCurrent orderPosition(int orderPosition) {
-        setOrderPosition(orderPosition);
-        return this;
-    }
-
-    public OutputCurrent downput(boolean downput) {
-        setDownput(downput);
-        return this;
-    }
-
-    public OutputCurrent output(boolean output) {
-        setOutput(output);
+    public OutputCurrent boardTaskOutput(BoardTask boardTaskOutput) {
+        setBoardTaskOutput(boardTaskOutput);
         return this;
     }
 
@@ -123,22 +45,15 @@ public class OutputCurrent extends TaskModelBase {
             return false;
         }
         OutputCurrent outputCurrent = (OutputCurrent) o;
-        return Objects.equals(boardVariable, outputCurrent.boardVariable) && current == outputCurrent.current && orderPosition == outputCurrent.orderPosition && downput == outputCurrent.downput && output == outputCurrent.output;
+        return Objects.equals(boardTaskOutput, outputCurrent.boardTaskOutput);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(boardVariable, current, orderPosition, downput, output);
-    }
+    
 
     @Override
     public String toString() {
         return "{" +
-            " boardVariable='" + getBoardVariable() + "'" +
-            ", current='" + getCurrent() + "'" +
-            ", orderPosition='" + getOrderPosition() + "'" +
-            ", downput='" + isDownput() + "'" +
-            ", output='" + isOutput() + "'" +
+            " boardTaskOutput='" + getBoardTaskOutput() + "'" +
             "}";
     }
     

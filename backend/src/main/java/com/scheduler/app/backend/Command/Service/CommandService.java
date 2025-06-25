@@ -2,10 +2,12 @@ package com.scheduler.app.backend.Command.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.context.annotation.Bean;
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scheduler.Base.Base;
 import com.scheduler.app.backend.Command.CommandFunction;
 import com.scheduler.app.backend.Command.Models.Command;
-import com.scheduler.app.backend.Command.Models.CommandParameter;
 import com.scheduler.app.backend.Command.Repo.CommandRepo;
 import com.scheduler.app.backend.Hardware.Service.HardwareService;
+import com.scheduler.app.backend.Messaging.Models.BoardPin;
+import com.scheduler.app.backend.Messaging.Models.BoardTask;
+import com.scheduler.app.backend.Messaging.Models.BoardVariable;
+import com.scheduler.app.backend.Messaging.Models.Brightness;
+import com.scheduler.app.backend.Messaging.Models.InputCurrent;
+import com.scheduler.app.backend.Messaging.Models.OutputCurrent;
 
 @Configuration
 @Service
@@ -27,14 +34,6 @@ public class CommandService extends Base {
     public final CommandParameterService commandParaService;
     public final HardwareService hardwareService;
     private final ObjectMapper objectMapper;
-    private final CommandFunction commandArr[]={
-        new CommandFunction(new Command("action","setLed", "", true, 3, false, false, false, null,null), new String[]{"electo","pin","output"}),
-        //new CommandFunction(new Command("background","ledblink", "", true, 4, true, false, false, null, null), new String[] {"pin","interval","number","number","number","number"}),
-        new CommandFunction(new Command("action","setRgb", "", true, 5, false, false, false, null,null),new String[]{"rgbType","rgbSet","rgbRed","rgbGreen","rgbBlue"}),
-        //new CommandFunction(new Command("action","clearQueue", "", false, 0, false, false, false, null, null),new String[]{}),
-        //new CommandFunction(new Command("background","ledfade","",true,5,false,false, true, null, null),new String[]{"pin","number","number","time","number"}),
-        new CommandFunction(new Command("action","setServo", "", true, 6, true, false, false, null, null),new String[]{"pin","startAngle","moveAngle","time","beginDelay","interval"})   
-    };
     
     //public TaskService taskService;
     public CommandService(CommandRepo command,CommandParameterService commandParaService,HardwareService hardwareService, ObjectMapper objectMapper) {
@@ -46,70 +45,109 @@ public class CommandService extends Base {
     public Command getCommand(long id){
         return command.getReferenceById(id);
     }
-    @Bean(initMethod="init")
+    //@Bean(initMethod="init")
+    @PostConstruct
+    @Transactional
     public void initData(){
-    
+         List<Command> jsonCom=new ArrayList<>();
         try {
             // Load the JSON file from resources
             ClassPathResource resource = new ClassPathResource("json/commands.json");
             // Deserialize JSON array into a List
-            List<Command> jsonCom=objectMapper.readValue(resource.getInputStream(),new TypeReference<List<Command>>() {});
-            for(int i=0; i<jsonCom.size(); i++){
-                Command commandItem=jsonCom.get(i);
-                Command exist=command.findCommand(commandItem.getCommandType(), commandItem.getCommand());
-                if(commandItem!=null&&exist==null){
-                    Command save=command.save(commandItem);
-                }else if(exist!=null){
-                    command.save(exist);
-                }
-
-            }
+            jsonCom=objectMapper.readValue(resource.getInputStream(),new TypeReference<List<Command>>() {});
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        for(int i=0; i<jsonCom.size(); i++){
+                Command commandItem=jsonCom.get(i);
+                Command exist=command.findCommand(commandItem.getCommandType(),commandItem.getCommand());
+                if(exist==null) exist=new Command();
+                Optional<Command> rec=command.findById(exist.getId());
+                if(commandItem!=null&&!rec.isPresent()){
+                    commandItem.setTotalParam(commandItem.getTotalParam());
+                    if(commandItem.getCommandParameter().size()>0){
+                        commandItem.setParams(true);
+                    }else commandItem.setParams(false);
+                    Command save=command.save(commandItem);
+
+                }else if(rec.isPresent()){
+                    /* 
+                    Command recValid=rec.get();
+                    List <CommandParameter> existingParaList=exist.getCommandParameter();
+                    exist.setTotalParam(commandItem.getTotalParam());
+                    if(commandItem.getCommandParameter().size()>0){
+                        exist.setParams(true);
+                    }else exist.setParams(false);
+                    exist.setCommandType(commandItem.getCommandType());
+                    exist.setCommand(commandItem.getCommand());
+                    exist.setHasMotor(commandItem.getHasMotor());
+                    exist.setBoardCommand(commandItem.getBoardCommand());
+                    List <CommandParameter> comparaList=commandItem.getCommandParameter();
+                    List <Long> findIds=new ArrayList<>();
+                    for(int x=0; x<comparaList.size(); x++){
+                        CommandParameter para=comparaList.get(x);
+                        String usedId=findIds.toString().replace("[","").replace("]", "");
+                        String query="Select Id from scheduler.commandparameter where backgroundKey="+quoteParam(para.getBackgroundKey())+" and command_id="+exist.getId();
+                        if(usedId!="")query+=" and id not in ("+usedId+")";
+                        long existParaId=getDataLong(query);
+                        if(existParaId>0){
+                            CommandParameter existPara=existingParaList.stream().filter(commandParameter->commandParameter.getId()==existParaId).findFirst().orElse(null);
+                            int index=existingParaList.indexOf(existPara);
+                            existPara.setBackgroundKey(para.getBackgroundKey());
+                            existPara.setClassName(para.getClassName());
+                            existPara.setComponent(para.getComponent());
+                            existPara.setPin(para.getPin());
+                            existingParaList.set(index, existPara);
+                            findIds.add(existParaId);   
+                            
+                        }else {
+                            existingParaList.add(para);
+                        }
+                    }
+                    exist.setCommandParameter(existingParaList);
+                    command.save(exist);
+                    */
+                }
+
+            }
         hardwareService.initData();
             
-    }
-    public List<CommandParameter> createParameterSet(String [] parameters,Command command){
-        HashMap<String,String> components=commandParaService.createComponentMap();
-        List<CommandParameter> commandParaSet=new ArrayList<>();
-        if(!command.getCommandParameter().isEmpty()){
-            commandParaSet=command.getCommandParameter();
-        }
-        for(int x=0; x<parameters.length; x++){
-            String para=parameters[x];
-            CommandParameter newPara=new CommandParameter();
-            Object comp=components.get(para);
-            if(comp!=null){
-                newPara.setCommand(command);
-                newPara.setBackgroundKey(para);
-                newPara.setComponent(components.get(para));
-                if(para=="pin"){
-                    newPara.setPin(true);
-                }
-                if(para=="output"){
-                    newPara.setClassName("BackgroundTask");
-                }else newPara.setClassName("BackgroundVariables");
-                if(!commandParaSet.contains(newPara)){
-                    commandParaSet.add(newPara);
-                }
-            }
-        }
-        return commandParaSet;
-    }
-
-    public CommandParameter createParameter(String type,int order){
-        CommandParameter newPara=new CommandParameter();
-        newPara.setType(type);
-        newPara.setParameterOrder(order+1);
-        if(type=="pin") newPara.setPin(true);
-        return newPara;
     }
     public List<Command> getCommands(){
         return command.findAll();
     }
-    public CommandFunction[] getCommandArr() {
-        return commandArr;
+    public void restartCommands(){
+        command.deleteAll();
+    }
+    public BoardTask newRecordComplete(){
+        BoardTask newTask=new BoardTask();
+        BoardVariable variable=new BoardVariable();
+        List <InputCurrent> input=new ArrayList<>();
+        List <OutputCurrent> output=new ArrayList<>();
+        List <Brightness> bright=new ArrayList<>();
+        List <BoardPin> pins=new ArrayList<>();
+        for(int i=1; i<=3; i++){
+            InputCurrent in=new InputCurrent();
+            in.setCurrent(0);
+            input.add(in);
+            OutputCurrent out=new OutputCurrent();
+            out.setCurrent(0);
+            output.add(out);
+            Brightness bri=new Brightness();
+            bri.setCurrent(0);
+            bright.add(bri);
+        }
+        for(int i=1; i<=10; i++){
+            BoardPin pin=new BoardPin();
+            pin.setPin(0);
+            pins.add(pin);
+        }
+        newTask.setInput(input);
+        newTask.setOutput(output);
+        variable.setBrightArray(bright);
+        newTask.setPins(pins);
+        newTask.setVariable(variable);
+        return newTask;
     }
    
     

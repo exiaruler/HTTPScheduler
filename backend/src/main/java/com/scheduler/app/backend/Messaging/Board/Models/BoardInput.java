@@ -14,21 +14,24 @@ public class BoardInput {
     private int taskPosition;
     // system queue
     private boolean systemQueue;
+    // normal queue
+    private boolean queue;
     // RAM space left on board
     private int ramSpace;
     // milliseconds took to process message
     //private int responseTime;
+
     public BoardInput() {
     }
 
-
-    public BoardInput(long board, String messageType, boolean success, String data, int taskPosition, boolean systemQueue, int ramSpace) {
+    public BoardInput(long board, String messageType, boolean success, String data, int taskPosition, boolean systemQueue, boolean queue, int ramSpace) {
         this.board = board;
         this.messageType = messageType;
         this.success = success;
         this.data = data;
         this.taskPosition = taskPosition;
         this.systemQueue = systemQueue;
+        this.queue = queue;
         this.ramSpace = ramSpace;
     }
 
@@ -88,6 +91,18 @@ public class BoardInput {
         this.systemQueue = systemQueue;
     }
 
+    public boolean isQueue() {
+        return this.queue;
+    }
+
+    public boolean getQueue() {
+        return this.queue;
+    }
+
+    public void setQueue(boolean queue) {
+        this.queue = queue;
+    }
+
     public int getRamSpace() {
         return this.ramSpace;
     }
@@ -126,6 +141,11 @@ public class BoardInput {
         return this;
     }
 
+    public BoardInput queue(boolean queue) {
+        setQueue(queue);
+        return this;
+    }
+
     public BoardInput ramSpace(int ramSpace) {
         setRamSpace(ramSpace);
         return this;
@@ -139,12 +159,12 @@ public class BoardInput {
             return false;
         }
         BoardInput boardInput = (BoardInput) o;
-        return board == boardInput.board && Objects.equals(messageType, boardInput.messageType) && success == boardInput.success && Objects.equals(data, boardInput.data) && taskPosition == boardInput.taskPosition && systemQueue == boardInput.systemQueue && ramSpace == boardInput.ramSpace;
+        return board == boardInput.board && Objects.equals(messageType, boardInput.messageType) && success == boardInput.success && Objects.equals(data, boardInput.data) && taskPosition == boardInput.taskPosition && systemQueue == boardInput.systemQueue && queue == boardInput.queue && ramSpace == boardInput.ramSpace;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(board, messageType, success, data, taskPosition, systemQueue, ramSpace);
+        return Objects.hash(board, messageType, success, data, taskPosition, systemQueue, queue, ramSpace);
     }
 
     @Override
@@ -156,6 +176,7 @@ public class BoardInput {
             ", data='" + getData() + "'" +
             ", taskPosition='" + getTaskPosition() + "'" +
             ", systemQueue='" + isSystemQueue() + "'" +
+            ", queue='" + isQueue() + "'" +
             ", ramSpace='" + getRamSpace() + "'" +
             "}";
     }

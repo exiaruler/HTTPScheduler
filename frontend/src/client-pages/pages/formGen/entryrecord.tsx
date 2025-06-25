@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import UiBase from "../../base/UiBase";
 import { ButtonComponent } from "../../components/Buttons/ButtonComponent";
 import React from "react";
-import TableComponent from "../../components/Table/TableComponent";
 import TableComponentColumn from "../../components/Table/TableComponentColumn";
 import TabGroup from "../../components/Tab/TabGroup";
 import TabComponent from "../../components/Tab/TabComponent";
 import Group from "../../components/Group";
+import TableComponentClass from "../../components/Table/TableComponentClass";
 type Props={
   entryRecord?:any
 }
@@ -155,13 +155,13 @@ export default function EntryRecord(props:Props){
         className="mb-4">
         <Tab eventKey="records" title={setup.name}>
        
-        <TableComponent id="table" ref={tableBodyRef} results={records} idKey={setup.valueKey} rowSelect={true} onClick={selectRecord} onDoubleClick={()=>handleTabSwitch("record")}>
+        <TableComponentClass id="table" ref={tableBodyRef} results={records} idKey={setup.valueKey} rowSelect={true} onClick={selectRecord} onDoubleClick={()=>handleTabSwitch("record")}>
         {
           setup.tableColumns.map((col:any,index)=>(
             <TableComponentColumn key={col.key} columnName={col.name}/>
           ))
         }
-        </TableComponent>
+        </TableComponentClass>
         <ButtonComponent id={""} caption={'Add'} variant={''} onClick={addRecord} size={''} active={false} disabled={false} type={undefined} />
         {!showDeleteBtn?
         <ButtonComponent id={""} caption={'Delete'} variant={'danger'} onClick={deleteHandle} size={''} active={false} disabled={false} type={undefined} />

@@ -19,7 +19,7 @@ import com.scheduler.Base.ModelBase.ModelBase;
 import com.scheduler.app.backend.Hardware.Models.Hardware;
 
 @Entity
-@Table(indexes = @Index(columnList = "boardId,ip"))
+@Table(indexes = @Index(columnList = "boardId"))
 public class Board extends ModelBase {
  
     // arduino board id

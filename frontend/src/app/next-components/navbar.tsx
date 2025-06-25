@@ -24,6 +24,7 @@ export default function NavBar(){
     var formsUser:any=[
         
     ];
+    //uiBase.generateKeyClient();
     var routes=uiBase.getPagesSection('navbar');
     //routes=navigation.routes.filter((route)=>route.show===true);
     //const home=routes[0];

@@ -1,27 +1,25 @@
 package com.scheduler.app.backend.aREST.Models;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.scheduler.Base.ModelBase.ModelBase;
 import com.scheduler.app.backend.Command.Models.Command;
 import com.scheduler.app.backend.Messaging.Models.BoardTask;
 // device functions
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
-@Table(indexes = @Index(columnList = "route"))
 public class Route extends ModelBase{
     @JsonBackReference("device-routes")
     @ManyToOne
@@ -37,7 +35,7 @@ public class Route extends ModelBase{
     @Column
     private String electrode="";
     // arest Command route
-    //@JsonBackReference("command-route")
+    @JsonBackReference("command-route")
     @ManyToOne
     @JoinColumn(name="command_id")
     private Command command;
@@ -48,10 +46,6 @@ public class Route extends ModelBase{
     @JsonManagedReference("route-mode")
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade =CascadeType.ALL)
     private List<Mode> mode;
-    // Set of pins used for command 
-    @JsonManagedReference("route-pins")
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "route", cascade =CascadeType.ALL)
-    private Set<PinsParameter> pins;
     // Board Task
     @JsonManagedReference("boardtask-route")
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "route", cascade = CascadeType.ALL)
@@ -65,7 +59,7 @@ public class Route extends ModelBase{
     public Route() {
     }
 
-    public Route(Device device, String route, boolean modes, String electrode, Command command, boolean switchDevice, List<Mode> mode, Set<PinsParameter> pins, BoardTask boardAction, List<Schedule> scheduledRoutes) {
+    public Route(Device device, String route, boolean modes, String electrode, Command command, boolean switchDevice, List<Mode> mode, BoardTask boardAction, List<Schedule> scheduledRoutes) {
         this.device = device;
         this.route = route;
         this.modes = modes;
@@ -73,7 +67,6 @@ public class Route extends ModelBase{
         this.command = command;
         this.switchDevice = switchDevice;
         this.mode = mode;
-        this.pins = pins;
         this.boardAction = boardAction;
         this.scheduledRoutes = scheduledRoutes;
     }
@@ -142,14 +135,6 @@ public class Route extends ModelBase{
         this.mode = mode;
     }
 
-    public Set<PinsParameter> getPins() {
-        return this.pins;
-    }
-
-    public void setPins(Set<PinsParameter> pins) {
-        this.pins = pins;
-    }
-
     public BoardTask getBoardAction() {
         return this.boardAction;
     }
@@ -201,11 +186,6 @@ public class Route extends ModelBase{
         return this;
     }
 
-    public Route pins(Set<PinsParameter> pins) {
-        setPins(pins);
-        return this;
-    }
-
     public Route boardAction(BoardTask boardAction) {
         setBoardAction(boardAction);
         return this;
@@ -224,12 +204,12 @@ public class Route extends ModelBase{
             return false;
         }
         Route route = (Route) o;
-        return Objects.equals(device, route.device) && Objects.equals(route, route.route) && modes == route.modes && Objects.equals(electrode, route.electrode) && Objects.equals(command, route.command) && switchDevice == route.switchDevice && Objects.equals(mode, route.mode) && Objects.equals(pins, route.pins) && Objects.equals(boardAction, route.boardAction) && Objects.equals(scheduledRoutes, route.scheduledRoutes);
+        return Objects.equals(device, route.device) && Objects.equals(route, route.route) && modes == route.modes && Objects.equals(electrode, route.electrode) && Objects.equals(command, route.command) && switchDevice == route.switchDevice && Objects.equals(mode, route.mode) && Objects.equals(boardAction, route.boardAction) && Objects.equals(scheduledRoutes, route.scheduledRoutes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(device, route, modes, electrode, command, switchDevice, mode, pins, boardAction, scheduledRoutes);
+        return Objects.hash(device, route, modes, electrode, command, switchDevice, mode, boardAction, scheduledRoutes);
     }
 
     @Override
@@ -242,10 +222,9 @@ public class Route extends ModelBase{
             ", command='" + getCommand() + "'" +
             ", switchDevice='" + isSwitchDevice() + "'" +
             ", mode='" + getMode() + "'" +
-            ", pins='" + getPins() + "'" +
             ", boardAction='" + getBoardAction() + "'" +
             ", scheduledRoutes='" + getScheduledRoutes() + "'" +
             "}";
     }
-    
+
 }

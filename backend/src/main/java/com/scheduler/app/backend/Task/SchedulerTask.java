@@ -40,8 +40,10 @@ public class SchedulerTask{
     private RoutesService routeService;
     @Autowired
     private ParameterService parameterService;
+    /* 
     @Autowired
     public WebSocketHandlerRaw websocketHandler;
+    */
     // task queue
     private static List<Task> queue=new ArrayList<Task>();
     // task running 
@@ -50,6 +52,7 @@ public class SchedulerTask{
     private static List<CompletedTask> completeTaskQueue=new ArrayList<CompletedTask>();
     // complete received websocket messages
     private static Map<String,String> completeMessages=new ConcurrentHashMap<>();
+    
     @Scheduled(fixedRate = 100)
     public void runSche(){
         if(queue.isEmpty()&&!start){
@@ -71,7 +74,7 @@ public class SchedulerTask{
                     // add task to running queue if it passes check else let it stick in the queue 
                     if(!checkTaskRunning(task)&&!task.getHttpTask()){
                         Device device=deviceService.getDevice(task.getDeviceId());
-                        Route route=routeService.getRoute(task.getRouteId());
+                        Route route=routeService.getRouteById(task.getRouteId());
                         Mode mode=routeService.getMode(task.getModeId());
                         paramsArr=parameterService.getParamsArray(task.getModeId());
                         if(device.getBoard().getArestCommand()){
@@ -167,8 +170,8 @@ public class SchedulerTask{
         boolean synchronous=false;
         // if command is synchronous by pass check
         if(task.getSchedule().getDevice().getBoard().getArestCommand()){
-            Route route=routeService.getRoute(task.getRouteId());
-            if(route.getCommand().getSynchronous()) synchronous=true;
+            Route route=routeService.getRouteById(task.getRouteId());
+            //if(route.getCommand().getSynchronous()) synchronous=true;
         }
         if(!synchronous){
             for(int i=0; i<runningQueue.size(); i++){
